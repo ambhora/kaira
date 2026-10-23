@@ -31,8 +31,8 @@ inputs.
 vector alone; there is no abbreviation, clustering, or implicit alias
 ([design goals](explanation/design-goals.md)).
 
-**Value portability:** `int` and `float` values are validated lexically and
-kept as text, so results do not depend on host numeric types
+**Value portability:** values are carried as the original text; the parser
+performs no conversion, so results do not depend on host numeric types
 ([results](reference/results.md)).
 
 **Scoped commands:** each selected subcommand opens a new level with its own
@@ -47,20 +47,30 @@ each case ([conformance suite](reference/results.md#conformance-suite)).
 
 ### Scope
 
-**Specified:** the KORML declaration format and its validation; per-level
-interpretation of flags, options, subcommands, and positional slots; the
-portable result and error codes; four primitive value types with exact
-lexical grammars; a language-neutral conformance suite.
+**This specification:** the declaration format, its interpretation, the
+portable result and error codes, and the conformance suite.
 
-**Out of scope:** implementation APIs; shell tokenization and quoting;
-diagnostic messages and help output; application-level types such as paths
-or dates; default values, environment variables, and configuration files.
+**Libraries** (`pykaira`, `kaira-rs`, `kaira-cpp`): the language API,
+typed access to the result, diagnostics, and help output — specified and
+documented per library.
+
+**Applications:** the meaning of values (paths, numbers, enumerations),
+defaults, environment variables, configuration files.
+
+**The shell:** tokenization, quoting, and escaping; Kaira receives words.
 
 </div>
 
 </div>
 
-## Overview
+## Command-line model
+
+<figure class="kaira-figure" markdown>
+![Anatomy of a command line: flags and options before the subcommand word belong to the root; the subcommand word opens the next level, whose flags, options and positional words interleave; positional words fill named slots - fixed-count left and right slots and one variable centre slot; the delimiter -- makes the remaining words positional.](assets/images/command-line-model.svg)
+<figcaption>A command line is read as a sequence of command levels. Every acceptance decision is determined by the current level's declaration: its shape, its flags and options, and its positional slots.</figcaption>
+</figure>
+
+## Using Kaira in a program
 
 <figure class="kaira-figure" markdown>
 ![Using Kaira in a program: write a declaration once; at start-up load it with a Kaira library, pass argv, and receive either a typed result consumed by application logic or an error with a code and argv index.](assets/images/usage-flow.svg)

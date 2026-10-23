@@ -1,10 +1,9 @@
-<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 64 64" fill="none" stroke="currentColor" stroke-width="5" stroke-linecap="round" stroke-linejoin="round" role="img" aria-label="Kaira">
-  <!-- Prompt chevron -->
-  <path d="M8 16 L24 32 L8 48"/>
-  <!-- Command tree: root, then two children -->
-  <path d="M34 20 H56"/>
-  <path d="M34 32 H44"/>
-  <path d="M44 32 V44 H56"/>
-  <circle cx="56" cy="20" r="3" fill="currentColor" stroke="none"/>
-  <circle cx="56" cy="44" r="3" fill="currentColor" stroke="none"/>
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 1600 1600" role="img" aria-label="Kaira">
+  <g fill="none" stroke-width="150" stroke-linecap="round" stroke-linejoin="round">
+    <path d="M230 420 L600 800 L230 1180" stroke="currentColor"/>
+    <path d="M840 540 H1330" stroke="currentColor"/>
+    <path d="M840 800 H1070 V1060 H1330" stroke="currentColor"/>
+  </g>
+  <circle cx="1330" cy="540" r="80" fill="currentColor"/>
+  <circle cx="1330" cy="1060" r="80" fill="currentColor"/>
 </svg>

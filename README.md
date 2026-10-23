@@ -1,3 +1,5 @@
+<img src="brand/kaira-logo.svg" alt="Kaira" width="300">
+
 # Kaira specification
 
 Kaira specifies a deterministic, language-independent command-line parser.

@@ -1,8 +1,10 @@
-<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 64 64">
-  <rect width="64" height="64" rx="14" fill="#1f3a5f"/>
-  <g fill="none" stroke="#9ad4d6" stroke-width="6" stroke-linecap="round" stroke-linejoin="round">
-    <path d="M12 18 L26 32 L12 46"/>
-    <path d="M36 22 H54"/>
-    <path d="M36 32 H44 V42 H54"/>
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 1600 1600" width="1600" height="1600" role="img" aria-label="Kaira icon">
+  <rect width="1600" height="1600" rx="320" fill="#1F3A5F"/>
+  <g fill="none" stroke-width="130" stroke-linecap="round" stroke-linejoin="round">
+    <path d="M230 420 L600 800 L230 1180" stroke="#FFFFFF"/>
+    <path d="M840 540 H1330" stroke="#4FC3C5"/>
+    <path d="M840 800 H1070 V1060 H1330" stroke="#4FC3C5"/>
   </g>
+  <circle cx="1330" cy="540" r="80" fill="#4FC3C5"/>
+  <circle cx="1330" cy="1060" r="80" fill="#4FC3C5"/>
 </svg>

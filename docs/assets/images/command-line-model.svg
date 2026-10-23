@@ -1,0 +1,43 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 1180 273" font-family="Inter, Roboto, Helvetica, Arial, sans-serif" role="img" aria-labelledby="t d">
+  <title id="t">Model of a Kaira command line</title>
+  <desc id="d">A command line is a sequence of command levels. Flags and options before the subcommand word belong to the root; the subcommand word opens the next level, whose flags, options and positional words may interleave. Positional words fill named slots: fixed-count left and right slots and at most one variable center slot. The delimiter -- makes all remaining words positional.</desc>
+<text x="18" y="64" font-family="JetBrains Mono, Menlo, monospace" font-size="15" fill="#5b6b7f">$</text>
+<rect x="40" y="44" width="47" height="30" rx="6" fill="#eef2f9" stroke="#7f9ac4"/>
+<text x="64" y="64" text-anchor="middle" font-family="JetBrains Mono, Menlo, monospace" font-size="15" fill="#243b6b">pkg</text>
+<rect x="101" y="44" width="39" height="30" rx="6" fill="#dbe8f8" stroke="#7f9ac4"/>
+<text x="120" y="64" text-anchor="middle" font-family="JetBrains Mono, Menlo, monospace" font-size="15" fill="#243b6b">-v</text>
+<rect x="154" y="44" width="90" height="30" rx="6" fill="#dbe8f8" stroke="#7f9ac4"/>
+<text x="199" y="64" text-anchor="middle" font-family="JetBrains Mono, Menlo, monospace" font-size="15" fill="#243b6b">--jobs=4</text>
+<rect x="258" y="44" width="82" height="30" rx="6" fill="#fff8e6" stroke="#c9a227"/>
+<text x="299" y="64" text-anchor="middle" font-family="JetBrains Mono, Menlo, monospace" font-size="15" fill="#6b5a1a">install</text>
+<rect x="354" y="44" width="99" height="30" rx="6" fill="#e2f3ea" stroke="#5fae7f"/>
+<text x="404" y="64" text-anchor="middle" font-family="JetBrains Mono, Menlo, monospace" font-size="15" fill="#1e6b3a">--dry-run</text>
+<rect x="467" y="44" width="65" height="30" rx="6" fill="#e2f3ea" stroke="#5fae7f"/>
+<text x="500" y="64" text-anchor="middle" font-family="JetBrains Mono, Menlo, monospace" font-size="15" fill="#1e6b3a">a.tgz</text>
+<rect x="546" y="44" width="65" height="30" rx="6" fill="#e2f3ea" stroke="#5fae7f"/>
+<text x="578" y="64" text-anchor="middle" font-family="JetBrains Mono, Menlo, monospace" font-size="15" fill="#1e6b3a">b.tgz</text>
+<rect x="625" y="44" width="39" height="30" rx="6" fill="#f4f6f8" stroke="#8a98a8"/>
+<text x="644" y="64" text-anchor="middle" font-family="JetBrains Mono, Menlo, monospace" font-size="15" fill="#5b6b7f">--</text>
+<rect x="678" y="44" width="73" height="30" rx="6" fill="#e2f3ea" stroke="#5fae7f"/>
+<text x="714" y="64" text-anchor="middle" font-family="JetBrains Mono, Menlo, monospace" font-size="15" fill="#1e6b3a">-x.tgz</text>
+<rect x="765" y="44" width="65" height="30" rx="6" fill="#e2f3ea" stroke="#5fae7f"/>
+<text x="798" y="64" text-anchor="middle" font-family="JetBrains Mono, Menlo, monospace" font-size="15" fill="#1e6b3a">dest/</text>
+<text x="299" y="18" text-anchor="middle" font-size="12" fill="#6b5a1a" font-weight="600">subcommand word</text>
+<text x="299" y="32" text-anchor="middle" font-size="11" fill="#6b5a1a">ends level 1, opens level 2</text>
+<line x1="251" y1="38" x2="251" y2="84" stroke="#c9a227" stroke-width="1.5" stroke-dasharray="4 3"/>
+<path d="M101 84 v8 h143 v-8" fill="none" stroke="#243b6b" stroke-width="1.5"/>
+<text x="101" y="104" text-anchor="start" font-size="12" fill="#243b6b" font-weight="600">level 1 · __main__ · shape: subcommands</text>
+<path d="M354 84 v8 h476 v-8" fill="none" stroke="#1e6b3a" stroke-width="1.5"/>
+<text x="354" y="104" text-anchor="start" font-size="12" fill="#1e6b3a" font-weight="600">level 2 · __main__.install · shape: positionals — flags, options and positional words interleave</text>
+<path d="M467 128 v8 h284 v-8" fill="none" stroke="#1e6b3a" stroke-width="1.5"/>
+<text x="467" y="148" text-anchor="start" font-size="12" fill="#1e6b3a" font-weight="normal">slot source · center · 1 or more</text>
+<path d="M765 128 v8 h65 v-8" fill="none" stroke="#1e6b3a" stroke-width="1.5"/>
+<text x="830" y="148" text-anchor="end" font-size="12" fill="#1e6b3a" font-weight="normal">slot destination · right · 1</text>
+<text x="404" y="174" text-anchor="middle" font-size="11" fill="#5b6b7f">flag of level 2; its position</text>
+<text x="404" y="188" text-anchor="middle" font-size="11" fill="#5b6b7f">among the words is free</text>
+<text x="674" y="174" text-anchor="middle" font-size="11" fill="#5b6b7f">-- ends option recognition;</text>
+<text x="674" y="188" text-anchor="middle" font-size="11" fill="#5b6b7f">-x.tgz is a positional word</text>
+<text x="18" y="218" font-size="12" fill="#1f2d3d"><tspan font-weight="600">Declaration: </tspan>commands is a flat mapping of named commands, __main__ being the root. A command has a shape (none | subcommands | positionals), flags (no value), options</text>
+<text x="18" y="235" font-size="12" fill="#1f2d3d"><tspan font-weight="600"></tspan>(one value per occurrence, spaced or attached) and, for shape positionals, ordered slots: left… with fixed counts, at most one center with a variable count, right… with fixed counts.</text>
+<text x="18" y="252" font-size="12" fill="#1f2d3d"><tspan font-weight="600">Result: </tspan>program · command (the selected key) · path (keys from root to leaf) · commands (one record per key, with flags, options and positionals).</text>
+</svg>
