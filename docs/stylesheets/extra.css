@@ -29,12 +29,6 @@
   letter-spacing: -0.01em;
 }
 
-.md-typeset .kaira-intro small {
-  display: block;
-  margin-top: 1rem;
-  color: var(--md-default-fg-color--light);
-}
-
 /* Illustrations. */
 .md-typeset .kaira-figure {
   width: 100%;

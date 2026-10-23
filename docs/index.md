@@ -19,8 +19,6 @@ a portable result representation, so that independent implementations in
 different languages produce identical results and error codes for identical
 inputs.
 
-<small>Version 1, draft. `src/SPECIFICATION.md` in the repository is normative; these pages are explanatory.</small>
-
 </div>
 
 ## Overview
@@ -129,8 +127,13 @@ Conformance
 
 !!! note "Status"
 
-    Version 1 is a draft. Once it is declared stable, any change that affects
-    results or error categories requires a new declaration version.
+    This site documents version 1 of the specification, which is currently a
+    draft. The normative text is the file `src/SPECIFICATION.md` in the
+    repository, reproduced unchanged on the
+    [Specification](reference/specification.md) page. All other pages are
+    explanatory and do not add requirements. Once version 1 is declared
+    stable, any change that affects results or error categories requires a
+    new declaration version.
 
 ## Contents
 
