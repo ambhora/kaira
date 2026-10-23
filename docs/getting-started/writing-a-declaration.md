@@ -69,8 +69,8 @@ commands:
     flags:
       verbose: {short: v}
     options:
-      jobs: {value: int, style: attached}
-      include: {value: string, style: spaced, multiplicity: multiple}
+      jobs: {style: attached}
+      include: {style: spaced, multiplicity: multiple}
 ```
 
 | Command line | Outcome |
@@ -78,11 +78,10 @@ commands:
 | `forge --jobs=8 --include src --include tests` | `"options": {"jobs": "8", "include": ["src", "tests"]}` |
 | `forge --jobs 8` | `invalid_option_form` at 0 — `jobs` is `attached`. |
 | `forge --include=src` | `invalid_option_form` at 0 — `include` is `spaced`. |
-| `forge --jobs=08` | `invalid_value` at 0 — `int` has no leading zeros. |
 | `forge --jobs=4 --jobs=8` | `duplicate_option` at 1 — a `single` option occurs at most once. |
 
-`jobs` is `"8"`, a string: numeric values keep their original text so that
-no host language can round or overflow them.
+`jobs` is `"8"`, a string. Kaira does not type or validate values; the
+application (or a typed accessor of the library) converts it.
 
 ## 4. Positional values
 
@@ -100,10 +99,10 @@ commands:
     flags:
       verbose: {short: v}
     options:
-      jobs: {value: int, style: attached}
-      include: {value: string, style: spaced, multiplicity: multiple}
+      jobs: {style: attached}
+      include: {style: spaced, multiplicity: multiple}
     positionals:
-      - target: {alignment: center, value: string, multiplicity: multiple}
+      - target: {alignment: center, multiplicity: multiple}
 ```
 
 | Command line | Outcome |
@@ -145,7 +144,7 @@ commands:
     flags:
       release: {}
     positionals:
-      - target: {alignment: center, value: string, multiplicity: multiple}
+      - target: {alignment: center, multiplicity: multiple}
   __main__.clean:
     shape: none
 ```
@@ -188,8 +187,8 @@ commands:
     flags:
       force: {short: f}
     positionals:
-      - source: {alignment: center, value: string, multiplicity: multiple}
-      - destination: {alignment: right, value: string}
+      - source: {alignment: center, multiplicity: multiple}
+      - destination: {alignment: right}
 ```
 
 | Command line | Outcome |

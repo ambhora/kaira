@@ -21,53 +21,11 @@ inputs.
 
 </div>
 
-<div class="grid kaira-columns" markdown>
-
-<div markdown>
-
-### Properties
-
-**Determinism:** the outcome depends on the declaration and the argument
-vector alone; there is no abbreviation, clustering, or implicit alias
-([design goals](explanation/design-goals.md)).
-
-**Value portability:** values are carried as the original text; the parser
-performs no conversion, so results do not depend on host numeric types
-([results](reference/results.md)).
-
-**Scoped commands:** each selected subcommand opens a new level with its own
-flags and options; nothing is inherited ([grammar](explanation/grammar.md)).
-
-**Conformance:** a shared vector file fixes the expected result or error for
-each case ([conformance suite](reference/results.md#conformance-suite)).
-
-</div>
-
-<div markdown>
-
-### Scope
-
-**This specification:** the declaration format, its interpretation, the
-portable result and error codes, and the conformance suite.
-
-**Libraries** (`pykaira`, `kaira-rs`, `kaira-cpp`): the language API,
-typed access to the result, diagnostics, and help output — specified and
-documented per library.
-
-**Applications:** the meaning of values (paths, numbers, enumerations),
-defaults, environment variables, configuration files.
-
-**The shell:** tokenization, quoting, and escaping; Kaira receives words.
-
-</div>
-
-</div>
-
 ## Command-line model
 
 <figure class="kaira-figure" markdown>
-![Anatomy of a command line: flags and options before the subcommand word belong to the root; the subcommand word opens the next level, whose flags, options and positional words interleave; positional words fill named slots - fixed-count left and right slots and one variable centre slot; the delimiter -- makes the remaining words positional.](assets/images/command-line-model.svg)
-<figcaption>A command line is read as a sequence of command levels. Every acceptance decision is determined by the current level's declaration: its shape, its flags and options, and its positional slots.</figcaption>
+![A command line names a program, its flags and options, then optionally a subcommand; everything after the subcommand belongs to it - flags, options and positional arguments in any order. Positional arguments are a fixed number first, a variable number in the middle, a fixed number last. After -- every word is an argument.](assets/images/command-line-model.svg)
+<figcaption>A command line is a program, its flags and options, and either a subcommand (which has its own) or positional arguments. A subcommand's arguments may be interleaved with its flags and options; a fixed number of arguments at each end and one variable group in the middle give every word exactly one place.</figcaption>
 </figure>
 
 ## Using Kaira in a program
@@ -95,7 +53,7 @@ portable error for a command line that omits the argument.
         flags:
           verbose: {short: v}        # (3)!
         positionals:
-          - input: {alignment: left, value: string}   # (4)!
+          - input: {alignment: left}                  # (4)!
     ```
 
     1.  Every command is an entry of `commands`; `__main__` is the root.
@@ -104,7 +62,8 @@ portable error for a command line that omits the argument.
     3.  A flag takes no value. Its short alias exists only because it is
         declared here.
     4.  One positional slot, `single` and `required` by default, so it
-        accepts exactly one word.
+        accepts exactly one word. Values have no types: every word is
+        delivered as a string.
 
 === "Command line"
 
@@ -148,6 +107,48 @@ portable error for a command line that omits the argument.
     An error consists of a code from a closed set and a zero-based index
     into `argv` (here the end of input). Diagnostic text is
     implementation-defined.
+
+<div class="grid kaira-columns" markdown>
+
+<div markdown>
+
+### Properties
+
+**Determinism:** the outcome depends on the declaration and the argument
+vector alone; there is no abbreviation, clustering, or implicit alias
+([design goals](explanation/design-goals.md)).
+
+**Opaque values:** every value is carried as the original string; the parser
+neither interprets nor converts it, so results do not depend on host types
+([results](reference/results.md)).
+
+**Scoped commands:** each selected subcommand opens a new level with its own
+flags and options; nothing is inherited ([grammar](explanation/grammar.md)).
+
+**Conformance:** a shared vector file fixes the expected result or error for
+each case ([conformance suite](reference/results.md#conformance-suite)).
+
+</div>
+
+<div markdown>
+
+### Scope
+
+**This specification:** the declaration format, its interpretation, the
+portable result and error codes, and the conformance suite.
+
+**Libraries** (`pykaira`, `kaira-rs`, `kaira-cpp`): the language API,
+typed access to the result, diagnostics, and help output — specified and
+documented per library.
+
+**Applications:** the meaning of values (paths, numbers, enumerations),
+defaults, environment variables, configuration files.
+
+**The shell:** tokenization, quoting, and escaping; Kaira receives words.
+
+</div>
+
+</div>
 
 !!! note "Status"
 

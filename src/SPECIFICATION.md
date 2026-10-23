@@ -86,10 +86,9 @@ word is matched against `argv`, and only the listing establishes the tree.
 `flags` maps a long name to a mapping with optional `short` and `help`.
 A flag takes no value and MAY occur at most once per level.
 
-`options` maps a long name to a mapping with required `value` (`int`,
-`float`, `string`, or `boolean`) and `style` (`spaced` or `attached`),
-and optional `short`, `help`, `multiplicity` (`single`, the default, or
-`multiple`), and `separator`. An option consumes exactly one value per
+`options` maps a long name to a mapping with required `style` (`spaced` or
+`attached`) and optional `short`, `help`, `multiplicity` (`single`, the
+default, or `multiple`), and `separator`. An option consumes exactly one value per
 occurrence. A `single` option MAY occur at most once. A `multiple` option
 without `separator` MAY occur any number of times, each occurrence
 contributing one value. A `multiple` option with a nonempty string
@@ -108,7 +107,6 @@ reused at a different level.
 | Field | Values | Default |
 | --- | --- | --- |
 | `alignment` | `left`, `center`, `right` | required |
-| `value` | a value type (section 5) | required |
 | `multiplicity` | `single`, `multiple` | `single` |
 | `required` | boolean | `true` |
 | `cardinality.min` | integer ≥ 0 | `1` if `required`, else `0` |
@@ -131,12 +129,11 @@ every word count (section 3).
 
 ### 2.5 Additional constraints
 
-1. Value type names are exactly the four of section 5.
-2. The KORML reader SHALL reject duplicate mapping keys; such documents are
+1. The KORML reader SHALL reject duplicate mapping keys; such documents are
    `invalid_declaration`.
-3. `allow_explicit_empty`, `tail`, `value_style`, and the option kinds
-   `flag`/`scalar`/`repeatable`/`separated` of preliminary drafts are not
-   part of v1 and are unknown fields.
+2. `allow_explicit_empty`, `tail`, `value_style`, `value`, and the option
+   kinds `flag`/`scalar`/`repeatable`/`separated` of preliminary drafts are
+   not part of v1 and are unknown fields.
 
 ## 3. Grammar and parsing procedure
 
@@ -183,9 +180,8 @@ map, and an empty positional word list, then scan tokens left to right:
    Consume it, disable option recognition, and treat all following tokens
    as positional words. Otherwise report `unexpected_delimiter`.
 2. If a token begins with `-`, require a declared long or short spelling
-   of a flag or option of this level. Check its form and occurrence limit,
-   consume and validate its value where applicable (option values are
-   validated as they are consumed). A forbidden attached/spaced form is
+   of a flag or option of this level. Check its form and occurrence limit
+   and consume its value where applicable. A forbidden attached/spaced form is
    `invalid_option_form`; an undeclared dash-leading token is
    `unknown_option`. All recognition at this level uses only the
    level's own declarations.
@@ -203,9 +199,7 @@ map, and an empty positional word list, then scan tokens left to right:
    words to slots in effective order: every slot with a fixed count takes
    exactly `min` words; the `center` slot, if present, takes the remaining
    words, whose number SHALL lie within its `[min, max]`, otherwise report
-   `too_few_positionals` (index `argv.length`). Then validate each word
-   against its slot's value type in word order; the first failure is
-   `invalid_value` at that word's index.
+   `too_few_positionals` (index `argv.length`).
 
 After `--`, step 2 is disabled and every token follows step 3 for a
 positionals level, even if it looks like an option or another delimiter.
@@ -224,52 +218,23 @@ flag or option is implicitly required; absent ones have no default value.
 A `multiple` option with `separator` consumes one value and splits it from
 left to right at each literal, nonoverlapping occurrence of its separator.
 Empty pieces are preserved: with `;`, `";a;;"` yields `["", "a", "", ""]`,
-and `""` yields `[""]`. Each piece undergoes value validation in order.
-Such an option itself cannot recur.
+and `""` yields `[""]`. Such an option itself cannot recur.
 
-## 5. Portable base types and value validation
+## 5. Values
 
-Kaira v1 defines **exactly four** primitive value types: `int`, `float`,
-`string`, and `boolean`. Every value-taking option and positional SHALL
-specify one of these exact, case-sensitive names. A different type name,
-including `integer`, `path`, `assignment`, or `command`, is an
-`invalid_declaration`. These names are not aliases.
+Every option value, separator piece, and positional word is an opaque
+Unicode string. Kaira does not interpret, validate, convert, trim, or
+normalize values; the only operation it performs on a value is splitting
+on a declared `separator`. There are no value types in a declaration, and
+`invalid_value` is not a Kaira error.
 
-| Type | Meaning and whole-value validation |
-| --- | --- |
-| `int` | A signed, base-ten integer with an arbitrary number of ASCII decimal digits. The exact lexical production appears in section 10. |
-| `float` | A finite, base-ten floating-point literal with an arbitrary number of mantissa and exponent digits. No particular precision, binary format, range, or rounding behavior is implied. |
-| `string` | Any Unicode string, including the empty string, without normalization or additional validation. |
-| `boolean` | Exactly the lowercase words `true` and `false`. |
-
-Both numeric types are **unbounded at the lexical level**. Implementations
-SHALL validate them without host-integer overflow, host-floating-point
-rounding, underflow, or overflow determining acceptance. Numeric syntax
-uses ASCII characters only; there are no separators, prefix radices,
-`NaN`, or infinity literals. For example, `+1` and `01` are invalid for
-`int`; `-0` is valid for `float` but not `int`. Integer-shaped decimal
-strings such as `1` are also valid `float` values. A sign on a `float`
-mantissa, if present, is `-`; an exponent MAY use `+` or `-`.
-
-The language-independent *lexical values* of `int` and `float` are their
-original strings. No conversion to native numeric types is required by
-Kaira. A language binding MAY provide typed numeric conversions using its
-own rules, but failures, range limits, and loss of precision in that
-additional API SHALL NOT change Kaira's lexical acceptance or portable
-result. A binding CAN use arbitrary-precision numeric libraries or retain
-the decimal text. The parser does not perform arithmetic.
-
-A `boolean` value is represented as a Boolean, not as its original text.
-A `string` value is preserved unchanged. A flag carries no value: its
-presence is recorded by name and its absence by omission.
-
-Types such as filesystem paths, assignments, dates, commands, or enums
-belong to layers **above** this core. Such a layer CAN declare a `string`
-value and impose additional validation or interpretation after successful
-Kaira parsing. Kaira v1 itself SHALL NOT silently apply those checks or
-accept extra primitive type names. The KORML schema's own `integer` and
-`boolean` scalars used for *declaration metadata* (such as `cardinality`
-bounds or `required`) are separate from Kaira's `value` type names.
+Interpretation of values — as numbers, Booleans, paths, dates,
+enumerations, or `NAME=VALUE` assignments — belongs to layers above this
+specification: a library MAY offer typed accessors, and an application
+applies whatever validation it needs after a successful parse. Such layers
+SHALL NOT change which argument vectors Kaira accepts or the portable
+result. In particular, a word such as `-1` or `true` is a string like any
+other, and a switch is expressed by a flag, not by an option value.
 
 ## 6. Portable successful result
 
@@ -284,7 +249,7 @@ The result is a JSON-compatible object with exactly these four fields:
     "__main__": {"flags": ["verbose"], "options": {}, "positionals": {}},
     "__main__.build": {
       "flags": [],
-      "options": {"output": "a.log", "include": ["src", "inc"]},
+      "options": {"output": "a.log", "include": ["src", "inc"], "jobs": "4"},
       "positionals": {"target": ["app"], "out": "dist"}
     }
   }
@@ -300,21 +265,19 @@ The result is a JSON-compatible object with exactly these four fields:
 - `flags` is an array of the long names of the flags present, in first
   occurrence order. Absent flags are omitted.
 - `options` maps the canonical **long names** of present options to values.
-  Unseen options are omitted. A `single` option yields one value
-  representation; a `multiple` option yields an array of them in occurrence
-  (or piece) order.
+  Unseen options are omitted. A `single` option yields one string; a
+  `multiple` option yields an array of strings in occurrence (or piece)
+  order.
 - `positionals` maps slot names to values for the slots that received at
   least one word; slots with zero words are omitted. A `single` slot yields
-  one value representation; a `multiple` slot yields an array in word
-  order. For shapes `none` and `subcommands`, `positionals` is `{}`.
-- A `boolean` value is a JSON Boolean; a `string`, `int`, or `float` value
-  is a string.
+  one string; a `multiple` slot yields an array of strings in word order.
+  For shapes `none` and `subcommands`, `positionals` is `{}`.
+- Every value is a JSON string, exactly as supplied in `argv`.
 
 JSON object key order is immaterial; all array order is significant.
 The only native JSON numbers in this representation are structural
-metadata such as error indices; decimal `int` and `float` arguments never
-become JSON numbers. This distinction prevents loss of precision during
-interchange. Implementations MAY expose a native, typed result in addition
+metadata such as error indices; argument values never become JSON numbers
+or Booleans. Implementations MAY expose a native, typed result in addition
 to this one, but SHALL expose or be able to serialize the portable
 representation.
 
@@ -333,7 +296,6 @@ End-of-input errors use `index = argv.length`.
 | `invalid_option_form` | Declared flag or option token with invalid value style. |
 | `missing_value` | Spaced option token without usable next token. |
 | `duplicate_option` | Second token of a flag or `single` option. |
-| `invalid_value` | Value token, attached-option token, or positional token. |
 | `unexpected_argument` | First bare token on shape `none`. |
 | `unknown_subcommand` | Bare token that is not a listed child's word. |
 | `missing_subcommand` | End index for shape `subcommands`. |
@@ -343,10 +305,8 @@ End-of-input errors use `index = argv.length`.
 
 Errors are reported in this order: first, errors detected during the
 left-to-right scan of section 3 (steps 1–3), at the first token that fails;
-then `missing_subcommand` or `too_few_positionals` at end of input; then
-`invalid_value` for positional words, in word order. Option values are
-validated during the scan. Duplicate option detection precedes validation
-of that option's second value. Diagnostic messages are not portable.
+then `missing_subcommand` or `too_few_positionals` at end of input.
+Diagnostic messages are not portable.
 
 ## 8. Versioning and non-goals
 
@@ -361,7 +321,8 @@ implement GNU-style or other general-purpose CLI conventions. The Kaira
 model does not include shell tokenization, global/inherited options,
 environment expansion, response files, option defaults and groups, implicit
 `--help`, short-option clustering, prefix matching, optional subcommands,
-Unicode normalization, filesystem validation, or application execution.
+value typing or validation, Unicode normalization, filesystem validation,
+or application execution.
 
 ## 9. Conformance
 
@@ -374,13 +335,11 @@ success values and error code/index, not human-readable messages.
 
 This grammar is the **source of truth for syntax**. Sections 1–9 specify
 semantic restrictions, declaration validation, error priority, and portable
-output; they SHALL NOT extend the syntax below. The value lexical
-productions at the end of this grammar are also normative.
+output; they SHALL NOT extend the syntax below.
 
-In the command-level grammar, EBNF terminals in quotes denote entire
-**words**, not substrings of a character stream. Only the explicitly
-marked primitive-value lexical subgrammar uses character terminals inside
-one word. The token stream is a sequence of words separated by one
+EBNF terminals in quotes denote entire **words**, not substrings of a
+character stream; the only intra-word distinction the grammar makes is the
+split of an attached option at its first `=`. The token stream is a sequence of words separated by one
 or more whitespace characters when written as a command line. Whitespace
 is a separator, not part of a word in this abstract syntax. A host adapter
 that supplies `argv` SHALL preserve its existing word boundaries; the core
@@ -417,27 +376,10 @@ declared-subcommand  = ? one exact declared child name word ? ;
 declared-flag-spelling = ? exact declared --long or -short flag word ? ;
 declared-spaced-spelling = ? exact declared --long or -short spaced-style option word ? ;
 declared-attached-spelling = ? exact declared --long or -short attached-style option prefix ? ;
-value-word           = ? one word other than --, matching the declared type ? ;
-positional-word      = ? bare word not beginning with -, matching the type of
-                         the slot it is assigned to (section 3) ? ;
-raw-positional-word  = ? any word, including -- or a dash-leading word,
-                         matching the type of the slot it is assigned to ? ;
-attached-value       = ? suffix of the SAME word after the FIRST =,
-                         matching the declared type; possibly empty for string ? ;
-
-(* Lexical productions apply to entire values within ONE word. In this *)
-(* subgrammar only, quoted terminals denote individual characters.    *)
-int-value            = "0" | [ "-" ], nonzero-digit, { decimal-digit } ;
-float-value          = [ "-" ], unsigned-decimal,
-                       [ ".", decimal-digit, { decimal-digit } ],
-                       [ exponent ] ;
-string-value         = ? any Unicode string, including empty ? ;
-boolean-value        = "true" | "false" ;
-unsigned-decimal     = "0" | nonzero-digit, { decimal-digit } ;
-exponent             = ( "e" | "E" ), [ "+" | "-" ],
-                       decimal-digit, { decimal-digit } ;
-decimal-digit        = "0" | nonzero-digit ;
-nonzero-digit        = "1" | "2" | "3" | "4" | "5" | "6" | "7" | "8" | "9" ;
+value-word           = ? one word other than -- ? ;
+positional-word      = ? bare word not beginning with - ? ;
+raw-positional-word  = ? any word, including -- or a dash-leading word ? ;
+attached-value       = ? suffix of the SAME word after the FIRST =, possibly empty ? ;
 ```
 
 For attached options, the `declared-attached-spelling`, `=`, and
@@ -448,17 +390,14 @@ arbitrary tokens or split attached values on whitespace. Other occurrences
 of `=` belong to the attached value. An attached option's value can be empty.
 
 `value-word`, `positional-word`, `raw-positional-word`, and
-`attached-value` SHALL match the entire `int-value`, `float-value`,
-`string-value`, or `boolean-value` lexical production selected by their
-declaration. These productions are character-level checks *within* a
-single word; they do not change word boundaries or allow splitting one
-word into multiple arguments. Numeric literal length is unbounded.
+`attached-value` are not inspected further: any Unicode string is
+admitted, and the word is carried into the result unchanged (section 5).
 
 The subcommand branch of `subcommand-level` is syntactically optional so
 that the end-of-input condition can be expressed; semantically it SHALL
 occur, and its absence is `missing_subcommand` (section 7).
-Positional counts, slot assignment, validation, option occurrence
-restrictions, and error-code selection are semantic checks defined above. `--` is reserved
+Positional counts, slot assignment, option occurrence restrictions, and
+error-code selection are semantic checks defined above. `--` is reserved
 at every level and is accepted only in the `positional-level` delimiter
 production; it terminates option recognition for that level. No production
 admits abbreviated options, implicit short spellings, concatenated short

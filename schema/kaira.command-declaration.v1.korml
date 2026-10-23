@@ -17,14 +17,6 @@ types:
     value: string
     pattern: "[A-Za-z0-9]"
 
-  value-type:
-    kind: enum
-    values:
-      - int
-      - float
-      - string
-      - boolean
-
   value-style:
     kind: enum
     values:
@@ -71,7 +63,6 @@ types:
   option:
     kind: mapping
     required:
-      value: value-type
       style: value-style
     optional:
       short: short-identifier
@@ -89,7 +80,6 @@ types:
     kind: mapping
     required:
       alignment: alignment
-      value: value-type
     optional:
       multiplicity: multiplicity
       required: boolean

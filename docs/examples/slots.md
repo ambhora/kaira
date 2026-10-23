@@ -18,8 +18,8 @@ commands:
     flags:
       recursive: {short: r}
     positionals:
-      - source:      {alignment: center, value: string, multiplicity: multiple}   # (1)!
-      - destination: {alignment: right,  value: string}                           # (2)!
+      - source:      {alignment: center, multiplicity: multiple}   # (1)!
+      - destination: {alignment: right}                           # (2)!
 ```
 
 1.  `multiple` and `required` (the default): one or more words.

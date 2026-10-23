@@ -36,9 +36,9 @@ commands:
     flags:
       dry-run: {}
     options:
-      jobs: {value: int, style: attached}
+      jobs: {style: attached}
     positionals:
-      - package: {alignment: center, value: string, multiplicity: multiple}
+      - package: {alignment: center, multiplicity: multiple}
 
   __main__.remote:
     shape: subcommands
@@ -49,7 +49,7 @@ commands:
     flags:
       verify: {short: v}          # (1)!
     positionals:
-      - url: {alignment: left, value: string}
+      - url: {alignment: left}
 
   __main__.remote.list:
     shape: none

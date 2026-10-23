@@ -19,11 +19,11 @@ commands:
     flags:
       verbose: {short: v}
     options:
-      output:   {short: o, value: string, style: attached}                              # (1)!
-      include:  {value: string, style: spaced, multiplicity: multiple}                  # (2)!
-      features: {value: string, style: spaced, multiplicity: multiple, separator: ";"}  # (3)!
+      output:   {short: o, style: attached}                              # (1)!
+      include:  {style: spaced, multiplicity: multiple}                  # (2)!
+      features: {style: spaced, multiplicity: multiple, separator: ";"}  # (3)!
     positionals:
-      - target: {alignment: center, value: string, multiplicity: multiple, required: false}
+      - target: {alignment: center, multiplicity: multiple, required: false}
 ```
 
 1.  `--output=FILE` and `-o=FILE` are accepted; `--output FILE` is not.

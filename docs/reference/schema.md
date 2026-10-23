@@ -1,6 +1,6 @@
 ---
 title: KORML schema reference
-description: The Kaira v1 command declaration language - root fields, commands and shapes, flags, options, positional slots, and primitive value types.
+description: The Kaira v1 command declaration language - root fields, commands and shapes, flags, options, and positional slots.
 ---
 
 # KORML schema reference
@@ -11,6 +11,8 @@ the listing below is included from that file at build time. The
 [normative specification](specification.md) adds semantic checks on top of
 the schema (tree structure, name uniqueness, slot consistency), and its
 EBNF grammar is the final authority on syntactic acceptance of `argv`.
+Values have no types: every option value and positional word is an opaque
+string.
 
 The schema describes declarations only; the runtime grammar of `argv` is
 defined in [Parser rules](parser-rules.md).
@@ -26,10 +28,10 @@ root
         ├── shape         none | subcommands | positionals
         ├── help?         string
         ├── flags?        name → {short?, help?}
-        ├── options?      name → {value, style, multiplicity?, separator?, short?, help?}
+        ├── options?      name → {style, multiplicity?, separator?, short?, help?}
         ├── subcommands?  [key, …]                  (iff shape = subcommands)
         └── positionals?  [{name: slot}, …]         (iff shape = positionals)
-            └── slot      {alignment, value, multiplicity?, required?, cardinality?, help?}
+            └── slot      {alignment, multiplicity?, required?, cardinality?, help?}
 ```
 
 ## Schema
@@ -118,7 +120,7 @@ self-describing.
     __main__.build:
       shape: positionals
       positionals:
-        - target: {alignment: center, value: string, multiplicity: multiple, required: false}
+        - target: {alignment: center, multiplicity: multiple, required: false}
     ```
 
     | Command line | Verdict |
@@ -148,11 +150,11 @@ flags:
 
 ## Options
 
-An option takes exactly one value per occurrence.
+An option takes exactly one value per occurrence; the value is an opaque
+string.
 
 | Field | Required | Meaning |
 | --- | --- | --- |
-| `value` | yes | `int`, `float`, `string`, or `boolean`. |
 | `style` | yes | `spaced` (`--name value`) or `attached` (`--name=value`). The other form is `invalid_option_form`. |
 | `multiplicity` | no | `single` (default): at most one occurrence, one value. `multiple`: see below. |
 | `separator` | no | Nonempty string; only with `multiple`. The one value is split on it. |
@@ -162,7 +164,7 @@ An option takes exactly one value per occurrence.
 === "single"
 
     ```yaml
-    output: {value: string, style: attached}
+    output: {style: attached}
     ```
 
     | Command line | Verdict |
@@ -176,7 +178,7 @@ An option takes exactly one value per occurrence.
     Repeated occurrences, one value each.
 
     ```yaml
-    include: {value: string, style: spaced, multiplicity: multiple}
+    include: {style: spaced, multiplicity: multiple}
     ```
 
     | Command line | Verdict |
@@ -190,7 +192,7 @@ An option takes exactly one value per occurrence.
     One occurrence whose value is split.
 
     ```yaml
-    features: {value: string, style: spaced, multiplicity: multiple, separator: ";"}
+    features: {style: spaced, multiplicity: multiple, separator: ";"}
     ```
 
     | Command line | Verdict |
@@ -210,7 +212,6 @@ the slot name to its fields.
 | Field | Required | Values | Default |
 | --- | --- | --- | --- |
 | `alignment` | yes | `left`, `center`, `right` | — |
-| `value` | yes | `int`, `float`, `string`, `boolean` | — |
 | `multiplicity` | no | `single`, `multiple` | `single` |
 | `required` | no | boolean | `true` |
 | `cardinality.min` | no | integer ≥ 0 | `1` if required, else `0` |
@@ -228,9 +229,9 @@ Consistency rules, violations of which are `invalid_declaration`:
 
 ```yaml
 positionals:
-  - input:  {alignment: left,   value: string, multiplicity: multiple, cardinality: {min: 2, max: 2}}
-  - extra:  {alignment: center, value: int,    multiplicity: multiple, required: false}
-  - output: {alignment: right,  value: string}
+  - input:  {alignment: left,   multiplicity: multiple, cardinality: {min: 2, max: 2}}
+  - extra:  {alignment: center, multiplicity: multiple, required: false}
+  - output: {alignment: right}
 ```
 
 | Command line | Assignment |
@@ -238,29 +239,19 @@ positionals:
 | `a b out` | `input = ["a", "b"]`, `output = "out"` |
 | `a b 1 2 out` | `input = ["a", "b"]`, `extra = ["1", "2"]`, `output = "out"` |
 | `a out` | `too_few_positionals` |
-| `a b x out` | `invalid_value` at 2 (`x` is not an `int`) |
+| `a b x out` | `input = ["a", "b"]`, `extra = ["x"]`, `output = "out"` — words are not typed |
 
-## Primitive value types
+## Values
 
-Kaira v1 supports **exactly four** case-sensitive value types for options and
-slots.
+Option values and positional words are opaque strings. The declaration
+carries no value types and the parser performs no validation or conversion;
+a word such as `-1`, `true`, or `NAME=VALUE` is delivered unchanged. Typed
+access is provided by libraries, and validation by applications, above this
+specification. A `value` field in an option or slot is an unknown field and
+makes the declaration invalid.
 
-| Value type | Meaning | Portable representation |
-| --- | --- | --- |
-| `int` | Arbitrarily long base-ten integer literal. | Original string. |
-| `float` | Arbitrarily long finite base-ten floating-point literal. | Original string. |
-| `string` | Any Unicode string, including the empty string. | Original string. |
-| `boolean` | Exactly `true` or `false`. | JSON Boolean. |
+!!! note "`integer` and `boolean` in the schema"
 
-The exact lexical grammar for all four is in
-[section 10 of the specification](specification.md#10-normative-ebnf-grammar).
-There is no built-in `integer`, `path`, `assignment`, or `command` type, and
-there are no aliases: declaring `value: integer` is `invalid_declaration`.
-Applications layer path validation, assignment parsing, and other
-domain-specific meaning on top of `string` **after** Kaira parsing.
-
-!!! note "Two different meanings of `integer`"
-
-    The schema uses its own intrinsic `integer` and `boolean` scalars to
+    The schema uses intrinsic `integer` and `boolean` scalars only to
     describe *declaration metadata* such as `cardinality` bounds and
-    `required`. Those are not Kaira value types.
+    `required`. They say nothing about command-line values.

@@ -16,7 +16,6 @@ empty.
 | [Minimal command](minimal.md) | The smallest valid declaration. | `none` |
 | [Subcommands](subcommands.md) | Child commands and per-level scopes. | `subcommands` |
 | [Options](options.md) | Flags and the three option multiplicities in one command. | `positionals` |
-| [Primitive types](base-types.md) | `int`, `float`, `string`, `boolean` and arbitrary-length numbers. | `none` |
 | [Attached values](attached-values.md) | `style: attached` for single, multiple, and separator options. | `positionals` |
 | [Raw positionals](raw-positionals.md) | The `--` delimiter and the literal value `--`. | `positionals` |
 | [Positional slots](slots.md) | A variable centre slot and a fixed right slot. | `positionals` |

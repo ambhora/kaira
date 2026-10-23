@@ -43,9 +43,9 @@ subcommand:
 commands:
   __main__:               {shape: subcommands, subcommands: [__main__.project]}
   __main__.project:       {shape: subcommands, subcommands: [__main__.project.build],
-                           options: {name: {value: string, style: spaced}}}
+                           options: {name: {style: spaced}}}
   __main__.project.build: {shape: positionals, flags: {release: {}},
-                           positionals: [{target: {alignment: left, value: string}}]}
+                           positionals: [{target: {alignment: left}}]}
 ```
 
 ```console
@@ -196,7 +196,7 @@ $ kaira --features='mpi;cuda;openmp' target
 ## Positional slots
 
 A `positionals` command declares an ordered list of named *slots*. Each
-slot has a value type, an `alignment`, and a count range derived from
+slot has an `alignment` and a count range derived from
 `multiplicity`, `required`, and an optional `cardinality`:
 
 | `multiplicity` | `required` | Count |
@@ -220,9 +220,9 @@ which must lie within its range. For example
 
 ```yaml
 positionals:
-  - command:   {alignment: left,   value: string}
-  - arguments: {alignment: center, value: string, multiplicity: multiple, required: false}
-  - log:       {alignment: right,  value: string}
+  - command:   {alignment: left}
+  - arguments: {alignment: center, multiplicity: multiple, required: false}
+  - log:       {alignment: right}
 ```
 
 with `run make -j4 all build.log` gives `command = "make"`,

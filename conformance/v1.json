@@ -24,16 +24,13 @@
           "options": {
             "output": {
               "short": "o",
-              "value": "string",
               "style": "attached"
             },
             "include": {
-              "value": "string",
               "style": "spaced",
               "multiplicity": "multiple"
             },
             "features": {
-              "value": "string",
               "style": "spaced",
               "multiplicity": "multiple",
               "separator": ";"
@@ -43,7 +40,6 @@
             {
               "target": {
                 "alignment": "center",
-                "value": "string",
                 "multiplicity": "multiple",
                 "required": false,
                 "cardinality": {
@@ -92,19 +88,15 @@
           "shape": "none",
           "options": {
             "count": {
-              "value": "int",
               "style": "attached"
             },
             "ratio": {
-              "value": "float",
               "style": "spaced"
             },
             "enabled": {
-              "value": "boolean",
               "style": "spaced"
             },
             "define": {
-              "value": "string",
               "style": "attached",
               "multiplicity": "multiple"
             }
@@ -121,8 +113,7 @@
           "positionals": [
             {
               "number": {
-                "alignment": "left",
-                "value": "int"
+                "alignment": "left"
               }
             }
           ]
@@ -137,12 +128,10 @@
           "shape": "none",
           "options": {
             "numbers": {
-              "value": "int",
               "style": "spaced",
               "multiplicity": "multiple"
             },
             "switches": {
-              "value": "boolean",
               "style": "attached",
               "multiplicity": "multiple",
               "separator": ","
@@ -161,7 +150,6 @@
             {
               "file": {
                 "alignment": "left",
-                "value": "string",
                 "multiplicity": "multiple",
                 "cardinality": {
                   "min": 2,
@@ -187,22 +175,19 @@
           "positionals": [
             {
               "input": {
-                "alignment": "left",
-                "value": "string"
+                "alignment": "left"
               }
             },
             {
               "extra": {
                 "alignment": "center",
-                "value": "int",
                 "multiplicity": "multiple",
                 "required": false
               }
             },
             {
               "output": {
-                "alignment": "right",
-                "value": "string"
+                "alignment": "right"
               }
             }
           ]
@@ -219,7 +204,6 @@
             {
               "left": {
                 "alignment": "left",
-                "value": "string",
                 "multiplicity": "multiple",
                 "cardinality": {
                   "min": 2,
@@ -230,14 +214,12 @@
             {
               "middle": {
                 "alignment": "center",
-                "value": "boolean",
                 "required": false
               }
             },
             {
               "right": {
-                "alignment": "right",
-                "value": "string"
+                "alignment": "right"
               }
             }
           ]
@@ -277,8 +259,7 @@
           "positionals": [
             {
               "url": {
-                "alignment": "left",
-                "value": "string"
+                "alignment": "left"
               }
             }
           ]
@@ -290,7 +271,6 @@
           "shape": "positionals",
           "options": {
             "jobs": {
-              "value": "int",
               "style": "attached"
             }
           },
@@ -298,7 +278,6 @@
             {
               "package": {
                 "alignment": "center",
-                "value": "string",
                 "multiplicity": "multiple"
               }
             }
@@ -902,7 +881,7 @@
       }
     },
     {
-      "id": "lexically-validated-large-numbers",
+      "id": "numbers-are-strings",
       "declaration": "values",
       "argv": [
         "--count=123456789012345678901234567890",
@@ -924,7 +903,7 @@
             "options": {
               "count": "123456789012345678901234567890",
               "ratio": "1.5e+1000",
-              "enabled": true,
+              "enabled": "true",
               "define": [
                 "A=="
               ]
@@ -935,42 +914,7 @@
       }
     },
     {
-      "id": "invalid-int",
-      "declaration": "values",
-      "argv": [
-        "--count=01"
-      ],
-      "error": {
-        "code": "invalid_value",
-        "index": 0
-      }
-    },
-    {
-      "id": "invalid-float",
-      "declaration": "values",
-      "argv": [
-        "--ratio",
-        "NaN"
-      ],
-      "error": {
-        "code": "invalid_value",
-        "index": 1
-      }
-    },
-    {
-      "id": "invalid-boolean",
-      "declaration": "values",
-      "argv": [
-        "--enabled",
-        "TRUE"
-      ],
-      "error": {
-        "code": "invalid_value",
-        "index": 1
-      }
-    },
-    {
-      "id": "string-does-not-validate-assignment",
+      "id": "assignment-is-a-string",
       "declaration": "values",
       "argv": [
         "--define==x"
@@ -995,7 +939,7 @@
       }
     },
     {
-      "id": "arbitrary-int-positional-after-delimiter",
+      "id": "negative-number-positional-after-delimiter",
       "declaration": "typed_positionals",
       "argv": [
         "--",
@@ -1019,7 +963,7 @@
       }
     },
     {
-      "id": "typed-repeatable-and-separated-values",
+      "id": "multiple-and-separated-values",
       "declaration": "typed_collections",
       "argv": [
         "--numbers",
@@ -1043,9 +987,9 @@
                 "-2"
               ],
               "switches": [
-                true,
-                false,
-                true
+                "true",
+                "false",
+                "true"
               ]
             },
             "positionals": {}
@@ -1054,18 +998,7 @@
       }
     },
     {
-      "id": "separated-invalid-boolean",
-      "declaration": "typed_collections",
-      "argv": [
-        "--switches=true,FALSE"
-      ],
-      "error": {
-        "code": "invalid_value",
-        "index": 0
-      }
-    },
-    {
-      "id": "float-integer-shaped",
+      "id": "integer-shaped-word",
       "declaration": "values",
       "argv": [
         "--ratio",
@@ -1089,7 +1022,7 @@
       }
     },
     {
-      "id": "float-negative-zero",
+      "id": "negative-zero-word",
       "declaration": "values",
       "argv": [
         "--ratio",
@@ -1113,7 +1046,7 @@
       }
     },
     {
-      "id": "negative-arbitrary-int",
+      "id": "negative-long-number",
       "declaration": "values",
       "argv": [
         "--count=-1234567890123456789012345678901234567890"
@@ -1136,7 +1069,7 @@
       }
     },
     {
-      "id": "float-large-mantissa-and-exponent",
+      "id": "long-decimal-word",
       "declaration": "values",
       "argv": [
         "--ratio",
@@ -1160,7 +1093,7 @@
       }
     },
     {
-      "id": "boolean-false",
+      "id": "false-is-a-string",
       "declaration": "values",
       "argv": [
         "--enabled",
@@ -1176,34 +1109,11 @@
           "__main__": {
             "flags": [],
             "options": {
-              "enabled": false
+              "enabled": "false"
             },
             "positionals": {}
           }
         }
-      }
-    },
-    {
-      "id": "invalid-int-plus",
-      "declaration": "values",
-      "argv": [
-        "--count=+1"
-      ],
-      "error": {
-        "code": "invalid_value",
-        "index": 0
-      }
-    },
-    {
-      "id": "invalid-float-infinity",
-      "declaration": "values",
-      "argv": [
-        "--ratio",
-        "Infinity"
-      ],
-      "error": {
-        "code": "invalid_value",
-        "index": 1
       }
     },
     {
@@ -1336,19 +1246,6 @@
       }
     },
     {
-      "id": "slots-center-invalid-value",
-      "declaration": "slots",
-      "argv": [
-        "a",
-        "x",
-        "b"
-      ],
-      "error": {
-        "code": "invalid_value",
-        "index": 1
-      }
-    },
-    {
       "id": "slots-scan-error-before-value-error",
       "declaration": "slots",
       "argv": [
@@ -1477,7 +1374,7 @@
                 "a",
                 "b"
               ],
-              "middle": true,
+              "middle": "true",
               "right": "c"
             }
           }
@@ -1497,20 +1394,6 @@
       "error": {
         "code": "too_many_positionals",
         "index": 4
-      }
-    },
-    {
-      "id": "fixed-center-invalid-boolean",
-      "declaration": "fixed_center",
-      "argv": [
-        "a",
-        "b",
-        "yes",
-        "c"
-      ],
-      "error": {
-        "code": "invalid_value",
-        "index": 2
       }
     },
     {
@@ -1628,6 +1511,30 @@
         "code": "unknown_subcommand",
         "index": 0
       }
+    },
+    {
+      "id": "true-is-a-string",
+      "declaration": "values",
+      "argv": [
+        "--enabled",
+        "true"
+      ],
+      "ok": {
+        "program": "app",
+        "command": "__main__",
+        "path": [
+          "__main__"
+        ],
+        "commands": {
+          "__main__": {
+            "flags": [],
+            "options": {
+              "enabled": "true"
+            },
+            "positionals": {}
+          }
+        }
+      }
     }
   ],
   "invalid_declarations": [
@@ -1679,7 +1586,6 @@
             "shape": "none",
             "options": {
               "list": {
-                "value": "string",
                 "style": "spaced",
                 "multiplicity": "multiple",
                 "separator": ""
@@ -1705,7 +1611,6 @@
                 "x": {
                   "alignment": "center",
                   "multiplicity": "multiple",
-                  "value": "string",
                   "cardinality": {
                     "min": 2,
                     "max": 1
@@ -1713,48 +1618,6 @@
                 }
               }
             ]
-          }
-        }
-      },
-      "error": {
-        "code": "invalid_declaration"
-      }
-    },
-    {
-      "id": "legacy-integer-is-not-a-type",
-      "declaration": {
-        "version": "kaira.command-declaration/v1",
-        "program": "app",
-        "commands": {
-          "__main__": {
-            "shape": "none",
-            "options": {
-              "count": {
-                "value": "integer",
-                "style": "spaced"
-              }
-            }
-          }
-        }
-      },
-      "error": {
-        "code": "invalid_declaration"
-      }
-    },
-    {
-      "id": "path-is-not-a-base-type",
-      "declaration": {
-        "version": "kaira.command-declaration/v1",
-        "program": "app",
-        "commands": {
-          "__main__": {
-            "shape": "none",
-            "options": {
-              "file": {
-                "value": "path",
-                "style": "spaced"
-              }
-            }
           }
         }
       },
@@ -1790,7 +1653,6 @@
               {
                 "a": {
                   "alignment": "center",
-                  "value": "string",
                   "multiplicity": "multiple",
                   "required": false
                 }
@@ -1798,7 +1660,6 @@
               {
                 "b": {
                   "alignment": "center",
-                  "value": "string",
                   "multiplicity": "multiple",
                   "required": false
                 }
@@ -1823,7 +1684,6 @@
               {
                 "a": {
                   "alignment": "left",
-                  "value": "string",
                   "multiplicity": "multiple"
                 }
               }
@@ -1847,7 +1707,6 @@
               {
                 "a": {
                   "alignment": "left",
-                  "value": "string",
                   "cardinality": {
                     "max": 2
                   }
@@ -1873,7 +1732,6 @@
               {
                 "a": {
                   "alignment": "left",
-                  "value": "string",
                   "cardinality": {
                     "min": 0,
                     "max": 0
@@ -1899,7 +1757,7 @@
             "positionals": [
               {
                 "a": {
-                  "value": "string"
+                  "multiplicity": "single"
                 }
               }
             ]
@@ -1921,8 +1779,7 @@
             "positionals": [
               {
                 "a": {
-                  "alignment": "left",
-                  "value": "string"
+                  "alignment": "left"
                 }
               }
             ]
@@ -2071,7 +1928,6 @@
             },
             "options": {
               "n": {
-                "value": "int",
                 "style": "spaced"
               }
             }
@@ -2098,7 +1954,6 @@
             "options": {
               "value": {
                 "short": "v",
-                "value": "int",
                 "style": "spaced"
               }
             }
@@ -2119,7 +1974,6 @@
             "shape": "none",
             "options": {
               "list": {
-                "value": "string",
                 "style": "spaced",
                 "separator": ";"
               }
@@ -2141,7 +1995,28 @@
             "shape": "none",
             "options": {
               "out": {
-                "value": "string"
+                "multiplicity": "single"
+              }
+            }
+          }
+        }
+      },
+      "error": {
+        "code": "invalid_declaration"
+      }
+    },
+    {
+      "id": "value-type-is-not-a-field",
+      "declaration": {
+        "version": "kaira.command-declaration/v1",
+        "program": "app",
+        "commands": {
+          "__main__": {
+            "shape": "none",
+            "options": {
+              "count": {
+                "style": "attached",
+                "value": "int"
               }
             }
           }

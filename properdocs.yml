@@ -34,7 +34,6 @@ nav:
       - Minimal command: examples/minimal.md
       - Subcommands: examples/subcommands.md
       - Options: examples/options.md
-      - Primitive types: examples/base-types.md
       - Attached values: examples/attached-values.md
       - Raw positionals: examples/raw-positionals.md
       - Positional slots: examples/slots.md

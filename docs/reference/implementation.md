@@ -10,8 +10,8 @@ description: Checklist for implementing a conforming Kaira library in a new host
     This page is for authors of Kaira libraries. Users of an existing
     library do not need it; see [Getting started](../getting-started/index.md).
 
-A Kaira implementation consists of a declaration validator, a per-level
-scanner, and four lexical validators. This page complements the
+A Kaira implementation consists of a declaration validator and a per-level
+scanner. This page complements the
 [normative specification](../reference/specification.md) with an
 implementation checklist and the conformance procedure.
 
@@ -30,7 +30,7 @@ flowchart LR
 
 The specification prescribes the declaration format, the validation rules,
 the parsing procedure, and the output representation. The public API,
-diagnostic presentation, and any typed numeric conversions are
+diagnostic presentation, and any typed accessors are
 implementation-defined.
 
 ## Checklist
@@ -48,8 +48,8 @@ implementation-defined.
 - [ ] **Enforce the per-command constraints.** `subcommands` present iff
       `shape: subcommands`, `positionals` present iff `shape: positionals`;
       long names and short aliases distinct across flags and options; a
-      nonempty `separator` only with `multiplicity: multiple`; only the four
-      exact value type names.
+      nonempty `separator` only with `multiplicity: multiple`; no `value`
+      field anywhere.
 - [ ] **Enforce the slot rules.** Effective bounds from `multiplicity`,
       `required`, and `cardinality` must agree; `left`/`right` slots have a
       fixed count; at most one `center` slot, the only one allowed to vary.
@@ -58,18 +58,16 @@ implementation-defined.
       and positional-word collections per level. Stop recognizing options
       after `--`. Descend into a subcommand immediately and never look back.
 - [ ] **Assign positional words to slots at end of input**, fixed slots
-      first, the remainder to the centre slot; then validate words against
-      their slots in word order.
-- [ ] **Implement the four lexical productions** for `int`, `float`,
-      `string`, and `boolean` as *string* checks. Never let a host integer
-      overflow or a floating-point parse decide acceptance.
+      first, the remainder to the centre slot.
+- [ ] **Leave values alone.** No trimming, conversion, or validation; the
+      only operation on a value is splitting on a declared `separator`.
 - [ ] **Produce the portable result** with exactly `program`, `command`,
       `path`, and `commands`; one record per selected key with `flags`,
       `options`, and `positionals`; omit absent options and empty slots;
       `single` yields a value, `multiple` an array.
 - [ ] **Report errors in the prescribed order**: scan errors at the first
       failing word, then `missing_subcommand` / `too_few_positionals` at
-      `argv.length`, then positional `invalid_value` in word order.
+      `argv.length`.
 - [ ] **Pass the conformance suite.**
 
 ## Running the conformance suite
@@ -145,12 +143,12 @@ A harness in any language does the same four things:
 
 ## Frequent nonconformances
 
-!!! failure "Deciding acceptance with host numeric parsing"
+!!! failure "Interpreting values"
 
-    `--ratio 1.5e+1000` is a valid `float`. A host floating-point parser
-    overflows or rejects it, which fails
-    `lexically-validated-large-numbers`. Acceptance is decided by the
-    lexical grammar on the text; conversion, if offered, is a separate step.
+    `--ratio 1.5e+1000`, `--count=01`, and `--enabled TRUE` are all
+    accepted and delivered as strings. An implementation that converts or
+    validates values during parsing fails `numbers-are-strings` and
+    `true-is-a-string`; typed access, if offered, is a separate accessor.
 
 !!! failure "Expanding `-vo` as two flags"
 
@@ -167,13 +165,6 @@ A harness in any language does the same four things:
     After a subcommand word is consumed, only the child's declarations are
     in scope. `app test -v` is `unknown_option` at index 1 even when
     `__main__` declares `-v`.
-
-!!! failure "Validating positional words as they are read"
-
-    With several slots the slot of a word is known only at end of input.
-    A parser that validates eagerly reports `invalid_value` where the
-    specification requires `unknown_option` for a later word, and fails
-    `slots-scan-error-before-value-error`.
 
 !!! failure "Matching subcommand keys instead of words"
 

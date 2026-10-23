@@ -24,15 +24,16 @@ of other declared names, or on host-language behavior.
 | Accepting both `--name value` and `--name=value` for one option | A value beginning with `-` is interpreted differently in each form. |
 | Implicit `--help` or `--version` | Application behavior, not grammar. |
 | Optional subcommands (stopping at a parent) | Makes the leaf command depend on the word count; a parent that can run on its own is declared with `shape: none` or `positionals` instead. |
-| Host-language numeric parsing | Overflow, rounding, and range differ between languages. |
+| Value typing and validation | Numeric overflow, rounding, range, and Boolean spellings differ between languages; interpretation belongs to the library or application. |
 
-## 2. Lexical treatment of numbers
+## 2. Opaque values
 
-`int` and `float` arguments are validated against an exact lexical grammar
-and carried in the portable result as their original strings. Acceptance
-therefore does not depend on the precision or range of any host numeric
-type. Language bindings may offer typed conversions, but such conversions
-cannot alter acceptance or the portable representation.
+Every value — option value, separator piece, or positional word — is
+carried in the portable result as the original string. Kaira neither types
+nor validates values, so acceptance never depends on the precision or range
+of a host numeric type, on a locale, or on a Boolean spelling. Libraries may
+offer typed accessors and applications apply their own validation; neither
+can change which argument vectors are accepted or the portable result.
 
 ## 3. Per-level option scope
 

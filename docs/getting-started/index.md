@@ -30,9 +30,9 @@ commands:
     flags:                                     # (3)!
       loud: {short: l}
     options:                                   # (4)!
-      times: {short: n, value: int, style: attached}
+      times: {short: n, style: attached}
     positionals:                               # (5)!
-      - name: {alignment: left, value: string}
+      - name: {alignment: left}
 ```
 
 1.  The root command is always keyed `__main__`. Other keys are free-form;
@@ -42,9 +42,10 @@ commands:
     accepted), `subcommands` (selects a child), or `positionals` (a value for
     one of the slots below).
 3.  Flags take no value. `--loud` and `-l` set the flag `loud`.
-4.  Options take one value per occurrence. `style: attached` means
-    `--times=3`; `style: spaced` would mean `--times 3`. An option is
-    `single` unless declared `multiplicity: multiple`.
+4.  Options take one value per occurrence, always as a string.
+    `style: attached` means `--times=3`; `style: spaced` would mean
+    `--times 3`. An option is `single` unless declared
+    `multiplicity: multiple`.
 5.  Positional slots are an ordered list. Each slot is `single` and
     `required` unless declared otherwise, so this one accepts exactly one
     word.
@@ -79,8 +80,9 @@ For `greet -l --times=3 Ada`, every conforming library produces:
   names present), `options`, and `positionals`. Anything absent from the
   command line is omitted. A `single` option or slot yields one value; a
   `multiple` one yields an array.
-- `int` and `float` values stay strings (`"3"`, not `3`); `boolean` values
-  become JSON Booleans. Numbers are never converted by the parser.
+- Every value is a string (`"3"`, not `3`). The parser does not interpret
+  values; a library may offer typed accessors, and the application decides
+  what a value means.
 
 For a command line the declaration does not accept, every library reports
 the same code and the same position:

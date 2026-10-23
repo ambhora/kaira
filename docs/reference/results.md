@@ -56,18 +56,14 @@ be matched against the file that declared it without counting levels.
 
 | Declaration | Portable value |
 | --- | --- |
-| option or slot, `single` | One value representation. |
-| option or slot, `multiple` | Array of value representations, in occurrence (or piece, or word) order. |
-| `int`, `float` | The original string, never a JSON number. |
-| `string` | The original string. |
-| `boolean` | JSON `true` or `false`. |
+| option or slot, `single` | One string. |
+| option or slot, `multiple` | Array of strings, in occurrence (or piece, or word) order. |
 
-The representation is the same whether a value came from a spaced option,
-an attached option, or a positional word. Numeric strings preserve
-arbitrary-length decimal literals and never undergo host-dependent rounding
-or overflow: `"count": "123456789012345678901234567890"` is exactly what a
-conforming parser emits. Language bindings may add typed numeric
-conversions without changing this portable representation.
+Every value is the original word (or the suffix after `=` for an attached
+option), as a JSON string. Values are never numbers or Booleans in the
+portable result, whatever they look like: `"count": "123456789012345678901234567890"`
+and `"enabled": "false"` are exactly what a conforming parser emits.
+Libraries may add typed accessors without changing this representation.
 
 ## Errors
 
@@ -117,14 +113,12 @@ The suite currently covers, among other things:
 
 - every error code at least once, including scope violations such as a
   parent flag used inside a child;
-- numeric literals far beyond 64-bit range, `-0`, exponents with and
-  without signs, and rejected spellings such as `+1`, `01`, `NaN`, and
-  `Infinity`;
+- numeric-looking words far beyond 64-bit range, `-0`, `true`, and `NAME=VALUE`
+  words, all delivered as strings;
 - empty attached values, empty separator pieces, and Unicode strings;
 - `--` before, between, and after positional words, and `--` where it is
   not allowed;
-- slot assignment with fixed and variable slots, count errors, deferred
-  value validation, and the precedence of scan errors over it;
+- slot assignment with fixed and variable slots and count errors;
 - tree validation: missing root, unknown or doubly listed child keys,
   orphan commands, duplicate child words, and name or alias collisions
   between flags and options.

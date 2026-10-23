@@ -23,7 +23,7 @@ Reported before any argument is read. They carry **no** `index`.
 | Code | Triggered by | Example |
 | --- | --- | --- |
 | `unsupported_version` | Any `version` other than `kaira.command-declaration/v1`. | `version: kaira.command-declaration/v2` |
-| `invalid_declaration` | Anything else the schema or semantic rules reject: unknown fields, malformed or duplicate KORML keys, a missing `__main__`, a listed child key that does not exist or is listed twice, an unlisted command, two children with the same word, a name or short alias shared by a flag and an option, `separator` on a `single` option, a `left`/`right` slot with a variable count, two `center` slots, a `single` slot with `max > 1`, or a type name such as `integer` or `path`. | two flags both declaring `short: a` |
+| `invalid_declaration` | Anything else the schema or semantic rules reject: unknown fields (including the `value` field of earlier drafts), malformed or duplicate KORML keys, a missing `__main__`, a listed child key that does not exist or is listed twice, an unlisted command, two children with the same word, a name or short alias shared by a flag and an option, `separator` on a `single` option, a `left`/`right` slot with a variable count, two `center` slots, or a `single` slot with `max > 1`. | two flags both declaring `short: a` |
 
 ## Argument errors
 
@@ -36,7 +36,6 @@ failing word wins.
 | `invalid_option_form` | A declared option written in the wrong value style, or a flag given a value. | The flag or option word. | `["--verbose=true"]` → 0 · `["--output", "a.log"]` → 0 |
 | `missing_value` | A spaced option at end of input, or followed by the exact word `--`. | The option word. | `["--include", "--"]` → 0 |
 | `duplicate_option` | A second occurrence of a flag or a `single` option (or a separator option), counting long and short spellings together. | The second occurrence. | `["-v", "--verbose"]` → 1 |
-| `invalid_value` | A value that does not match its declared type's lexical grammar. | The value word for spaced options and positional words; the whole option word for attached options. | `["--count=01"]` → 0 · `["--ratio", "NaN"]` → 1 (`values` declaration) · `["a", "x", "b"]` → 1 (`slots` declaration) |
 | `unexpected_argument` | A bare word on `shape: none`. | That word. | `["extra"]` → 0 (`empty` declaration) |
 | `unknown_subcommand` | A bare word on `shape: subcommands` that is not a listed child's word. | That word. | `["deploy"]` → 0 (`commands` declaration) |
 | `missing_subcommand` | End of input on `shape: subcommands`. | `argv.length` | `[]` → 0 (`commands` declaration) |
@@ -46,22 +45,11 @@ failing word wins.
 
 ## Precedence
 
-Errors are reported in three stages: scan errors at the first failing word;
-then `missing_subcommand` or `too_few_positionals` at end of input; then
-positional `invalid_value` in word order. Consequently the leftmost scan
-problem wins even if a positional word earlier in `argv` is invalid:
-
-```text
-argv: ["a", "x", "--bad", "b"]        (slots declaration; x is assigned to an int slot)
-                 ^^^^^
-                 unknown_option at 2   (invalid_value at 1 is reported only if the scan succeeds)
-```
-
-Two further rules: `too_many_positionals` is raised immediately when the
-excess word is consumed, whereas `too_few_positionals` waits for end of
-input; and `duplicate_option` is checked before the duplicate's value is
-validated, so `["--output=a", "--output=!!"]` is `duplicate_option` at 1
-regardless of the second value.
+Errors are reported in two stages: scan errors at the first failing word;
+then `missing_subcommand` or `too_few_positionals` at end of input.
+Consequently `too_many_positionals` is raised immediately when the excess
+word is consumed, whereas `too_few_positionals` waits for end of input.
+Values are never a source of errors: Kaira does not type or validate them.
 
 ## Presenting errors to users
 

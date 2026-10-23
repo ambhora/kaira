@@ -16,11 +16,11 @@ commands:
   __main__:
     shape: positionals
     options:
-      output:   {value: string, style: attached}
-      define:   {value: string, style: attached, multiplicity: multiple}                  # (1)!
-      features: {value: string, style: attached, multiplicity: multiple, separator: ";"}
+      output:   {style: attached}
+      define:   {style: attached, multiplicity: multiple}                  # (1)!
+      features: {style: attached, multiplicity: multiple, separator: ";"}
     positionals:
-      - target: {alignment: center, value: string, multiplicity: multiple, required: false}
+      - target: {alignment: center, multiplicity: multiple, required: false}
 ```
 
 1.  Kaira delivers `USE_MPI=1` as one string. Only the **first** `=` in a

@@ -48,7 +48,7 @@ parse_level(command, argv):
       raw = true
       consume token
     else if token starts with "-":
-      consume_declared_flag_or_option(command)   # validates option values
+      consume_declared_flag_or_option(command)
     else if command.shape is none:
       error unexpected_argument
     else if command.shape is subcommands:
@@ -60,7 +60,6 @@ parse_level(command, argv):
   if command.shape is subcommands: error missing_subcommand
   if command.shape is positionals:
     assign_words_to_slots(words)                 # too_few_positionals
-    validate_each_word_against_its_slot()        # invalid_value, in word order
   return record_for_level
 ```
 
@@ -90,8 +89,8 @@ including an empty string or further `=` signs. For separator values whose
 separator is special to a shell, such as `;`, users must quote or escape so
 that the whole word reaches Kaira.
 
-Option values are validated as they are consumed; a failure is
-`invalid_value` at the value word (spaced) or at the option word (attached).
+Values are not inspected: an option value is any word (or any suffix after
+`=`), delivered to the result unchanged.
 
 ## Occurrence rules
 
@@ -118,7 +117,7 @@ of the separator, from left to right. Empty pieces are kept.
 --features ""                    →  [""]
 ```
 
-Each piece is validated against the declared value type in order.
+Pieces are delivered as strings; empty pieces are preserved.
 
 ## Positional slot assignment
 
@@ -134,20 +133,19 @@ bounds `[min, max]`; `left` and `right` slots have `min = max`, and only the
    and the remaining words to the `center` slot. If the centre count is
    below its `min` (or, with no centre slot, if there are fewer words than
    the fixed slots need), report `too_few_positionals` at `argv.length`.
-3. **Then** validate each word against the value type of the slot it was
-   assigned to, in word order; the first failure is `invalid_value` at
-   that word's index.
+Words are not validated; the slot only determines where each word is
+placed in the result.
 
-Example with `input` (`left`, 1), `extra` (`center`, `int`, 0 or more),
-`output` (`right`, 1):
+Example with `input` (`left`, 1), `extra` (`center`, 0 or more), `output`
+(`right`, 1):
 
 | `argv` | Outcome |
 | --- | --- |
 | `["a", "b"]` | `input = "a"`, `output = "b"` |
 | `["a", "1", "2", "b"]` | `extra = ["1", "2"]` |
 | `["a"]` | `too_few_positionals` at 1 |
-| `["a", "x", "b"]` | `invalid_value` at 1 |
-| `["a", "x", "--bad", "b"]` | `unknown_option` at 2 — scan errors precede slot validation |
+| `["a", "x", "b"]` | `extra = ["x"]` — words are not typed |
+| `["a", "x", "--bad", "b"]` | `unknown_option` at 2 |
 
 ## The `--` delimiter
 
@@ -179,10 +177,8 @@ the literal value.
 
 1. Errors detected during the scan, at the first word that fails:
    `unknown_option`, `invalid_option_form`, `missing_value`,
-   `duplicate_option`, option `invalid_value`, `unexpected_argument`,
-   `unknown_subcommand`, `unexpected_delimiter`, `too_many_positionals`.
+   `duplicate_option`, `unexpected_argument`, `unknown_subcommand`,
+   `unexpected_delimiter`, `too_many_positionals`.
 2. At end of input: `missing_subcommand` or `too_few_positionals`.
-3. Then positional `invalid_value`, in word order.
 
-Duplicate-option detection precedes validation of the duplicate's value.
 See [Error codes](errors.md) for the full list with examples.

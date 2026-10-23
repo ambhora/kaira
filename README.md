@@ -40,7 +40,7 @@ commands:
     flags:
       verbose: {short: v}
     positionals:
-      - input: {alignment: left, value: string}
+      - input: {alignment: left}
 ```
 
 For `argv = ["-v", "report.txt"]` (without `argv[0]`), the portable
@@ -61,11 +61,10 @@ result is:
 }
 ```
 
-The core value types are `int`, `float`, `string`, and `boolean` only.
-Arbitrary-length numeric literals retain their original decimal text in
-portable results; Boolean values are represented as booleans. Paths and
-other application-specific types are built on top of `string`, and language
-libraries MAY offer additional native numeric conversions.
+Values are opaque strings: Kaira neither types nor validates them, so
+numeric literals of any length reach the application unchanged. Typed
+access, paths, and other application-specific interpretation are provided
+by libraries and applications above the specification.
 
 ## Conformance contract
 

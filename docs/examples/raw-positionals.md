@@ -18,9 +18,9 @@ commands:
     flags:
       dry-run: {}
     options:
-      output: {value: string, style: attached}    # (1)!
+      output: {style: attached}    # (1)!
     positionals:
-      - argument: {alignment: center, value: string, multiplicity: multiple, required: false}
+      - argument: {alignment: center, multiplicity: multiple, required: false}
 ```
 
 1.  The attached style is what allows this option to receive the literal
