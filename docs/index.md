@@ -28,6 +28,14 @@ inputs.
 <figcaption>Using Kaira in a program. The declaration is written once; steps 2–4 are performed by the library and behave identically in every language.</figcaption>
 </figure>
 
+## Example
+
+The tabs below show the four artefacts involved in one parse for a program
+`example` that accepts a `--verbose` flag (short alias `-v`) and exactly
+one positional argument: the declaration, the command line as the shell
+tokenizes it, the portable result for a valid command line, and the
+portable error for an invalid one.
+
 === ":material-file-code: Declaration"
 
     ```yaml title="example.korml"

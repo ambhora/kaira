@@ -48,11 +48,13 @@
   height: auto;
 }
 
-.kaira-figure figcaption {
+.md-typeset .kaira-figure figcaption {
+  max-width: none;
   margin: 0.75rem 0 0;
   font-size: 0.75rem;
+  font-style: normal;
   color: var(--md-default-fg-color--light);
-  text-align: center;
+  text-align: left;
 }
 
 /* Hand-drawn SVGs use fixed light fills; keep them readable in dark mode. */
