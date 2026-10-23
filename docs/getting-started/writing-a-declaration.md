@@ -288,22 +288,10 @@ command:
 
 ## Further reading
 
-<div class="grid cards" markdown>
-
--   :material-file-tree: **Grammar**
-
-    [Command-line grammar](../explanation/grammar.md) describes levels,
-    scopes, and tail modes.
-
--   :material-table: **Reference**
-
-    The [KORML schema](../reference/schema.md) and
-    [parser rules](../reference/parser-rules.md) summarize the
-    [normative specification](../reference/specification.md).
-
--   :material-console: **Examples**
-
-    Each [example](../examples/index.md) is a complete declaration with
-    accepted and rejected argument vectors.
-
-</div>
+- [Command-line grammar](../explanation/grammar.md) describes levels,
+  scopes, and tail modes.
+- The [KORML schema](../reference/schema.md) and
+  [parser rules](../reference/parser-rules.md) summarize the
+  [normative specification](../reference/specification.md).
+- Each [example](../examples/index.md) is a complete declaration with
+  accepted and rejected argument vectors.

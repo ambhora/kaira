@@ -19,10 +19,6 @@ a portable result representation, so that independent implementations in
 different languages produce identical results and error codes for identical
 inputs.
 
-[Getting started](getting-started/index.md){ .md-button }
-[Specification](reference/specification.md){ .md-button }
-[Examples](examples/index.md){ .md-button }
-
 <small>Version 1, draft. `src/SPECIFICATION.md` in the repository is normative; these pages are explanatory.</small>
 
 </div>

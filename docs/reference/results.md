@@ -94,31 +94,18 @@ intentionally not standardized.
 
 The repository's `conformance/v1.json` contains three sections.
 
-<div class="grid cards" markdown>
-
--   :material-file-document-multiple: **`declarations`**
-
-    ---
-
-    Named, already-decoded representations of KORML command declarations.
+`declarations`
+:   Named, already-decoded representations of KORML command declarations.
     JSON is used only as a neutral interchange format for tests.
 
--   :material-play-box-multiple: **`cases`**
-
-    ---
-
-    Each case names a declaration, supplies an `argv` array, and expects
+`cases`
+:   Each case names a declaration, supplies an `argv` array, and expects
     exactly one of `ok` (a portable result) or `error` (a `code` and
     `index`).
 
--   :material-file-remove: **`invalid_declarations`**
-
-    ---
-
-    Declarations that must be rejected during validation, with the expected
+`invalid_declarations`
+:   Declarations that must be rejected during validation, with the expected
     error code and no argument index.
-
-</div>
 
 An implementation should load KORML source files with its chosen compatible
 KORML reader, then pass the resulting data to its validator and `argv`

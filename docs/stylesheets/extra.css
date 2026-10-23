@@ -29,10 +29,6 @@
   letter-spacing: -0.01em;
 }
 
-.md-typeset .kaira-intro .md-button {
-  margin: 0.4rem 0.5rem 0 0;
-}
-
 .md-typeset .kaira-intro small {
   display: block;
   margin-top: 1rem;
@@ -73,16 +69,6 @@
 
 [data-md-color-scheme="slate"] .kaira-figure figcaption {
   color: #4a5a6e;
-}
-
-/* Softer grid cards with a hover lift. */
-.md-typeset .grid.cards > ul > li {
-  transition: transform 120ms ease, box-shadow 120ms ease;
-}
-
-.md-typeset .grid.cards > ul > li:hover {
-  transform: translateY(-2px);
-  box-shadow: 0 6px 18px rgba(0, 0, 0, 0.08);
 }
 
 /* Compact "Accepted / Rejected" command listings. */
