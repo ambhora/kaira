@@ -11,63 +11,63 @@ although no implementation is required to use JSON internally.
 
 ## Successful parse
 
+For a declaration whose root lists `__main__.build`, and the command line
+`kaira -v build --output=build.log --include src --include inc app`:
+
 ```json
 {
   "program": "kaira",
-  "command_path": ["build"],
-  "levels": [
-    {
-      "options": {"verbose": true},
-      "positionals": null
+  "command": "__main__.build",
+  "path": ["__main__", "__main__.build"],
+  "commands": {
+    "__main__": {
+      "flags": ["verbose"],
+      "options": {},
+      "positionals": {}
     },
-    {
+    "__main__.build": {
+      "flags": [],
       "options": {"output": "build.log", "include": ["src", "inc"]},
-      "positionals": {"target": ["app"]}
+      "positionals": {"target": "app"}
     }
-  ]
+  }
 }
 ```
 
-```mermaid
-flowchart LR
-    R["result"] --> P["program: string"]
-    R --> C["command_path: [child, …]"]
-    R --> L["levels: [ root, child, … ]"]
-    L --> O["options: { long-name → value }"]
-    L --> Q["positionals: null | { name → [values] }"]
-```
-
-Every selected command level is represented exactly once, root first. The
-root command is **not** included in `command_path`. Option keys are the
-declared long names even when the user typed a short alias. Absent options
-are omitted; they are never filled in with `false`, `null`, or empty arrays.
-
-| Declaration | Portable value when present |
+| Field | Content |
 | --- | --- |
-| `flag` | Boolean `true`. |
-| `scalar` | The validated value: `int` and `float` as their original strings; `string` unchanged; `boolean` as a JSON Boolean. |
-| `repeatable` | Array of validated values in occurrence order. |
-| `separated` | Array of validated values in piece order. |
-| `positionals` | Mapping from the declared name to an array of validated values. |
+| `program` | Copied from the declaration. |
+| `command` | Key of the last selected command. |
+| `path` | Keys of all selected commands, from `__main__` to `command`, in order. |
+| `commands` | One record per key in `path`, keyed by that key; no other keys. |
+
+Each record has exactly `flags`, `options`, and `positionals`:
+
+| Record field | Content |
+| --- | --- |
+| `flags` | Array of the long names of the flags present, in first-occurrence order. |
+| `options` | Mapping from long option name to value; absent options are omitted. |
+| `positionals` | Mapping from slot name to value for slots that received at least one word; others are omitted. `{}` for `shape: none` and `subcommands`. |
+
+The result is keyed by the same names as the declaration, so a record can
+be matched against the file that declared it without counting levels.
+
+### Value representation
+
+| Declaration | Portable value |
+| --- | --- |
+| option or slot, `single` | One value representation. |
+| option or slot, `multiple` | Array of value representations, in occurrence (or piece, or word) order. |
+| `int`, `float` | The original string, never a JSON number. |
+| `string` | The original string. |
+| `boolean` | JSON `true` or `false`. |
 
 The representation is the same whether a value came from a spaced option,
-an attached option, or a positional argument.
-
-!!! info "Numbers stay text"
-
-    Numeric strings preserve arbitrary-length decimal literals. They never
-    become JSON numbers and never undergo host-dependent rounding or
-    overflow. `"count": "123456789012345678901234567890"` is exactly what a
-    conforming parser emits. Booleans, by contrast, use native JSON `true`
-    and `false`. Language bindings may add typed numeric conversions without
-    changing this portable representation.
-
-For commands without a positional tail, `positionals` is `null`. For
-commands with one, it is a mapping even when no positional values occurred:
-
-```json
-{"options": {}, "positionals": {"target": []}}
-```
+an attached option, or a positional word. Numeric strings preserve
+arbitrary-length decimal literals and never undergo host-dependent rounding
+or overflow: `"count": "123456789012345678901234567890"` is exactly what a
+conforming parser emits. Language bindings may add typed numeric
+conversions without changing this portable representation.
 
 ## Errors
 
@@ -80,7 +80,7 @@ with no `index`:
 
 Argument failures return a `code` and a zero-based `index` into the supplied
 `argv` (which excludes the executable name). Errors detected at end of
-input, such as a missing required subcommand, use `index = argv.length`.
+input use `index = argv.length`.
 
 ```json
 {"code": "missing_value", "index": 2}
@@ -116,13 +116,18 @@ duplicate keys.
 The suite currently covers, among other things:
 
 - every error code at least once, including scope violations such as a
-  parent option used inside a child;
+  parent flag used inside a child;
 - numeric literals far beyond 64-bit range, `-0`, exponents with and
   without signs, and rejected spellings such as `+1`, `01`, `NaN`, and
   `Infinity`;
-- empty attached values, empty separated pieces, and Unicode strings;
-- `--` before, between, and after positionals, and `--` used where it is not
-  allowed.
+- empty attached values, empty separator pieces, and Unicode strings;
+- `--` before, between, and after positional words, and `--` where it is
+  not allowed;
+- slot assignment with fixed and variable slots, count errors, deferred
+  value validation, and the precedence of scan errors over it;
+- tree validation: missing root, unknown or doubly listed child keys,
+  orphan commands, duplicate child words, and name or alias collisions
+  between flags and options.
 
 !!! note "Scope of the suite"
 

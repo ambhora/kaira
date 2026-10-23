@@ -1,149 +1,112 @@
 ---
 title: Nested command tree
-description: A three-level command tree in the style of a package manager, showing per-level option scopes, a reused short alias, and a mix of tail modes.
+description: A three-level command tree in the style of a package manager, showing per-level scopes, a reused short alias, and a mix of shapes.
 ---
 
 # Nested command tree
 
-This example models a small package manager, `pkg`, with a `remote`
-command group that has children of its own. It combines a root-level flag,
-`subcommands` tails with and without `required`, a `positionals` leaf, and
-a short alias reused at a different level.
+A small package manager, `pkg`, with a `remote` command group that has
+children of its own. It combines a root-level flag, two `subcommands`
+levels, two `positionals` leaves, a `none` leaf, and a short alias reused
+at a different level. Because the declaration is flat, each command is one
+top-level entry; the tree is visible in the `subcommands` lists.
 
 ```mermaid
 flowchart LR
-    P["pkg<br/><small>--verbose / -v</small>"] --> I["install<br/><small>--dry-run, --jobs=N</small><br/><small>positionals: package…</small>"]
-    P --> R["remote<br/><small>required: false</small>"]
-    R --> RA["add<br/><small>-v / --verify</small><br/><small>positionals: url (exactly 1)</small>"]
-    R --> RL["list<br/><small>empty</small>"]
-    classDef lvl fill:#eef4fb,stroke:#6f93c0,color:#1f3a5f;
+    P["__main__<br/><small>-v / --verbose</small>"] --> I["__main__.install<br/><small>--dry-run, --jobs=N</small><br/><small>package…</small>"]
+    P --> R["__main__.remote"]
+    R --> RA["__main__.remote.add<br/><small>-v / --verify</small><br/><small>url</small>"]
+    R --> RL["__main__.remote.list"]
+    classDef lvl fill:#eef2f9,stroke:#7f9ac4,color:#243b6b;
     class P,I,R,RA,RL lvl;
 ```
-
-## Declaration
 
 ```yaml title="pkg.korml"
 version: kaira.command-declaration/v1
 program: pkg
+commands:
+  __main__:
+    shape: subcommands
+    flags:
+      verbose: {short: v}
+    subcommands: [__main__.install, __main__.remote]
 
-command:
-  options:
-    verbose:
-      flag:
-        short: v
-  tail:
-    subcommands:
-      required: true
-      commands:
+  __main__.install:
+    shape: positionals
+    flags:
+      dry-run: {}
+    options:
+      jobs: {value: int, style: attached}
+    positionals:
+      - package: {alignment: center, value: string, multiplicity: multiple}
 
-        install:
-          options:
-            dry-run:
-              flag: {}
-            jobs:
-              scalar:
-                value: int
-                value_style: attached
-          tail:
-            positionals:
-              positionals:
-                name: package
-                value: string
-                min: 1
-                max: unbounded
+  __main__.remote:
+    shape: subcommands
+    subcommands: [__main__.remote.add, __main__.remote.list]
 
-        remote:
-          tail:
-            subcommands:
-              required: false # (1)!
-              commands:
-                add:
-                  options:
-                    verify:
-                      flag:
-                        short: v # (2)!
-                  tail:
-                    positionals:
-                      positionals:
-                        name: url
-                        value: string
-                        min: 1
-                        max: 1
-                list:
-                  tail:
-                    empty: {}
+  __main__.remote.add:
+    shape: positionals
+    flags:
+      verify: {short: v}          # (1)!
+    positionals:
+      - url: {alignment: left, value: string}
+
+  __main__.remote.list:
+    shape: none
 ```
 
-1.  `pkg remote` on its own is valid and stops at the `remote` level.
-2.  The root uses `-v` for `verbose`; `remote add` reuses `-v` for `verify`.
-    Aliases are unique within a level, not across the tree.
+1.  `__main__` uses `-v` for `verbose`; `__main__.remote.add` reuses `-v` for
+    `verify`. Aliases are unique within a command, not across the tree.
 
-## Verdicts
+| Command line | Outcome |
+| --- | --- |
+| `pkg -v install --jobs=4 left-pad is-odd --dry-run` | accepted — see below |
+| `pkg remote add -v https://example.org/index` | accepted — three records; at the third level `-v` means `verify` |
+| `pkg remote` | `missing_subcommand` at 1 — a `subcommands` command always requires a child |
+| `pkg install -v left-pad` | `unknown_option` at 1 — `verbose` belongs to `__main__`; inside `install` it is unknown |
+| `pkg --jobs=4 install left-pad` | `unknown_option` at 0 — `jobs` belongs to `install` |
+| `pkg install` | `too_few_positionals` at 1 — `install` requires at least one package |
+| `pkg remote add a b` | `too_many_positionals` at 3 — `url` takes exactly one word |
+| `pkg remote list extra` | `unexpected_argument` at 2 — `list` has `shape: none` |
+| `pkg remote -v add x` | `unknown_option` at 1 — `remote` itself declares no flags |
+| `pkg` | `missing_subcommand` at 0 |
 
-=== ":material-check-circle: Accepted"
+For `pkg -v install --jobs=4 left-pad is-odd --dry-run`:
 
-    ```console
-    $ pkg -v install --jobs=4 left-pad is-odd --dry-run
-    ```
-
-    ```json
-    {
-      "program": "pkg",
-      "command_path": ["install"],
-      "levels": [
-        {"options": {"verbose": true}, "positionals": null},
-        {
-          "options": {"jobs": "4", "dry-run": true},
-          "positionals": {"package": ["left-pad", "is-odd"]}
-        }
-      ]
+```json
+{
+  "program": "pkg",
+  "command": "__main__.install",
+  "path": ["__main__", "__main__.install"],
+  "commands": {
+    "__main__": {"flags": ["verbose"], "options": {}, "positionals": {}},
+    "__main__.install": {
+      "flags": ["dry-run"],
+      "options": {"jobs": "4"},
+      "positionals": {"package": ["left-pad", "is-odd"]}
     }
-    ```
+  }
+}
+```
 
-    ```console
-    $ pkg remote add -v https://example.org/index
-    ```
+For `pkg remote add -v https://example.org/index`:
 
-    ```json
-    {
-      "program": "pkg",
-      "command_path": ["remote", "add"],
-      "levels": [
-        {"options": {}, "positionals": null},
-        {"options": {}, "positionals": null},
-        {"options": {"verify": true}, "positionals": {"url": ["https://example.org/index"]}}
-      ]
-    }
-    ```
+```json
+{
+  "program": "pkg",
+  "command": "__main__.remote.add",
+  "path": ["__main__", "__main__.remote", "__main__.remote.add"],
+  "commands": {
+    "__main__":            {"flags": [], "options": {}, "positionals": {}},
+    "__main__.remote":     {"flags": [], "options": {}, "positionals": {}},
+    "__main__.remote.add": {"flags": ["verify"], "options": {}, "positionals": {"url": "https://example.org/index"}}
+  }
+}
+```
 
-    Three command levels, three entries in `levels`. At the third level
-    `-v` means `verify`, not `verbose`.
-
-    ```console
-    $ pkg remote
-    ```
-
-    Valid, because `remote` declares `required: false`. The result has two
-    levels and `"command_path": ["remote"]`.
-
-=== ":material-close-circle: Rejected"
-
-    | Command line | Error | Why |
-    | --- | --- | --- |
-    | `pkg install -v left-pad` | `unknown_option` at 1 | `verbose` belongs to the root; inside `install` it is unknown. |
-    | `pkg --jobs=4 install left-pad` | `unknown_option` at 0 | `jobs` belongs to `install`; at the root it is unknown. |
-    | `pkg install` | `too_few_positionals` at 1 | `install` requires at least one package. |
-    | `pkg remote add a b` | `too_many_positionals` at 3 | `url` allows exactly one value. |
-    | `pkg remote list extra` | `unexpected_argument` at 2 | `list` has an `empty` tail. |
-    | `pkg remote -v add x` | `unknown_option` at 1 | `remote` itself declares no options. |
-    | `pkg` | `missing_subcommand` at 0 | The root requires a child. |
-
-## Remarks
-
-- **Scopes are strict in both directions.** A parent option used in a child
-  and a child option used in a parent are both `unknown_option`.
-- **Order inside a level is free; order across levels is not.** `--dry-run`
-  may come after the package names, but `-v` for `verbose` must come before
-  `install`.
-- **Every selected level appears in the result,** even a pass-through level
-  like `remote` that declared no options.
+Scopes are strict in both directions: a parent flag used in a child and a
+child option used in a parent are both `unknown_option`. Order inside a
+level is free (`--dry-run` may follow the package names), order across
+levels is not (`-v` for `verbose` must precede `install`). Every selected
+command appears in `commands`, including a pass-through level such as
+`__main__.remote` that declared nothing.

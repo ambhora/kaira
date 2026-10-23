@@ -1,6 +1,8 @@
 ---
 title: Writing a declaration
-description: An incremental guide to Kaira declarations, from an empty command to a nested command tree, with the argument vectors each step accepts and rejects.
+description: An incremental guide to Kaira declarations, from an empty command to a nested command tree and multiple positional slots, with the argument vectors each step accepts and rejects.
+hide:
+  - navigation
 ---
 
 # Writing a declaration
@@ -8,289 +10,203 @@ description: An incremental guide to Kaira declarations, from an empty command t
 This page develops a declaration for a hypothetical build tool, `forge`,
 from an empty command to a nested command tree. Each step shows the
 declaration, accepted argument vectors with their results, and rejected
-argument vectors with the resulting error code and index.
+argument vectors with the resulting error code and index. Results are
+abbreviated to the record of the relevant command where the rest is
+unchanged.
 
-## Step 1 — The smallest possible program
+## 1. The smallest program
 
-A declaration always has three root fields. A command always has exactly
-one tail mode. `empty` means "no further arguments".
+A declaration has three root fields, and `commands` must contain
+`__main__`. `shape: none` means the command accepts no bare words.
 
 ```yaml title="forge.korml"
 version: kaira.command-declaration/v1
 program: forge
-command:
-  tail:
-    empty: {}
+commands:
+  __main__:
+    shape: none
 ```
 
-=== ":material-check-circle: Accepted"
+| Command line | Outcome |
+| --- | --- |
+| `forge` | `{"flags": [], "options": {}, "positionals": {}}` |
+| `forge now` | `unexpected_argument` at 0 — `shape: none` accepts no bare words. |
 
-    ```console
-    $ forge
-    ```
+## 2. A flag
 
-    ```json
-    {
-      "program": "forge",
-      "command_path": [],
-      "levels": [{"options": {}, "positionals": null}]
-    }
-    ```
+Flags live under `flags`; a short alias exists only when declared.
 
-=== ":material-close-circle: Rejected"
-
-    ```console
-    $ forge now
-    ```
-
-    ```json
-    {"code": "unexpected_argument", "index": 0}
-    ```
-
-    An `empty` tail accepts no bare words at all.
-
-## Step 2 — Add a flag
-
-Options live under `options`. A `flag` takes no value, and its short alias
-exists only because we declared it.
-
-```yaml title="forge.korml" hl_lines="4-7"
+```yaml title="forge.korml" hl_lines="6-7"
 version: kaira.command-declaration/v1
 program: forge
-command:
-  options:
-    verbose:
-      flag:
-        short: v
-  tail:
-    empty: {}
+commands:
+  __main__:
+    shape: none
+    flags:
+      verbose: {short: v}
 ```
 
-=== ":material-check-circle: Accepted"
+| Command line | Outcome |
+| --- | --- |
+| `forge -v`, `forge --verbose` | `"flags": ["verbose"]` — the result always uses the long name. |
+| `forge --verbose=true` | `invalid_option_form` at 0 — a flag never takes a value. |
+| `forge -v --verbose` | `duplicate_option` at 1 — both spellings count as the same flag. |
+| `forge --verb` | `unknown_option` at 0 — there is no prefix matching. |
 
-    ```console
-    $ forge -v
-    $ forge --verbose
-    ```
+## 3. Options
 
-    Both produce `"options": {"verbose": true}`. The result always uses the
-    long name.
+Options live under `options` and take exactly one value per occurrence.
+Each declares one `style`: `spaced` (`--name value`) or `attached`
+(`--name=value`); the other form is refused. `multiplicity: multiple`
+allows repetition.
 
-=== ":material-close-circle: Rejected"
-
-    | Command line | Error | Why |
-    | --- | --- | --- |
-    | `forge --verbose=true` | `invalid_option_form` at 0 | A flag never takes a value. |
-    | `forge -v --verbose` | `duplicate_option` at 1 | Long and short spellings count as the same option. |
-    | `forge --verb` | `unknown_option` at 0 | There is no prefix matching. |
-
-## Step 3 — Options that take a value
-
-Every value-taking option declares **one** value style. `spaced` means the
-value is the next word; `attached` means it follows `=` in the same word.
-The two forms are never interchangeable.
-
-```yaml title="forge.korml" hl_lines="8-16"
+```yaml title="forge.korml" hl_lines="8-10"
 version: kaira.command-declaration/v1
 program: forge
-command:
-  options:
-    verbose:
-      flag:
-        short: v
-    jobs:
-      scalar:
-        value: int
-        value_style: attached
-    include:
-      repeatable:
-        value: string
-        value_style: spaced
-  tail:
-    empty: {}
+commands:
+  __main__:
+    shape: none
+    flags:
+      verbose: {short: v}
+    options:
+      jobs: {value: int, style: attached}
+      include: {value: string, style: spaced, multiplicity: multiple}
 ```
 
-=== ":material-check-circle: Accepted"
+| Command line | Outcome |
+| --- | --- |
+| `forge --jobs=8 --include src --include tests` | `"options": {"jobs": "8", "include": ["src", "tests"]}` |
+| `forge --jobs 8` | `invalid_option_form` at 0 — `jobs` is `attached`. |
+| `forge --include=src` | `invalid_option_form` at 0 — `include` is `spaced`. |
+| `forge --jobs=08` | `invalid_value` at 0 — `int` has no leading zeros. |
+| `forge --jobs=4 --jobs=8` | `duplicate_option` at 1 — a `single` option occurs at most once. |
 
-    ```console
-    $ forge --jobs=8 --include src --include tests
-    ```
+`jobs` is `"8"`, a string: numeric values keep their original text so that
+no host language can round or overflow them.
 
-    ```json
-    {
-      "program": "forge",
-      "command_path": [],
-      "levels": [
-        {
-          "options": {"jobs": "8", "include": ["src", "tests"]},
-          "positionals": null
-        }
-      ]
-    }
-    ```
+## 4. Positional values
 
-    Note that `jobs` is `"8"`, a string. Integers keep their original text so
-    that no host language can round or overflow them.
+`shape: positionals` accepts bare words and assigns them to the declared
+slots. A slot is `single` and `required` by default; this one is
+`multiple`, so it takes one or more words. Options may appear anywhere
+among the positional words.
 
-=== ":material-close-circle: Rejected"
-
-    | Command line | Error | Why |
-    | --- | --- | --- |
-    | `forge --jobs 8` | `invalid_option_form` at 0 | `jobs` is `attached`; the spaced form is refused. |
-    | `forge --include=src` | `invalid_option_form` at 0 | `include` is `spaced`; the attached form is refused. |
-    | `forge --jobs=08` | `invalid_value` at 0 | `int` has no leading zeros. |
-    | `forge --jobs=4 --jobs=8` | `duplicate_option` at 1 | A `scalar` may appear at most once. |
-
-## Step 4 — Positional values
-
-Switch the tail to `positionals` to accept bare words. Options and
-positionals may now be interleaved freely.
-
-```yaml title="forge.korml" hl_lines="17-22"
+```yaml title="forge.korml" hl_lines="5 11-12"
 version: kaira.command-declaration/v1
 program: forge
-command:
-  options:
-    verbose:
-      flag:
-        short: v
-    jobs:
-      scalar:
-        value: int
-        value_style: attached
-    include:
-      repeatable:
-        value: string
-        value_style: spaced
-  tail:
+commands:
+  __main__:
+    shape: positionals
+    flags:
+      verbose: {short: v}
+    options:
+      jobs: {value: int, style: attached}
+      include: {value: string, style: spaced, multiplicity: multiple}
     positionals:
-      positionals:
-        name: target
-        value: string
-        min: 1
-        max: unbounded
+      - target: {alignment: center, value: string, multiplicity: multiple}
 ```
 
-=== ":material-check-circle: Accepted"
+| Command line | Outcome |
+| --- | --- |
+| `forge app -v docs --include src` | `"flags": ["verbose"], "options": {"include": ["src"]}, "positionals": {"target": ["app", "docs"]}` |
+| `forge` | `too_few_positionals` at 0 — the slot is required; the index is the end of input. |
+| `forge app --clean` | `unknown_option` at 1 — dash-leading words are always options unless `--` came first. |
 
-    ```console
-    $ forge app -v docs --include src
-    ```
+A slot whose count can vary (here: one or more) must be aligned `center`;
+only one such slot is allowed per command. Step 7 shows why.
 
-    ```json
-    {
-      "program": "forge",
-      "command_path": [],
-      "levels": [
-        {
-          "options": {"verbose": true, "include": ["src"]},
-          "positionals": {"target": ["app", "docs"]}
-        }
-      ]
-    }
-    ```
+## 5. Passing arbitrary words through
 
-    Options that appear *after* a positional are still options.
+The exact word `--` ends option recognition for the rest of the level.
+Everything after it is a positional word, even if it starts with a dash.
 
-=== ":material-close-circle: Rejected"
+| Command line | Outcome |
+| --- | --- |
+| `forge app -- --clean -j8` | `"positionals": {"target": ["app", "--clean", "-j8"]}` |
+| `forge --include --` | `missing_value` at 0 — a spaced option never consumes `--`. An option that must accept the literal value `--` is declared `attached` and written `--name=--`. |
 
-    | Command line | Error | Why |
-    | --- | --- | --- |
-    | `forge` | `too_few_positionals` at 0 | `min: 1` is checked at end of input. |
-    | `forge app --clean` | `unknown_option` at 1 | Dash-leading words are always options unless `--` came first. |
+## 6. Subcommands
 
-## Step 5 — Pass arbitrary words through with `--`
-
-The exact word `--` turns off option recognition for the rest of the level.
-Everything after it is a positional value, even if it starts with a dash.
-
-=== ":material-check-circle: Accepted"
-
-    ```console
-    $ forge app -- --clean -j8
-    ```
-
-    ```json
-    {"options": {}, "positionals": {"target": ["app", "--clean", "-j8"]}}
-    ```
-
-=== ":material-close-circle: Rejected"
-
-    ```console
-    $ forge --include --
-    ```
-
-    ```json
-    {"code": "missing_value", "index": 0}
-    ```
-
-    A spaced option never consumes `--` as its value. An option that must
-    accept the literal value `--` is declared `attached` and written `--name=--`.
-
-## Step 6 — Subcommands and scopes
-
-A `subcommands` tail selects a child command. The child opens its **own**
-level with its **own** option scope.
+`shape: subcommands` lists child keys. Each child is its own entry of
+`commands` with its own flags, options, and slots; nothing is inherited.
+The word typed on the command line is the last segment of the key.
 
 ```yaml title="forge.korml"
 version: kaira.command-declaration/v1
 program: forge
-command:
-  options:
-    verbose:
-      flag:
-        short: v
-  tail:
-    subcommands:
-      required: true
-      commands:
-        build:
-          options:
-            release:
-              flag: {}
-          tail:
-            positionals:
-              positionals:
-                name: target
-                value: string
-        clean:
-          tail:
-            empty: {}
+commands:
+  __main__:
+    shape: subcommands
+    flags:
+      verbose: {short: v}
+    subcommands: [__main__.build, __main__.clean]
+  __main__.build:
+    shape: positionals
+    flags:
+      release: {}
+    positionals:
+      - target: {alignment: center, value: string, multiplicity: multiple}
+  __main__.clean:
+    shape: none
 ```
 
-=== ":material-check-circle: Accepted"
+For `forge -v build --release app`:
 
-    ```console
-    $ forge -v build --release app
-    ```
+```json
+{
+  "program": "forge",
+  "command": "__main__.build",
+  "path": ["__main__", "__main__.build"],
+  "commands": {
+    "__main__":       {"flags": ["verbose"], "options": {}, "positionals": {}},
+    "__main__.build": {"flags": ["release"], "options": {}, "positionals": {"target": ["app"]}}
+  }
+}
+```
 
-    ```json
-    {
-      "program": "forge",
-      "command_path": ["build"],
-      "levels": [
-        {"options": {"verbose": true}, "positionals": null},
-        {"options": {"release": true}, "positionals": {"target": ["app"]}}
-      ]
-    }
-    ```
+| Command line | Outcome |
+| --- | --- |
+| `forge clean` | `"command": "__main__.clean"`, two records, both empty. |
+| `forge build -v app` | `unknown_option` at 1 — `verbose` belongs to `__main__`; inside `build` it is unknown. |
+| `forge --release build` | `unknown_option` at 0 — `release` belongs to `build`. |
+| `forge` | `missing_subcommand` at 0 — a `subcommands` command always requires a child. |
+| `forge deploy` | `unknown_subcommand` at 0 — only listed children are accepted. |
 
-    One entry in `levels` per command level, root first.
+## 7. Several positional slots
 
-=== ":material-close-circle: Rejected"
+A command may declare several slots. Slots aligned `left` and `right` have
+a fixed count; at most one slot, aligned `center`, may take a variable
+number of words. The parser fills the fixed slots first and gives the rest
+to the centre slot, so the assignment is unique for any number of words.
 
-    | Command line | Error | Why |
-    | --- | --- | --- |
-    | `forge build -v app` | `unknown_option` at 1 | `verbose` belongs to the root; it is unknown inside `build`. |
-    | `forge --release build` | `unknown_option` at 0 | `release` belongs to `build`; it is unknown at the root. |
-    | `forge` | `missing_subcommand` at 0 | The tail is `required: true`. |
-    | `forge deploy` | `unknown_subcommand` at 0 | Only declared children are accepted. |
+```yaml title="forge.korml"
+version: kaira.command-declaration/v1
+program: forge
+commands:
+  __main__:
+    shape: positionals
+    flags:
+      force: {short: f}
+    positionals:
+      - source: {alignment: center, value: string, multiplicity: multiple}
+      - destination: {alignment: right, value: string}
+```
+
+| Command line | Outcome |
+| --- | --- |
+| `forge a.txt b.txt dist/` | `"positionals": {"source": ["a.txt", "b.txt"], "destination": "dist/"}` |
+| `forge -f a.txt dist/` | `"flags": ["force"]`, `"positionals": {"source": ["a.txt"], "destination": "dist/"}` |
+| `forge a.txt -- -x dist/` | `"positionals": {"source": ["a.txt", "-x"], "destination": "dist/"}` |
+| `forge dist/` | `too_few_positionals` at 1 — one word fills `destination`; `source` needs at least one. |
+
+Declaring `source` as `left` with `multiplicity: multiple` is rejected as
+`invalid_declaration`: a `left` slot must have a fixed count.
 
 ## Further reading
 
 - [Command-line grammar](../explanation/grammar.md) describes levels,
-  scopes, and tail modes.
-- The [KORML schema](../reference/schema.md) and
+  scopes, shapes, and slot assignment.
+- The [KORML schema](../reference/schema.md) lists every field; the
   [parser rules](../reference/parser-rules.md) summarize the
   [normative specification](../reference/specification.md).
 - Each [example](../examples/index.md) is a complete declaration with

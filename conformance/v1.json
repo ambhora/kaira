@@ -4,87 +4,306 @@
     "empty": {
       "version": "kaira.command-declaration/v1",
       "program": "app",
-      "command": {"tail": {"empty": {}}}
+      "commands": {
+        "__main__": {
+          "shape": "none"
+        }
+      }
     },
     "options": {
       "version": "kaira.command-declaration/v1",
       "program": "app",
-      "command": {
-        "options": {
-          "verbose": {"flag": {"short": "v"}},
-          "output": {"scalar": {"short": "o", "value": "string", "value_style": "attached"}},
-          "include": {"repeatable": {"value": "string", "value_style": "spaced"}},
-          "features": {"separated": {"value": "string", "value_style": "spaced", "separator": ";"}}
-        },
-        "tail": {"positionals": {"positionals": {"name": "target", "value": "string", "min": 0, "max": 3}}}
+      "commands": {
+        "__main__": {
+          "shape": "positionals",
+          "flags": {
+            "verbose": {
+              "short": "v"
+            }
+          },
+          "options": {
+            "output": {
+              "short": "o",
+              "value": "string",
+              "style": "attached"
+            },
+            "include": {
+              "value": "string",
+              "style": "spaced",
+              "multiplicity": "multiple"
+            },
+            "features": {
+              "value": "string",
+              "style": "spaced",
+              "multiplicity": "multiple",
+              "separator": ";"
+            }
+          },
+          "positionals": [
+            {
+              "target": {
+                "alignment": "center",
+                "value": "string",
+                "multiplicity": "multiple",
+                "required": false,
+                "cardinality": {
+                  "max": 3
+                }
+              }
+            }
+          ]
+        }
       }
     },
     "commands": {
       "version": "kaira.command-declaration/v1",
       "program": "app",
-      "command": {
-        "options": {"verbose": {"flag": {"short": "v"}}},
-        "tail": {
-          "subcommands": {
-            "required": true,
-            "commands": {
-              "build": {
-                "options": {"verbose": {"flag": {"short": "v"}}},
-                "tail": {"empty": {}}
-              },
-              "test": {"tail": {"empty": {}}}
+      "commands": {
+        "__main__": {
+          "shape": "subcommands",
+          "flags": {
+            "verbose": {
+              "short": "v"
+            }
+          },
+          "subcommands": [
+            "__main__.build",
+            "__main__.test"
+          ]
+        },
+        "__main__.build": {
+          "shape": "none",
+          "flags": {
+            "verbose": {
+              "short": "v"
             }
           }
-        }
-      }
-    },
-    "optional_subcommand": {
-      "version": "kaira.command-declaration/v1",
-      "program": "app",
-      "command": {
-        "tail": {
-          "subcommands": {
-            "commands": {"build": {"tail": {"empty": {}}}}
-          }
+        },
+        "__main__.test": {
+          "shape": "none"
         }
       }
     },
     "values": {
       "version": "kaira.command-declaration/v1",
       "program": "app",
-      "command": {
-        "options": {
-          "count": {"scalar": {"value": "int", "value_style": "attached"}},
-          "ratio": {"scalar": {"value": "float", "value_style": "spaced"}},
-          "enabled": {"scalar": {"value": "boolean", "value_style": "spaced"}},
-          "define": {"repeatable": {"value": "string", "value_style": "attached"}}
-        },
-        "tail": {"empty": {}}
+      "commands": {
+        "__main__": {
+          "shape": "none",
+          "options": {
+            "count": {
+              "value": "int",
+              "style": "attached"
+            },
+            "ratio": {
+              "value": "float",
+              "style": "spaced"
+            },
+            "enabled": {
+              "value": "boolean",
+              "style": "spaced"
+            },
+            "define": {
+              "value": "string",
+              "style": "attached",
+              "multiplicity": "multiple"
+            }
+          }
+        }
       }
     },
     "typed_positionals": {
       "version": "kaira.command-declaration/v1",
       "program": "app",
-      "command": {
-        "tail": {"positionals": {"positionals": {"name": "number", "value": "int", "min": 1, "max": 1}}}
+      "commands": {
+        "__main__": {
+          "shape": "positionals",
+          "positionals": [
+            {
+              "number": {
+                "alignment": "left",
+                "value": "int"
+              }
+            }
+          ]
+        }
       }
     },
     "typed_collections": {
       "version": "kaira.command-declaration/v1",
       "program": "app",
-      "command": {
-        "options": {
-          "numbers": {"repeatable": {"value": "int", "value_style": "spaced"}},
-          "switches": {"separated": {"value": "boolean", "value_style": "attached", "separator": ","}}
-        },
-        "tail": {"empty": {}}
+      "commands": {
+        "__main__": {
+          "shape": "none",
+          "options": {
+            "numbers": {
+              "value": "int",
+              "style": "spaced",
+              "multiplicity": "multiple"
+            },
+            "switches": {
+              "value": "boolean",
+              "style": "attached",
+              "multiplicity": "multiple",
+              "separator": ","
+            }
+          }
+        }
       }
     },
     "two_positionals": {
       "version": "kaira.command-declaration/v1",
       "program": "app",
-      "command": {
-        "tail": {"positionals": {"positionals": {"name": "file", "value": "string", "min": 2, "max": 2}}}
+      "commands": {
+        "__main__": {
+          "shape": "positionals",
+          "positionals": [
+            {
+              "file": {
+                "alignment": "left",
+                "value": "string",
+                "multiplicity": "multiple",
+                "cardinality": {
+                  "min": 2,
+                  "max": 2
+                }
+              }
+            }
+          ]
+        }
+      }
+    },
+    "slots": {
+      "version": "kaira.command-declaration/v1",
+      "program": "cp",
+      "commands": {
+        "__main__": {
+          "shape": "positionals",
+          "flags": {
+            "verbose": {
+              "short": "v"
+            }
+          },
+          "positionals": [
+            {
+              "input": {
+                "alignment": "left",
+                "value": "string"
+              }
+            },
+            {
+              "extra": {
+                "alignment": "center",
+                "value": "int",
+                "multiplicity": "multiple",
+                "required": false
+              }
+            },
+            {
+              "output": {
+                "alignment": "right",
+                "value": "string"
+              }
+            }
+          ]
+        }
+      }
+    },
+    "fixed_center": {
+      "version": "kaira.command-declaration/v1",
+      "program": "pair",
+      "commands": {
+        "__main__": {
+          "shape": "positionals",
+          "positionals": [
+            {
+              "left": {
+                "alignment": "left",
+                "value": "string",
+                "multiplicity": "multiple",
+                "cardinality": {
+                  "min": 2,
+                  "max": 2
+                }
+              }
+            },
+            {
+              "middle": {
+                "alignment": "center",
+                "value": "boolean",
+                "required": false
+              }
+            },
+            {
+              "right": {
+                "alignment": "right",
+                "value": "string"
+              }
+            }
+          ]
+        }
+      }
+    },
+    "tree": {
+      "version": "kaira.command-declaration/v1",
+      "program": "tool",
+      "commands": {
+        "__main__": {
+          "shape": "subcommands",
+          "flags": {
+            "verbose": {
+              "short": "v"
+            }
+          },
+          "subcommands": [
+            "__main__.remote",
+            "__main__.install"
+          ]
+        },
+        "__main__.remote": {
+          "shape": "subcommands",
+          "subcommands": [
+            "__main__.remote.add",
+            "__main__.remote.list"
+          ]
+        },
+        "__main__.remote.add": {
+          "shape": "positionals",
+          "flags": {
+            "verify": {
+              "short": "v"
+            }
+          },
+          "positionals": [
+            {
+              "url": {
+                "alignment": "left",
+                "value": "string"
+              }
+            }
+          ]
+        },
+        "__main__.remote.list": {
+          "shape": "none"
+        },
+        "__main__.install": {
+          "shape": "positionals",
+          "options": {
+            "jobs": {
+              "value": "int",
+              "style": "attached"
+            }
+          },
+          "positionals": [
+            {
+              "package": {
+                "alignment": "center",
+                "value": "string",
+                "multiplicity": "multiple"
+              }
+            }
+          ]
+        }
       }
     }
   },
@@ -93,415 +312,1844 @@
       "id": "empty-accept",
       "declaration": "empty",
       "argv": [],
-      "ok": {"program": "app", "command_path": [], "levels": [{"options": {}, "positionals": null}]}
+      "ok": {
+        "program": "app",
+        "command": "__main__",
+        "path": [
+          "__main__"
+        ],
+        "commands": {
+          "__main__": {
+            "flags": [],
+            "options": {},
+            "positionals": {}
+          }
+        }
+      }
     },
     {
       "id": "empty-extra",
       "declaration": "empty",
-      "argv": ["extra"],
-      "error": {"code": "unexpected_argument", "index": 0}
+      "argv": [
+        "extra"
+      ],
+      "error": {
+        "code": "unexpected_argument",
+        "index": 0
+      }
     },
     {
       "id": "empty-delimiter",
       "declaration": "empty",
-      "argv": ["--"],
-      "error": {"code": "unexpected_delimiter", "index": 0}
+      "argv": [
+        "--"
+      ],
+      "error": {
+        "code": "unexpected_delimiter",
+        "index": 0
+      }
     },
     {
       "id": "options-all",
       "declaration": "options",
-      "argv": ["-v", "--output=a.log", "--include", "src", "--include", "inc", "--features", "mpi;cuda", "app"],
+      "argv": [
+        "-v",
+        "--output=a.log",
+        "--include",
+        "src",
+        "--include",
+        "inc",
+        "--features",
+        "mpi;cuda",
+        "app"
+      ],
       "ok": {
         "program": "app",
-        "command_path": [],
-        "levels": [
-          {
-            "options": {"verbose": true, "output": "a.log", "include": ["src", "inc"], "features": ["mpi", "cuda"]},
-            "positionals": {"target": ["app"]}
+        "command": "__main__",
+        "path": [
+          "__main__"
+        ],
+        "commands": {
+          "__main__": {
+            "flags": [
+              "verbose"
+            ],
+            "options": {
+              "output": "a.log",
+              "include": [
+                "src",
+                "inc"
+              ],
+              "features": [
+                "mpi",
+                "cuda"
+              ]
+            },
+            "positionals": {
+              "target": [
+                "app"
+              ]
+            }
           }
-        ]
+        }
       }
     },
     {
       "id": "options-absent",
       "declaration": "options",
       "argv": [],
-      "ok": {"program": "app", "command_path": [], "levels": [{"options": {}, "positionals": {"target": []}}]}
+      "ok": {
+        "program": "app",
+        "command": "__main__",
+        "path": [
+          "__main__"
+        ],
+        "commands": {
+          "__main__": {
+            "flags": [],
+            "options": {},
+            "positionals": {}
+          }
+        }
+      }
     },
     {
       "id": "short-attached",
       "declaration": "options",
-      "argv": ["-o=--"],
-      "ok": {"program": "app", "command_path": [], "levels": [{"options": {"output": "--"}, "positionals": {"target": []}}]}
+      "argv": [
+        "-o=--"
+      ],
+      "ok": {
+        "program": "app",
+        "command": "__main__",
+        "path": [
+          "__main__"
+        ],
+        "commands": {
+          "__main__": {
+            "flags": [],
+            "options": {
+              "output": "--"
+            },
+            "positionals": {}
+          }
+        }
+      }
     },
     {
       "id": "empty-attached-path",
       "declaration": "options",
-      "argv": ["--output="],
-      "ok": {"program": "app", "command_path": [], "levels": [{"options": {"output": ""}, "positionals": {"target": []}}]}
+      "argv": [
+        "--output="
+      ],
+      "ok": {
+        "program": "app",
+        "command": "__main__",
+        "path": [
+          "__main__"
+        ],
+        "commands": {
+          "__main__": {
+            "flags": [],
+            "options": {
+              "output": ""
+            },
+            "positionals": {}
+          }
+        }
+      }
     },
     {
       "id": "separated-empty-pieces",
       "declaration": "options",
-      "argv": ["--features", ";a;;"],
-      "ok": {"program": "app", "command_path": [], "levels": [{"options": {"features": ["", "a", "", ""]}, "positionals": {"target": []}}]}
+      "argv": [
+        "--features",
+        ";a;;"
+      ],
+      "ok": {
+        "program": "app",
+        "command": "__main__",
+        "path": [
+          "__main__"
+        ],
+        "commands": {
+          "__main__": {
+            "flags": [],
+            "options": {
+              "features": [
+                "",
+                "a",
+                "",
+                ""
+              ]
+            },
+            "positionals": {}
+          }
+        }
+      }
     },
     {
       "id": "spaced-dash-value",
       "declaration": "options",
-      "argv": ["--include", "--verbose"],
-      "ok": {"program": "app", "command_path": [], "levels": [{"options": {"include": ["--verbose"]}, "positionals": {"target": []}}]}
+      "argv": [
+        "--include",
+        "--verbose"
+      ],
+      "ok": {
+        "program": "app",
+        "command": "__main__",
+        "path": [
+          "__main__"
+        ],
+        "commands": {
+          "__main__": {
+            "flags": [],
+            "options": {
+              "include": [
+                "--verbose"
+              ]
+            },
+            "positionals": {}
+          }
+        }
+      }
     },
     {
       "id": "raw-positionals",
       "declaration": "options",
-      "argv": ["--", "--bad", "--", "-2"],
-      "ok": {"program": "app", "command_path": [], "levels": [{"options": {}, "positionals": {"target": ["--bad", "--", "-2"]}}]}
+      "argv": [
+        "--",
+        "--bad",
+        "--",
+        "-2"
+      ],
+      "ok": {
+        "program": "app",
+        "command": "__main__",
+        "path": [
+          "__main__"
+        ],
+        "commands": {
+          "__main__": {
+            "flags": [],
+            "options": {},
+            "positionals": {
+              "target": [
+                "--bad",
+                "--",
+                "-2"
+              ]
+            }
+          }
+        }
+      }
     },
     {
       "id": "positional-after-first-looks-like-option",
       "declaration": "options",
-      "argv": ["target", "--include", "src"],
+      "argv": [
+        "target",
+        "--include",
+        "src"
+      ],
       "ok": {
         "program": "app",
-        "command_path": [],
-        "levels": [{"options": {"include": ["src"]}, "positionals": {"target": ["target"]}}]
+        "command": "__main__",
+        "path": [
+          "__main__"
+        ],
+        "commands": {
+          "__main__": {
+            "flags": [],
+            "options": {
+              "include": [
+                "src"
+              ]
+            },
+            "positionals": {
+              "target": [
+                "target"
+              ]
+            }
+          }
+        }
       }
     },
     {
       "id": "options-interleaved-with-positionals",
       "declaration": "options",
-      "argv": ["one", "-v", "two", "--output=x", "--features", "a;b", "three"],
+      "argv": [
+        "one",
+        "-v",
+        "two",
+        "--output=x",
+        "--features",
+        "a;b",
+        "three"
+      ],
       "ok": {
         "program": "app",
-        "command_path": [],
-        "levels": [
-          {
-            "options": {"verbose": true, "output": "x", "features": ["a", "b"]},
-            "positionals": {"target": ["one", "two", "three"]}
+        "command": "__main__",
+        "path": [
+          "__main__"
+        ],
+        "commands": {
+          "__main__": {
+            "flags": [
+              "verbose"
+            ],
+            "options": {
+              "output": "x",
+              "features": [
+                "a",
+                "b"
+              ]
+            },
+            "positionals": {
+              "target": [
+                "one",
+                "two",
+                "three"
+              ]
+            }
           }
-        ]
+        }
       }
     },
     {
       "id": "delimiter-after-positionals",
       "declaration": "options",
-      "argv": ["a", "--", "--verbose", "b"],
+      "argv": [
+        "a",
+        "--",
+        "--verbose",
+        "b"
+      ],
       "ok": {
         "program": "app",
-        "command_path": [],
-        "levels": [{"options": {}, "positionals": {"target": ["a", "--verbose", "b"]}}]
+        "command": "__main__",
+        "path": [
+          "__main__"
+        ],
+        "commands": {
+          "__main__": {
+            "flags": [],
+            "options": {},
+            "positionals": {
+              "target": [
+                "a",
+                "--verbose",
+                "b"
+              ]
+            }
+          }
+        }
       }
     },
     {
       "id": "repeated-options-between-positionals",
       "declaration": "options",
-      "argv": ["a", "--include", "x", "b", "--include", "y"],
+      "argv": [
+        "a",
+        "--include",
+        "x",
+        "b",
+        "--include",
+        "y"
+      ],
       "ok": {
         "program": "app",
-        "command_path": [],
-        "levels": [{"options": {"include": ["x", "y"]}, "positionals": {"target": ["a", "b"]}}]
+        "command": "__main__",
+        "path": [
+          "__main__"
+        ],
+        "commands": {
+          "__main__": {
+            "flags": [],
+            "options": {
+              "include": [
+                "x",
+                "y"
+              ]
+            },
+            "positionals": {
+              "target": [
+                "a",
+                "b"
+              ]
+            }
+          }
+        }
       }
     },
     {
       "id": "unknown-option-after-positional",
       "declaration": "options",
-      "argv": ["target", "--bad"],
-      "error": {"code": "unknown_option", "index": 1}
+      "argv": [
+        "target",
+        "--bad"
+      ],
+      "error": {
+        "code": "unknown_option",
+        "index": 1
+      }
     },
     {
       "id": "short-alias-must-be-declared",
       "declaration": "options",
-      "argv": ["-i", "src"],
-      "error": {"code": "unknown_option", "index": 0}
+      "argv": [
+        "-i",
+        "src"
+      ],
+      "error": {
+        "code": "unknown_option",
+        "index": 0
+      }
     },
     {
       "id": "unknown-option",
       "declaration": "options",
-      "argv": ["--bad"],
-      "error": {"code": "unknown_option", "index": 0}
+      "argv": [
+        "--bad"
+      ],
+      "error": {
+        "code": "unknown_option",
+        "index": 0
+      }
     },
     {
       "id": "flag-attached-is-invalid",
       "declaration": "options",
-      "argv": ["--verbose=true"],
-      "error": {"code": "invalid_option_form", "index": 0}
+      "argv": [
+        "--verbose=true"
+      ],
+      "error": {
+        "code": "invalid_option_form",
+        "index": 0
+      }
     },
     {
       "id": "spaced-form-required",
       "declaration": "options",
-      "argv": ["--include=src"],
-      "error": {"code": "invalid_option_form", "index": 0}
+      "argv": [
+        "--include=src"
+      ],
+      "error": {
+        "code": "invalid_option_form",
+        "index": 0
+      }
     },
     {
       "id": "attached-form-required",
       "declaration": "options",
-      "argv": ["--output", "a.log"],
-      "error": {"code": "invalid_option_form", "index": 0}
+      "argv": [
+        "--output",
+        "a.log"
+      ],
+      "error": {
+        "code": "invalid_option_form",
+        "index": 0
+      }
     },
     {
       "id": "no-short-clusters",
       "declaration": "options",
-      "argv": ["-vo"],
-      "error": {"code": "unknown_option", "index": 0}
+      "argv": [
+        "-vo"
+      ],
+      "error": {
+        "code": "unknown_option",
+        "index": 0
+      }
     },
     {
       "id": "missing-spaced-value",
       "declaration": "options",
-      "argv": ["--include", "--"],
-      "error": {"code": "missing_value", "index": 0}
+      "argv": [
+        "--include",
+        "--"
+      ],
+      "error": {
+        "code": "missing_value",
+        "index": 0
+      }
     },
     {
       "id": "duplicate-flag-alias",
       "declaration": "options",
-      "argv": ["-v", "--verbose"],
-      "error": {"code": "duplicate_option", "index": 1}
+      "argv": [
+        "-v",
+        "--verbose"
+      ],
+      "error": {
+        "code": "duplicate_option",
+        "index": 1
+      }
     },
     {
       "id": "duplicate-scalar",
       "declaration": "options",
-      "argv": ["--output=a", "--output=b"],
-      "error": {"code": "duplicate_option", "index": 1}
+      "argv": [
+        "--output=a",
+        "--output=b"
+      ],
+      "error": {
+        "code": "duplicate_option",
+        "index": 1
+      }
     },
     {
       "id": "too-many-positionals",
       "declaration": "options",
-      "argv": ["a", "--verbose", "b", "c", "d"],
-      "error": {"code": "too_many_positionals", "index": 4}
+      "argv": [
+        "a",
+        "--verbose",
+        "b",
+        "c",
+        "d"
+      ],
+      "error": {
+        "code": "too_many_positionals",
+        "index": 4
+      }
     },
     {
       "id": "too-few-positionals",
       "declaration": "two_positionals",
-      "argv": ["a"],
-      "error": {"code": "too_few_positionals", "index": 1}
+      "argv": [
+        "a"
+      ],
+      "error": {
+        "code": "too_few_positionals",
+        "index": 1
+      }
     },
     {
       "id": "nested-option-scopes",
       "declaration": "commands",
-      "argv": ["-v", "build", "-v"],
+      "argv": [
+        "-v",
+        "build",
+        "-v"
+      ],
       "ok": {
         "program": "app",
-        "command_path": ["build"],
-        "levels": [
-          {"options": {"verbose": true}, "positionals": null},
-          {"options": {"verbose": true}, "positionals": null}
-        ]
+        "command": "__main__.build",
+        "path": [
+          "__main__",
+          "__main__.build"
+        ],
+        "commands": {
+          "__main__": {
+            "flags": [
+              "verbose"
+            ],
+            "options": {},
+            "positionals": {}
+          },
+          "__main__.build": {
+            "flags": [
+              "verbose"
+            ],
+            "options": {},
+            "positionals": {}
+          }
+        }
       }
     },
     {
       "id": "missing-required-subcommand",
       "declaration": "commands",
       "argv": [],
-      "error": {"code": "missing_subcommand", "index": 0}
+      "error": {
+        "code": "missing_subcommand",
+        "index": 0
+      }
     },
     {
       "id": "unknown-subcommand",
       "declaration": "commands",
-      "argv": ["deploy"],
-      "error": {"code": "unknown_subcommand", "index": 0}
+      "argv": [
+        "deploy"
+      ],
+      "error": {
+        "code": "unknown_subcommand",
+        "index": 0
+      }
     },
     {
       "id": "delimiter-cannot-select-subcommand",
       "declaration": "commands",
-      "argv": ["--", "build"],
-      "error": {"code": "unexpected_delimiter", "index": 0}
+      "argv": [
+        "--",
+        "build"
+      ],
+      "error": {
+        "code": "unexpected_delimiter",
+        "index": 0
+      }
     },
     {
       "id": "parent-option-not-in-child",
       "declaration": "commands",
-      "argv": ["test", "-v"],
-      "error": {"code": "unknown_option", "index": 1}
-    },
-    {
-      "id": "optional-stop",
-      "declaration": "optional_subcommand",
-      "argv": [],
-      "ok": {"program": "app", "command_path": [], "levels": [{"options": {}, "positionals": null}]}
+      "argv": [
+        "test",
+        "-v"
+      ],
+      "error": {
+        "code": "unknown_option",
+        "index": 1
+      }
     },
     {
       "id": "lexically-validated-large-numbers",
       "declaration": "values",
-      "argv": ["--count=123456789012345678901234567890", "--ratio", "1.5e+1000", "--enabled", "true", "--define=A=="],
+      "argv": [
+        "--count=123456789012345678901234567890",
+        "--ratio",
+        "1.5e+1000",
+        "--enabled",
+        "true",
+        "--define=A=="
+      ],
       "ok": {
         "program": "app",
-        "command_path": [],
-        "levels": [
-          {
+        "command": "__main__",
+        "path": [
+          "__main__"
+        ],
+        "commands": {
+          "__main__": {
+            "flags": [],
             "options": {
               "count": "123456789012345678901234567890",
               "ratio": "1.5e+1000",
               "enabled": true,
-              "define": ["A=="]
+              "define": [
+                "A=="
+              ]
             },
-            "positionals": null
+            "positionals": {}
           }
-        ]
+        }
       }
     },
     {
       "id": "invalid-int",
       "declaration": "values",
-      "argv": ["--count=01"],
-      "error": {"code": "invalid_value", "index": 0}
+      "argv": [
+        "--count=01"
+      ],
+      "error": {
+        "code": "invalid_value",
+        "index": 0
+      }
     },
     {
       "id": "invalid-float",
       "declaration": "values",
-      "argv": ["--ratio", "NaN"],
-      "error": {"code": "invalid_value", "index": 1}
+      "argv": [
+        "--ratio",
+        "NaN"
+      ],
+      "error": {
+        "code": "invalid_value",
+        "index": 1
+      }
     },
     {
       "id": "invalid-boolean",
       "declaration": "values",
-      "argv": ["--enabled", "TRUE"],
-      "error": {"code": "invalid_value", "index": 1}
+      "argv": [
+        "--enabled",
+        "TRUE"
+      ],
+      "error": {
+        "code": "invalid_value",
+        "index": 1
+      }
     },
     {
       "id": "string-does-not-validate-assignment",
       "declaration": "values",
-      "argv": ["--define==x"],
-      "ok": {"program": "app", "command_path": [], "levels": [{"options": {"define": ["=x"]}, "positionals": null}]}
+      "argv": [
+        "--define==x"
+      ],
+      "ok": {
+        "program": "app",
+        "command": "__main__",
+        "path": [
+          "__main__"
+        ],
+        "commands": {
+          "__main__": {
+            "flags": [],
+            "options": {
+              "define": [
+                "=x"
+              ]
+            },
+            "positionals": {}
+          }
+        }
+      }
     },
     {
       "id": "arbitrary-int-positional-after-delimiter",
       "declaration": "typed_positionals",
-      "argv": ["--", "-123456789012345678901234567890"],
-      "ok": {"program": "app", "command_path": [], "levels": [{"options": {}, "positionals": {"number": ["-123456789012345678901234567890"]}}]}
+      "argv": [
+        "--",
+        "-123456789012345678901234567890"
+      ],
+      "ok": {
+        "program": "app",
+        "command": "__main__",
+        "path": [
+          "__main__"
+        ],
+        "commands": {
+          "__main__": {
+            "flags": [],
+            "options": {},
+            "positionals": {
+              "number": "-123456789012345678901234567890"
+            }
+          }
+        }
+      }
     },
     {
       "id": "typed-repeatable-and-separated-values",
       "declaration": "typed_collections",
-      "argv": ["--numbers", "123456789012345678901234567890", "--numbers", "-2", "--switches=true,false,true"],
-      "ok": {"program": "app", "command_path": [], "levels": [{"options": {"numbers": ["123456789012345678901234567890", "-2"], "switches": [true, false, true]}, "positionals": null}]}
+      "argv": [
+        "--numbers",
+        "123456789012345678901234567890",
+        "--numbers",
+        "-2",
+        "--switches=true,false,true"
+      ],
+      "ok": {
+        "program": "app",
+        "command": "__main__",
+        "path": [
+          "__main__"
+        ],
+        "commands": {
+          "__main__": {
+            "flags": [],
+            "options": {
+              "numbers": [
+                "123456789012345678901234567890",
+                "-2"
+              ],
+              "switches": [
+                true,
+                false,
+                true
+              ]
+            },
+            "positionals": {}
+          }
+        }
+      }
     },
     {
       "id": "separated-invalid-boolean",
       "declaration": "typed_collections",
-      "argv": ["--switches=true,FALSE"],
-      "error": {"code": "invalid_value", "index": 0}
+      "argv": [
+        "--switches=true,FALSE"
+      ],
+      "error": {
+        "code": "invalid_value",
+        "index": 0
+      }
     },
     {
       "id": "float-integer-shaped",
       "declaration": "values",
-      "argv": ["--ratio", "1"],
-      "ok": {"program": "app", "command_path": [], "levels": [{"options": {"ratio": "1"}, "positionals": null}]}
+      "argv": [
+        "--ratio",
+        "1"
+      ],
+      "ok": {
+        "program": "app",
+        "command": "__main__",
+        "path": [
+          "__main__"
+        ],
+        "commands": {
+          "__main__": {
+            "flags": [],
+            "options": {
+              "ratio": "1"
+            },
+            "positionals": {}
+          }
+        }
+      }
     },
     {
       "id": "float-negative-zero",
       "declaration": "values",
-      "argv": ["--ratio", "-0"],
-      "ok": {"program": "app", "command_path": [], "levels": [{"options": {"ratio": "-0"}, "positionals": null}]}
+      "argv": [
+        "--ratio",
+        "-0"
+      ],
+      "ok": {
+        "program": "app",
+        "command": "__main__",
+        "path": [
+          "__main__"
+        ],
+        "commands": {
+          "__main__": {
+            "flags": [],
+            "options": {
+              "ratio": "-0"
+            },
+            "positionals": {}
+          }
+        }
+      }
     },
     {
       "id": "negative-arbitrary-int",
       "declaration": "values",
-      "argv": ["--count=-1234567890123456789012345678901234567890"],
-      "ok": {"program": "app", "command_path": [], "levels": [{"options": {"count": "-1234567890123456789012345678901234567890"}, "positionals": null}]}
+      "argv": [
+        "--count=-1234567890123456789012345678901234567890"
+      ],
+      "ok": {
+        "program": "app",
+        "command": "__main__",
+        "path": [
+          "__main__"
+        ],
+        "commands": {
+          "__main__": {
+            "flags": [],
+            "options": {
+              "count": "-1234567890123456789012345678901234567890"
+            },
+            "positionals": {}
+          }
+        }
+      }
     },
     {
       "id": "float-large-mantissa-and-exponent",
       "declaration": "values",
-      "argv": ["--ratio", "12345678901234567890.0000000000000000001e-999999999999999999"],
-      "ok": {"program": "app", "command_path": [], "levels": [{"options": {"ratio": "12345678901234567890.0000000000000000001e-999999999999999999"}, "positionals": null}]}
+      "argv": [
+        "--ratio",
+        "12345678901234567890.0000000000000000001e-999999999999999999"
+      ],
+      "ok": {
+        "program": "app",
+        "command": "__main__",
+        "path": [
+          "__main__"
+        ],
+        "commands": {
+          "__main__": {
+            "flags": [],
+            "options": {
+              "ratio": "12345678901234567890.0000000000000000001e-999999999999999999"
+            },
+            "positionals": {}
+          }
+        }
+      }
     },
     {
       "id": "boolean-false",
       "declaration": "values",
-      "argv": ["--enabled", "false"],
-      "ok": {"program": "app", "command_path": [], "levels": [{"options": {"enabled": false}, "positionals": null}]}
+      "argv": [
+        "--enabled",
+        "false"
+      ],
+      "ok": {
+        "program": "app",
+        "command": "__main__",
+        "path": [
+          "__main__"
+        ],
+        "commands": {
+          "__main__": {
+            "flags": [],
+            "options": {
+              "enabled": false
+            },
+            "positionals": {}
+          }
+        }
+      }
     },
     {
       "id": "invalid-int-plus",
       "declaration": "values",
-      "argv": ["--count=+1"],
-      "error": {"code": "invalid_value", "index": 0}
+      "argv": [
+        "--count=+1"
+      ],
+      "error": {
+        "code": "invalid_value",
+        "index": 0
+      }
     },
     {
       "id": "invalid-float-infinity",
       "declaration": "values",
-      "argv": ["--ratio", "Infinity"],
-      "error": {"code": "invalid_value", "index": 1}
+      "argv": [
+        "--ratio",
+        "Infinity"
+      ],
+      "error": {
+        "code": "invalid_value",
+        "index": 1
+      }
     },
     {
       "id": "empty-attached-string",
       "declaration": "values",
-      "argv": ["--define="],
-      "ok": {"program": "app", "command_path": [], "levels": [{"options": {"define": [""]}, "positionals": null}]}
+      "argv": [
+        "--define="
+      ],
+      "ok": {
+        "program": "app",
+        "command": "__main__",
+        "path": [
+          "__main__"
+        ],
+        "commands": {
+          "__main__": {
+            "flags": [],
+            "options": {
+              "define": [
+                ""
+              ]
+            },
+            "positionals": {}
+          }
+        }
+      }
     },
     {
       "id": "unicode-string",
       "declaration": "options",
-      "argv": ["--output=東京"],
-      "ok": {"program": "app", "command_path": [], "levels": [{"options": {"output": "東京"}, "positionals": {"target": []}}]}
+      "argv": [
+        "--output=東京"
+      ],
+      "ok": {
+        "program": "app",
+        "command": "__main__",
+        "path": [
+          "__main__"
+        ],
+        "commands": {
+          "__main__": {
+            "flags": [],
+            "options": {
+              "output": "東京"
+            },
+            "positionals": {}
+          }
+        }
+      }
+    },
+    {
+      "id": "separator-option-twice",
+      "declaration": "options",
+      "argv": [
+        "--features",
+        "a",
+        "--features",
+        "b"
+      ],
+      "error": {
+        "code": "duplicate_option",
+        "index": 2
+      }
+    },
+    {
+      "id": "slots-two-words",
+      "declaration": "slots",
+      "argv": [
+        "a",
+        "b"
+      ],
+      "ok": {
+        "program": "cp",
+        "command": "__main__",
+        "path": [
+          "__main__"
+        ],
+        "commands": {
+          "__main__": {
+            "flags": [],
+            "options": {},
+            "positionals": {
+              "input": "a",
+              "output": "b"
+            }
+          }
+        }
+      }
+    },
+    {
+      "id": "slots-center-filled",
+      "declaration": "slots",
+      "argv": [
+        "a",
+        "1",
+        "2",
+        "b"
+      ],
+      "ok": {
+        "program": "cp",
+        "command": "__main__",
+        "path": [
+          "__main__"
+        ],
+        "commands": {
+          "__main__": {
+            "flags": [],
+            "options": {},
+            "positionals": {
+              "input": "a",
+              "extra": [
+                "1",
+                "2"
+              ],
+              "output": "b"
+            }
+          }
+        }
+      }
+    },
+    {
+      "id": "slots-too-few",
+      "declaration": "slots",
+      "argv": [
+        "a"
+      ],
+      "error": {
+        "code": "too_few_positionals",
+        "index": 1
+      }
+    },
+    {
+      "id": "slots-center-invalid-value",
+      "declaration": "slots",
+      "argv": [
+        "a",
+        "x",
+        "b"
+      ],
+      "error": {
+        "code": "invalid_value",
+        "index": 1
+      }
+    },
+    {
+      "id": "slots-scan-error-before-value-error",
+      "declaration": "slots",
+      "argv": [
+        "a",
+        "x",
+        "--bad",
+        "b"
+      ],
+      "error": {
+        "code": "unknown_option",
+        "index": 2
+      }
+    },
+    {
+      "id": "slots-raw-negative-int",
+      "declaration": "slots",
+      "argv": [
+        "a",
+        "--",
+        "-1",
+        "b"
+      ],
+      "ok": {
+        "program": "cp",
+        "command": "__main__",
+        "path": [
+          "__main__"
+        ],
+        "commands": {
+          "__main__": {
+            "flags": [],
+            "options": {},
+            "positionals": {
+              "input": "a",
+              "extra": [
+                "-1"
+              ],
+              "output": "b"
+            }
+          }
+        }
+      }
+    },
+    {
+      "id": "slots-flag-between-slots",
+      "declaration": "slots",
+      "argv": [
+        "a",
+        "-v",
+        "1",
+        "b"
+      ],
+      "ok": {
+        "program": "cp",
+        "command": "__main__",
+        "path": [
+          "__main__"
+        ],
+        "commands": {
+          "__main__": {
+            "flags": [
+              "verbose"
+            ],
+            "options": {},
+            "positionals": {
+              "input": "a",
+              "extra": [
+                "1"
+              ],
+              "output": "b"
+            }
+          }
+        }
+      }
+    },
+    {
+      "id": "fixed-center-absent",
+      "declaration": "fixed_center",
+      "argv": [
+        "a",
+        "b",
+        "c"
+      ],
+      "ok": {
+        "program": "pair",
+        "command": "__main__",
+        "path": [
+          "__main__"
+        ],
+        "commands": {
+          "__main__": {
+            "flags": [],
+            "options": {},
+            "positionals": {
+              "left": [
+                "a",
+                "b"
+              ],
+              "right": "c"
+            }
+          }
+        }
+      }
+    },
+    {
+      "id": "fixed-center-present",
+      "declaration": "fixed_center",
+      "argv": [
+        "a",
+        "b",
+        "true",
+        "c"
+      ],
+      "ok": {
+        "program": "pair",
+        "command": "__main__",
+        "path": [
+          "__main__"
+        ],
+        "commands": {
+          "__main__": {
+            "flags": [],
+            "options": {},
+            "positionals": {
+              "left": [
+                "a",
+                "b"
+              ],
+              "middle": true,
+              "right": "c"
+            }
+          }
+        }
+      }
+    },
+    {
+      "id": "fixed-center-too-many",
+      "declaration": "fixed_center",
+      "argv": [
+        "a",
+        "b",
+        "true",
+        "c",
+        "d"
+      ],
+      "error": {
+        "code": "too_many_positionals",
+        "index": 4
+      }
+    },
+    {
+      "id": "fixed-center-invalid-boolean",
+      "declaration": "fixed_center",
+      "argv": [
+        "a",
+        "b",
+        "yes",
+        "c"
+      ],
+      "error": {
+        "code": "invalid_value",
+        "index": 2
+      }
+    },
+    {
+      "id": "tree-three-levels",
+      "declaration": "tree",
+      "argv": [
+        "-v",
+        "remote",
+        "add",
+        "-v",
+        "https://example.org"
+      ],
+      "ok": {
+        "program": "tool",
+        "command": "__main__.remote.add",
+        "path": [
+          "__main__",
+          "__main__.remote",
+          "__main__.remote.add"
+        ],
+        "commands": {
+          "__main__": {
+            "flags": [
+              "verbose"
+            ],
+            "options": {},
+            "positionals": {}
+          },
+          "__main__.remote": {
+            "flags": [],
+            "options": {},
+            "positionals": {}
+          },
+          "__main__.remote.add": {
+            "flags": [
+              "verify"
+            ],
+            "options": {},
+            "positionals": {
+              "url": "https://example.org"
+            }
+          }
+        }
+      }
+    },
+    {
+      "id": "tree-stop-at-group",
+      "declaration": "tree",
+      "argv": [
+        "remote"
+      ],
+      "error": {
+        "code": "missing_subcommand",
+        "index": 1
+      }
+    },
+    {
+      "id": "tree-leaf-multiple-positionals",
+      "declaration": "tree",
+      "argv": [
+        "install",
+        "--jobs=4",
+        "left-pad",
+        "is-odd"
+      ],
+      "ok": {
+        "program": "tool",
+        "command": "__main__.install",
+        "path": [
+          "__main__",
+          "__main__.install"
+        ],
+        "commands": {
+          "__main__": {
+            "flags": [],
+            "options": {},
+            "positionals": {}
+          },
+          "__main__.install": {
+            "flags": [],
+            "options": {
+              "jobs": "4"
+            },
+            "positionals": {
+              "package": [
+                "left-pad",
+                "is-odd"
+              ]
+            }
+          }
+        }
+      }
+    },
+    {
+      "id": "tree-option-scope",
+      "declaration": "tree",
+      "argv": [
+        "install",
+        "-v",
+        "left-pad"
+      ],
+      "error": {
+        "code": "unknown_option",
+        "index": 1
+      }
+    },
+    {
+      "id": "tree-word-not-key",
+      "declaration": "tree",
+      "argv": [
+        "__main__.install",
+        "x"
+      ],
+      "error": {
+        "code": "unknown_subcommand",
+        "index": 0
+      }
     }
   ],
   "invalid_declarations": [
     {
       "id": "version-not-supported",
-      "declaration": {"version": "kaira.command-declaration/v2", "program": "app", "command": {"tail": {"empty": {}}}},
-      "error": {"code": "unsupported_version"}
+      "declaration": {
+        "version": "kaira.command-declaration/v2",
+        "program": "app",
+        "commands": {
+          "__main__": {
+            "shape": "none"
+          }
+        }
+      },
+      "error": {
+        "code": "unsupported_version"
+      }
     },
     {
       "id": "repeated-short-alias",
       "declaration": {
         "version": "kaira.command-declaration/v1",
         "program": "app",
-        "command": {
-          "options": {"alpha": {"flag": {"short": "a"}}, "another": {"flag": {"short": "a"}}},
-          "tail": {"empty": {}}
+        "commands": {
+          "__main__": {
+            "shape": "none",
+            "flags": {
+              "alpha": {
+                "short": "a"
+              },
+              "another": {
+                "short": "a"
+              }
+            }
+          }
         }
       },
-      "error": {"code": "invalid_declaration"}
+      "error": {
+        "code": "invalid_declaration"
+      }
     },
     {
       "id": "empty-separator",
       "declaration": {
         "version": "kaira.command-declaration/v1",
         "program": "app",
-        "command": {
-          "options": {"list": {"separated": {"value": "string", "value_style": "spaced", "separator": ""}}},
-          "tail": {"empty": {}}
+        "commands": {
+          "__main__": {
+            "shape": "none",
+            "options": {
+              "list": {
+                "value": "string",
+                "style": "spaced",
+                "multiplicity": "multiple",
+                "separator": ""
+              }
+            }
+          }
         }
       },
-      "error": {"code": "invalid_declaration"}
+      "error": {
+        "code": "invalid_declaration"
+      }
     },
     {
       "id": "inverted-positional-bounds",
       "declaration": {
         "version": "kaira.command-declaration/v1",
         "program": "app",
-        "command": {
-          "tail": {"positionals": {"positionals": {"name": "x", "value": "string", "min": 2, "max": 1}}}
+        "commands": {
+          "__main__": {
+            "shape": "positionals",
+            "positionals": [
+              {
+                "x": {
+                  "alignment": "center",
+                  "multiplicity": "multiple",
+                  "value": "string",
+                  "cardinality": {
+                    "min": 2,
+                    "max": 1
+                  }
+                }
+              }
+            ]
+          }
         }
       },
-      "error": {"code": "invalid_declaration"}
+      "error": {
+        "code": "invalid_declaration"
+      }
     },
     {
       "id": "legacy-integer-is-not-a-type",
       "declaration": {
         "version": "kaira.command-declaration/v1",
         "program": "app",
-        "command": {"options": {"count": {"scalar": {"value": "integer", "value_style": "spaced"}}}, "tail": {"empty": {}}}
+        "commands": {
+          "__main__": {
+            "shape": "none",
+            "options": {
+              "count": {
+                "value": "integer",
+                "style": "spaced"
+              }
+            }
+          }
+        }
       },
-      "error": {"code": "invalid_declaration"}
+      "error": {
+        "code": "invalid_declaration"
+      }
     },
     {
       "id": "path-is-not-a-base-type",
       "declaration": {
         "version": "kaira.command-declaration/v1",
         "program": "app",
-        "command": {"options": {"file": {"scalar": {"value": "path", "value_style": "spaced"}}}, "tail": {"empty": {}}}
+        "commands": {
+          "__main__": {
+            "shape": "none",
+            "options": {
+              "file": {
+                "value": "path",
+                "style": "spaced"
+              }
+            }
+          }
+        }
       },
-      "error": {"code": "invalid_declaration"}
+      "error": {
+        "code": "invalid_declaration"
+      }
     },
     {
       "id": "unknown-field",
       "declaration": {
         "version": "kaira.command-declaration/v1",
         "program": "app",
-        "command": {"tail": {"empty": {"allow_explicit_empty": true}}}
+        "commands": {
+          "__main__": {
+            "shape": "none",
+            "allow_explicit_empty": true
+          }
+        }
       },
-      "error": {"code": "invalid_declaration"}
+      "error": {
+        "code": "invalid_declaration"
+      }
+    },
+    {
+      "id": "two-variable-slots",
+      "declaration": {
+        "version": "kaira.command-declaration/v1",
+        "program": "app",
+        "commands": {
+          "__main__": {
+            "shape": "positionals",
+            "positionals": [
+              {
+                "a": {
+                  "alignment": "center",
+                  "value": "string",
+                  "multiplicity": "multiple",
+                  "required": false
+                }
+              },
+              {
+                "b": {
+                  "alignment": "center",
+                  "value": "string",
+                  "multiplicity": "multiple",
+                  "required": false
+                }
+              }
+            ]
+          }
+        }
+      },
+      "error": {
+        "code": "invalid_declaration"
+      }
+    },
+    {
+      "id": "left-slot-variable",
+      "declaration": {
+        "version": "kaira.command-declaration/v1",
+        "program": "app",
+        "commands": {
+          "__main__": {
+            "shape": "positionals",
+            "positionals": [
+              {
+                "a": {
+                  "alignment": "left",
+                  "value": "string",
+                  "multiplicity": "multiple"
+                }
+              }
+            ]
+          }
+        }
+      },
+      "error": {
+        "code": "invalid_declaration"
+      }
+    },
+    {
+      "id": "single-slot-max-two",
+      "declaration": {
+        "version": "kaira.command-declaration/v1",
+        "program": "app",
+        "commands": {
+          "__main__": {
+            "shape": "positionals",
+            "positionals": [
+              {
+                "a": {
+                  "alignment": "left",
+                  "value": "string",
+                  "cardinality": {
+                    "max": 2
+                  }
+                }
+              }
+            ]
+          }
+        }
+      },
+      "error": {
+        "code": "invalid_declaration"
+      }
+    },
+    {
+      "id": "required-slot-min-zero",
+      "declaration": {
+        "version": "kaira.command-declaration/v1",
+        "program": "app",
+        "commands": {
+          "__main__": {
+            "shape": "positionals",
+            "positionals": [
+              {
+                "a": {
+                  "alignment": "left",
+                  "value": "string",
+                  "cardinality": {
+                    "min": 0,
+                    "max": 0
+                  }
+                }
+              }
+            ]
+          }
+        }
+      },
+      "error": {
+        "code": "invalid_declaration"
+      }
+    },
+    {
+      "id": "slot-without-alignment",
+      "declaration": {
+        "version": "kaira.command-declaration/v1",
+        "program": "app",
+        "commands": {
+          "__main__": {
+            "shape": "positionals",
+            "positionals": [
+              {
+                "a": {
+                  "value": "string"
+                }
+              }
+            ]
+          }
+        }
+      },
+      "error": {
+        "code": "invalid_declaration"
+      }
+    },
+    {
+      "id": "positionals-with-shape-none",
+      "declaration": {
+        "version": "kaira.command-declaration/v1",
+        "program": "app",
+        "commands": {
+          "__main__": {
+            "shape": "none",
+            "positionals": [
+              {
+                "a": {
+                  "alignment": "left",
+                  "value": "string"
+                }
+              }
+            ]
+          }
+        }
+      },
+      "error": {
+        "code": "invalid_declaration"
+      }
+    },
+    {
+      "id": "subcommands-shape-without-list",
+      "declaration": {
+        "version": "kaira.command-declaration/v1",
+        "program": "app",
+        "commands": {
+          "__main__": {
+            "shape": "subcommands"
+          }
+        }
+      },
+      "error": {
+        "code": "invalid_declaration"
+      }
+    },
+    {
+      "id": "missing-root",
+      "declaration": {
+        "version": "kaira.command-declaration/v1",
+        "program": "app",
+        "commands": {
+          "main": {
+            "shape": "none"
+          }
+        }
+      },
+      "error": {
+        "code": "invalid_declaration"
+      }
+    },
+    {
+      "id": "unknown-subcommand-key",
+      "declaration": {
+        "version": "kaira.command-declaration/v1",
+        "program": "app",
+        "commands": {
+          "__main__": {
+            "shape": "subcommands",
+            "subcommands": [
+              "__main__.build"
+            ]
+          }
+        }
+      },
+      "error": {
+        "code": "invalid_declaration"
+      }
+    },
+    {
+      "id": "orphan-command",
+      "declaration": {
+        "version": "kaira.command-declaration/v1",
+        "program": "app",
+        "commands": {
+          "__main__": {
+            "shape": "none"
+          },
+          "__main__.build": {
+            "shape": "none"
+          }
+        }
+      },
+      "error": {
+        "code": "invalid_declaration"
+      }
+    },
+    {
+      "id": "command-referenced-twice",
+      "declaration": {
+        "version": "kaira.command-declaration/v1",
+        "program": "app",
+        "commands": {
+          "__main__": {
+            "shape": "subcommands",
+            "subcommands": [
+              "__main__.a",
+              "__main__.b"
+            ]
+          },
+          "__main__.a": {
+            "shape": "subcommands",
+            "subcommands": [
+              "shared"
+            ]
+          },
+          "__main__.b": {
+            "shape": "subcommands",
+            "subcommands": [
+              "shared"
+            ]
+          },
+          "shared": {
+            "shape": "none"
+          }
+        }
+      },
+      "error": {
+        "code": "invalid_declaration"
+      }
+    },
+    {
+      "id": "duplicate-subcommand-word",
+      "declaration": {
+        "version": "kaira.command-declaration/v1",
+        "program": "app",
+        "commands": {
+          "__main__": {
+            "shape": "subcommands",
+            "subcommands": [
+              "x.build",
+              "y.build"
+            ]
+          },
+          "x.build": {
+            "shape": "none"
+          },
+          "y.build": {
+            "shape": "none"
+          }
+        }
+      },
+      "error": {
+        "code": "invalid_declaration"
+      }
+    },
+    {
+      "id": "flag-and-option-same-name",
+      "declaration": {
+        "version": "kaira.command-declaration/v1",
+        "program": "app",
+        "commands": {
+          "__main__": {
+            "shape": "none",
+            "flags": {
+              "n": {}
+            },
+            "options": {
+              "n": {
+                "value": "int",
+                "style": "spaced"
+              }
+            }
+          }
+        }
+      },
+      "error": {
+        "code": "invalid_declaration"
+      }
+    },
+    {
+      "id": "short-shared-by-flag-and-option",
+      "declaration": {
+        "version": "kaira.command-declaration/v1",
+        "program": "app",
+        "commands": {
+          "__main__": {
+            "shape": "none",
+            "flags": {
+              "verbose": {
+                "short": "v"
+              }
+            },
+            "options": {
+              "value": {
+                "short": "v",
+                "value": "int",
+                "style": "spaced"
+              }
+            }
+          }
+        }
+      },
+      "error": {
+        "code": "invalid_declaration"
+      }
+    },
+    {
+      "id": "separator-on-single-option",
+      "declaration": {
+        "version": "kaira.command-declaration/v1",
+        "program": "app",
+        "commands": {
+          "__main__": {
+            "shape": "none",
+            "options": {
+              "list": {
+                "value": "string",
+                "style": "spaced",
+                "separator": ";"
+              }
+            }
+          }
+        }
+      },
+      "error": {
+        "code": "invalid_declaration"
+      }
+    },
+    {
+      "id": "option-without-style",
+      "declaration": {
+        "version": "kaira.command-declaration/v1",
+        "program": "app",
+        "commands": {
+          "__main__": {
+            "shape": "none",
+            "options": {
+              "out": {
+                "value": "string"
+              }
+            }
+          }
+        }
+      },
+      "error": {
+        "code": "invalid_declaration"
+      }
     }
   ]
 }

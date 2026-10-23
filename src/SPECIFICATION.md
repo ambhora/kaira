@@ -38,35 +38,105 @@ on the original character stream. Native adapters MAY decode and strip their hos
 `argv[0]`. Kaira performs no trimming, case folding, Unicode normalization,
 environment expansion, or escape interpretation.
 
-The root KORML mapping has exactly `version`, `program`, and `command`.
+### 2.1 Document structure
+
+The root KORML mapping has exactly `version`, `program`, and `commands`.
 `version` is exactly `kaira.command-declaration/v1`. The `program` field
 labels the result; it is not matched against an executable filename.
+`commands` is a mapping from *command keys* to command declarations. The
+declaration is flat: every command, at any depth of the command tree, is an
+entry of `commands`, and the tree is expressed by reference.
 
 Identifiers match the entire ASCII pattern `[A-Za-z][A-Za-z0-9_-]*`.
-Mapping keys under `options` are long option names without dashes; under
-`commands` they are bare subcommand names. `short` aliases contain exactly
-one ASCII letter or digit, matching `[A-Za-z0-9]`. All matching is
-case-sensitive. Short aliases SHALL be unique within a command level but
-MAY be reused at a different level.
+A command key matches `[A-Za-z_][A-Za-z0-9_-]*(\.[A-Za-z][A-Za-z0-9_-]*)*`;
+its *word* is the text after the last `.`, or the whole key if it contains
+none. The key `__main__` SHALL be present and denotes the root command.
+`short` aliases contain exactly one ASCII letter or digit, matching
+`[A-Za-z0-9]`. All matching is case-sensitive. Unknown fields are invalid
+everywhere.
 
-Every command has exactly one `tail` variant: `empty`, `subcommands`,
-or `positionals`. Optional fields are `help` (a string with no parsing
-effect) and `options` (a mapping, defaulting to empty). Every option has
-exactly one variant: `flag`, `scalar`, `repeatable`, or `separated`.
-Unknown fields are invalid everywhere, including variant payloads.
+### 2.2 Commands
 
-Additional semantic constraints:
+Every command has a required `shape`, exactly one of:
 
-1. `subcommands.commands` SHALL contain at least one child. Optional
-   `required` is a boolean and defaults to `false`.
-2. A positional tail declares one named list. Its `min` defaults to zero
-   and `max` defaults to `unbounded`; finite bounds are nonnegative
-   integers, with `max >= min`.
-3. Every value-taking option has a `value` type (`int`, `float`, `string`,
-   or `boolean`) and `value_style`, exactly `spaced` or `attached`. Flags
-   have neither. The same four value types apply to positionals.
-4. Separated options additionally require a nonempty string `separator`.
-5. `allow_explicit_empty` from preliminary drafts is not part of v1.
+| `shape` | Bare words at this level are | Required field |
+| --- | --- | --- |
+| `none` | not accepted | — |
+| `subcommands` | the word of one listed child, which opens the next level | `subcommands` |
+| `positionals` | positional values assigned to the declared slots | `positionals` |
+
+Optional fields are `help` (a string with no parsing effect), `flags`, and
+`options`, both mappings defaulting to empty. `subcommands` SHALL be
+present iff `shape` is `subcommands` and `positionals` SHALL be present
+iff `shape` is `positionals`; each is a nonempty list.
+
+Tree constraints:
+
+1. `subcommands` lists command keys. Every listed key SHALL exist in
+   `commands`; `__main__` SHALL NOT be listed. The words of the keys listed
+   by one command SHALL be distinct.
+2. Every key other than `__main__` SHALL be listed by exactly one command.
+   Consequently the commands form a tree rooted at `__main__`.
+
+The dotted prefix of a key carries no meaning beyond readability; only the
+word is matched against `argv`, and only the listing establishes the tree.
+
+### 2.3 Flags and options
+
+`flags` maps a long name to a mapping with optional `short` and `help`.
+A flag takes no value and MAY occur at most once per level.
+
+`options` maps a long name to a mapping with required `value` (`int`,
+`float`, `string`, or `boolean`) and `style` (`spaced` or `attached`),
+and optional `short`, `help`, `multiplicity` (`single`, the default, or
+`multiple`), and `separator`. An option consumes exactly one value per
+occurrence. A `single` option MAY occur at most once. A `multiple` option
+without `separator` MAY occur any number of times, each occurrence
+contributing one value. A `multiple` option with a nonempty string
+`separator` MAY occur at most once and its one value is split (section 4).
+`separator` is invalid without `multiplicity: multiple`.
+
+Within one command, long names SHALL be distinct across `flags` and
+`options` together, and so SHALL short aliases. Names and aliases MAY be
+reused at a different level.
+
+### 2.4 Positional slots
+
+`positionals` is a list of single-key mappings; each key is the slot name
+(distinct within the command) and each value declares the slot:
+
+| Field | Values | Default |
+| --- | --- | --- |
+| `alignment` | `left`, `center`, `right` | required |
+| `value` | a value type (section 5) | required |
+| `multiplicity` | `single`, `multiple` | `single` |
+| `required` | boolean | `true` |
+| `cardinality.min` | integer ≥ 0 | `1` if `required`, else `0` |
+| `cardinality.max` | integer, or `unbounded` | `1` if `single`, else `unbounded` |
+
+Let `min` and `max` be the effective bounds after defaults. The following
+SHALL hold:
+
+1. `max >= min`; `multiplicity: single` implies `max = 1`;
+   `required: true` implies `min >= 1`; `required: false` implies
+   `min = 0`.
+2. A `left` or `right` slot has a fixed count: `min = max`.
+3. At most one slot has `alignment: center`. Only that slot MAY have
+   `min != max` or `max: unbounded`.
+4. The *effective order* of slots is: all `left` slots in list order, then
+   the `center` slot if any, then all `right` slots in list order.
+
+Rules 2 and 3 make the assignment of positional words to slots unique for
+every word count (section 3).
+
+### 2.5 Additional constraints
+
+1. Value type names are exactly the four of section 5.
+2. The KORML reader SHALL reject duplicate mapping keys; such documents are
+   `invalid_declaration`.
+3. `allow_explicit_empty`, `tail`, `value_style`, and the option kinds
+   `flag`/`scalar`/`repeatable`/`separated` of preliminary drafts are not
+   part of v1 and are unknown fields.
 
 ## 3. Grammar and parsing procedure
 
@@ -80,8 +150,8 @@ spellings.
 | Kind and style | Accepted | Rejected |
 | --- | --- | --- |
 | Flag | `--verbose`, `-v` | `--verbose=true`, `-v=true` |
-| Spaced value | `--output file`, `-o file` | `--output=file`, `-o=file` |
-| Attached value | `--output=file`, `-o=file` | `--output file`, `-o file` |
+| Spaced option | `--output file`, `-o file` | `--output=file`, `-o=file` |
+| Attached option | `--output=file`, `-o=file` | `--output file`, `-o file` |
 
 A spaced option consumes the immediately following token, **even if it
 resembles an option**, except that the exact token `--` is reserved and
@@ -93,61 +163,69 @@ The following is an **informative sketch** of the declaration-parameterized
 grammar; the complete normative EBNF appears at the end of this document:
 
 ```text
-empty level:        option*
-subcommands level:  option* [subcommand child-level]
+none level:         option*
+subcommands level:  option* subcommand child-level
 positionals level:  (option | positional)* [-- positional*]
 ```
 
-The square-bracketed subcommand is optional only if `required: false`.
 The delimiter `--` is an exact word, not a declared option. After it,
 every remaining token is positional data. Options and positional arguments
-MAY interleave freely in a positional level:
+MAY interleave freely in a positionals level:
 
 ```text
 app target1 --verbose target2 --include dir target3
 ```
 
-For each command level, initialize a fresh options map and scan tokens
-left to right:
+For each command level, initialize an empty flag list, an empty options
+map, and an empty positional word list, then scan tokens left to right:
 
-1. If an exact `--` token occurs, accept it only for a `positionals`
-   tail. Consume it, disable option recognition, and interpret all following
-   tokens as positional values. Otherwise report `unexpected_delimiter`.
-2. If a token begins with `-`, require a declared long or short option
-   spelling. Check its form and occurrence limit, consume its value where
-   applicable, and validate it. A forbidden attached/spaced form is
+1. If an exact `--` token occurs, accept it only for shape `positionals`.
+   Consume it, disable option recognition, and treat all following tokens
+   as positional words. Otherwise report `unexpected_delimiter`.
+2. If a token begins with `-`, require a declared long or short spelling
+   of a flag or option of this level. Check its form and occurrence limit,
+   consume and validate its value where applicable (option values are
+   validated as they are consumed). A forbidden attached/spaced form is
    `invalid_option_form`; an undeclared dash-leading token is
-   `unknown_option`. All option recognition at this level uses only the
+   `unknown_option`. All recognition at this level uses only the
    level's own declarations.
-3. For a bare token, act according to the tail:
-   - `empty`: report `unexpected_argument`.
-   - `subcommands`: require an exact child name, consume it, then
-     **immediately** descend into that child's command level. No parent
+3. For a bare token, act according to the shape:
+   - `none`: report `unexpected_argument`.
+   - `subcommands`: require the word of a listed child, consume it, then
+     **immediately** descend into that child's level. No parent flags or
      options are recognized beyond that boundary.
-   - `positionals`: append the token as a positional value and continue
-     scanning this level; subsequent options remain recognizable.
-4. For each positional value, enforce the finite `max` bound first and
-   then validate the value type. At end of input, enforce `min`; for a
-   subcommands tail, enforce `required`.
+   - `positionals`: append the token to the positional word list and
+     continue scanning this level; subsequent options remain recognizable.
+     If the sum of all slot `max` values is finite and the list now
+     exceeds it, report `too_many_positionals` at this token.
+4. At end of input: for shape `subcommands`, report `missing_subcommand`
+   if no child was selected. For shape `positionals`, assign the positional
+   words to slots in effective order: every slot with a fixed count takes
+   exactly `min` words; the `center` slot, if present, takes the remaining
+   words, whose number SHALL lie within its `[min, max]`, otherwise report
+   `too_few_positionals` (index `argv.length`). Then validate each word
+   against its slot's value type in word order; the first failure is
+   `invalid_value` at that word's index.
 
-After `--`, step 2 is disabled and every token follows step 4, even if it
-looks like an option or another delimiter. A dash-leading positional
-therefore requires a preceding `--`, which may appear **after earlier
-positional arguments**. Parent and child option scopes never overlap.
-A level cannot both select subcommands and accept positional values.
+After `--`, step 2 is disabled and every token follows step 3 for a
+positionals level, even if it looks like an option or another delimiter.
+A dash-leading positional therefore requires a preceding `--`, which may
+appear **after earlier positional arguments**. Parent and child scopes
+never overlap. A level cannot both select subcommands and accept positional
+values.
 
 ## 4. Occurrences, splitting, and counts
 
-`flag`, `scalar`, and `separated` MAY occur at most once per level,
-across long and short spellings combined. Duplicate use is
-`duplicate_option`. A `repeatable` option may occur any number of times.
-No option is implicitly required; absent options have no default value.
+A flag and a `single` option MAY occur at most once per level, across long
+and short spellings combined. Duplicate use is `duplicate_option`. A
+`multiple` option without `separator` MAY occur any number of times. No
+flag or option is implicitly required; absent ones have no default value.
 
-`separated` consumes one value and splits it from left to right at each
-literal, nonoverlapping occurrence of its separator. Empty pieces are
-preserved: with `;`, `";a;;"` yields `["", "a", "", ""]`, and
-`""` yields `[""]`. Each piece undergoes value validation in order.
-The separated option itself cannot recur.
+A `multiple` option with `separator` consumes one value and splits it from
+left to right at each literal, nonoverlapping occurrence of its separator.
+Empty pieces are preserved: with `;`, `";a;;"` yields `["", "a", "", ""]`,
+and `""` yields `[""]`. Each piece undergoes value validation in order.
+Such an option itself cannot recur.
 
 ## 5. Portable base types and value validation
 
@@ -182,47 +260,55 @@ result. A binding CAN use arbitrary-precision numeric libraries or retain
 the decimal text. The parser does not perform arithmetic.
 
 A `boolean` value is represented as a Boolean, not as its original text.
-A `string` value is preserved unchanged. A flag is not a value-taking
-option: its presence yields Boolean `true` and its absence is represented
-by omission, not by `false`.
+A `string` value is preserved unchanged. A flag carries no value: its
+presence is recorded by name and its absence by omission.
 
 Types such as filesystem paths, assignments, dates, commands, or enums
 belong to layers **above** this core. Such a layer CAN declare a `string`
 value and impose additional validation or interpretation after successful
 Kaira parsing. Kaira v1 itself SHALL NOT silently apply those checks or
 accept extra primitive type names. The KORML schema's own `integer` and
-`boolean` scalars used for *declaration metadata* (such as `min`, `max`,
-or `required`) are separate from Kaira's `value` type names.
+`boolean` scalars used for *declaration metadata* (such as `cardinality`
+bounds or `required`) are separate from Kaira's `value` type names.
 
 ## 6. Portable successful result
 
-The result is a JSON-compatible object with exactly these three fields:
+The result is a JSON-compatible object with exactly these four fields:
 
 ```json
 {
   "program": "example",
-  "command_path": ["build"],
-  "levels": [
-    {"options": {"verbose": true}, "positionals": null},
-    {"options": {"output": "a.log", "include": ["src", "inc"]},
-     "positionals": {"target": ["app"]}}
-  ]
+  "command": "__main__.build",
+  "path": ["__main__", "__main__.build"],
+  "commands": {
+    "__main__": {"flags": ["verbose"], "options": {}, "positionals": {}},
+    "__main__.build": {
+      "flags": [],
+      "options": {"output": "a.log", "include": ["src", "inc"]},
+      "positionals": {"target": ["app"], "out": "dist"}
+    }
+  }
 }
 ```
 
 - `program` is copied from the declaration.
-- `command_path` lists child names traversed after the root.
-- `levels` has one entry for root plus one per selected child, in order.
-- Each level has exactly `options` and `positionals`.
-- `options` maps canonical **long names** of present options to values.
-  Unseen options are omitted. Flags yield Boolean `true`. A present
-  `boolean` scalar yields Boolean `true` or `false`; a `string`, `int`,
-  or `float` scalar yields a string. Repeatable and separated options yield
-  arrays of the corresponding value representations.
-- `positionals` is `null` for empty and subcommands tails. For a
-  positionals tail it maps the declared name to an array of the
-  corresponding value representations, including an empty array if no
-  values were supplied.
+- `command` is the key of the last selected level; `path` lists the keys
+  of all selected levels from `__main__` to `command`, in order.
+- `commands` maps each key in `path` to that level's record and contains
+  no other keys. Each record has exactly `flags`, `options`, and
+  `positionals`.
+- `flags` is an array of the long names of the flags present, in first
+  occurrence order. Absent flags are omitted.
+- `options` maps the canonical **long names** of present options to values.
+  Unseen options are omitted. A `single` option yields one value
+  representation; a `multiple` option yields an array of them in occurrence
+  (or piece) order.
+- `positionals` maps slot names to values for the slots that received at
+  least one word; slots with zero words are omitted. A `single` slot yields
+  one value representation; a `multiple` slot yields an array in word
+  order. For shapes `none` and `subcommands`, `positionals` is `{}`.
+- A `boolean` value is a JSON Boolean; a `string`, `int`, or `float` value
+  is a string.
 
 JSON object key order is immaterial; all array order is significant.
 The only native JSON numbers in this representation are structural
@@ -244,22 +330,23 @@ End-of-input errors use `index = argv.length`.
 | Code | Reported at (`index`) |
 | --- | --- |
 | `unknown_option` | Unrecognized dash-leading token. |
-| `invalid_option_form` | Declared option token with invalid value style. |
+| `invalid_option_form` | Declared flag or option token with invalid value style. |
 | `missing_value` | Spaced option token without usable next token. |
-| `duplicate_option` | Second nonrepeatable option token. |
-| `invalid_value` | Value token, or attached-option token. |
-| `unexpected_argument` | First bare token on an empty tail. |
-| `unknown_subcommand` | Unknown bare subcommand token. |
-| `missing_subcommand` | End index for required subcommand. |
-| `unexpected_delimiter` | `--` token on non-positional tail. |
+| `duplicate_option` | Second token of a flag or `single` option. |
+| `invalid_value` | Value token, attached-option token, or positional token. |
+| `unexpected_argument` | First bare token on shape `none`. |
+| `unknown_subcommand` | Bare token that is not a listed child's word. |
+| `missing_subcommand` | End index for shape `subcommands`. |
+| `unexpected_delimiter` | `--` token on shape `none` or `subcommands`. |
 | `too_few_positionals` | End index. |
-| `too_many_positionals` | Index of first extra positional token. |
+| `too_many_positionals` | Index of the first positional token beyond the finite total maximum. |
 
-When several errors are present, report the first encountered by the
-left-to-right procedure in section 3. Positional `max` is checked as each
-positional is consumed; `min` is checked only at end of input.
-Duplicate option detection precedes validation of that option's second
-value. Diagnostic messages are not portable.
+Errors are reported in this order: first, errors detected during the
+left-to-right scan of section 3 (steps 1–3), at the first token that fails;
+then `missing_subcommand` or `too_few_positionals` at end of input; then
+`invalid_value` for positional words, in word order. Option values are
+validated during the scan. Duplicate option detection precedes validation
+of that option's second value. Diagnostic messages are not portable.
 
 ## 8. Versioning and non-goals
 
@@ -273,8 +360,8 @@ The command language is intentionally narrow: it is not an attempt to
 implement GNU-style or other general-purpose CLI conventions. The Kaira
 model does not include shell tokenization, global/inherited options,
 environment expansion, response files, option defaults and groups, implicit
-`--help`, short-option clustering, prefix matching, Unicode
-normalization, filesystem validation, or application execution.
+`--help`, short-option clustering, prefix matching, optional subcommands,
+Unicode normalization, filesystem validation, or application execution.
 
 ## 9. Conformance
 
@@ -310,10 +397,10 @@ level starts immediately after its exact subcommand word.
 
 ```ebnf
 invocation           = root-level ;
-root-level           = empty-level | positional-level | subcommand-level ;
-child-level          = empty-level | positional-level | subcommand-level ;
+root-level           = none-level | positional-level | subcommand-level ;
+child-level          = none-level | positional-level | subcommand-level ;
 
-empty-level          = { option } ;
+none-level          = { option } ;
 positional-level     = { option | positional-word }, [ end-of-options,
                          { raw-positional-word } ] ;
 subcommand-level     = { option }, [ declared-subcommand, child-level ] ;
@@ -328,12 +415,13 @@ end-of-options       = "--" ;
 (* Atomic word classes are defined by the following constraints. *)
 declared-subcommand  = ? one exact declared child name word ? ;
 declared-flag-spelling = ? exact declared --long or -short flag word ? ;
-declared-spaced-spelling = ? exact declared --long or -short spaced option word ? ;
-declared-attached-spelling = ? exact declared --long or -short attached option prefix ? ;
+declared-spaced-spelling = ? exact declared --long or -short spaced-style option word ? ;
+declared-attached-spelling = ? exact declared --long or -short attached-style option prefix ? ;
 value-word           = ? one word other than --, matching the declared type ? ;
-positional-word      = ? bare word not beginning with -, matching the declared type ? ;
+positional-word      = ? bare word not beginning with -, matching the type of
+                         the slot it is assigned to (section 3) ? ;
 raw-positional-word  = ? any word, including -- or a dash-leading word,
-                         matching the declared positional type ? ;
+                         matching the type of the slot it is assigned to ? ;
 attached-value       = ? suffix of the SAME word after the FIRST =,
                          matching the declared type; possibly empty for string ? ;
 
@@ -366,10 +454,11 @@ declaration. These productions are character-level checks *within* a
 single word; they do not change word boundaries or allow splitting one
 word into multiple arguments. Numeric literal length is unbounded.
 
-The optional subcommand branch is permitted to be absent only when the
-declaration says `required: false`; otherwise the branch SHALL occur.
-Positional counts, validation, option occurrence restrictions, and
-error-code selection are semantic checks defined above. `--` is reserved
+The subcommand branch of `subcommand-level` is syntactically optional so
+that the end-of-input condition can be expressed; semantically it SHALL
+occur, and its absence is `missing_subcommand` (section 7).
+Positional counts, slot assignment, validation, option occurrence
+restrictions, and error-code selection are semantic checks defined above. `--` is reserved
 at every level and is accepted only in the `positional-level` delimiter
 production; it terminates option recognition for that level. No production
 admits abbreviated options, implicit short spellings, concatenated short

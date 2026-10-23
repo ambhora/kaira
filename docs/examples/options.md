@@ -1,124 +1,69 @@
 ---
 title: Options
-description: All four Kaira option kinds — flag, scalar, repeatable, and separated — in one build command, with mixed value styles.
+description: A flag and the three option multiplicities - single, multiple, and multiple with separator - in one command, with mixed value styles.
 ---
 
 # Options
 
-This example shows all four option kinds: `flag`, `scalar`, `repeatable`,
-and `separated`. It also shows that value-taking options choose exactly one
-value style: `output` uses the attached style, while `include` and
-`features` use the spaced style. For a page devoted to the attached style,
-see [Attached values](attached-values.md).
-
-## Declaration
+One flag and three options, one per multiplicity. The options deliberately
+mix value styles: `output` is `attached`, `include` and `features` are
+`spaced`. [Attached values](attached-values.md) shows the attached style
+throughout.
 
 ```yaml title="kaira.korml"
 version: kaira.command-declaration/v1
 program: kaira
-
-command:
-  help: Build command.
-
-  options:
-    verbose:
-      flag:
-        short: v
-        help: Print more information.
-
-    output:
-      scalar:
-        short: o
-        value: string
-        value_style: attached # (1)!
-        help: Output file.
-
-    include:
-      repeatable:
-        value: string
-        value_style: spaced # (2)!
-        help: Include path.
-
-    features:
-      separated:
-        value: string
-        value_style: spaced
-        separator: ";" # (3)!
-        help: Semicolon-separated feature list.
-
-  tail:
+commands:
+  __main__:
+    shape: positionals
+    flags:
+      verbose: {short: v}
+    options:
+      output:   {short: o, value: string, style: attached}                              # (1)!
+      include:  {value: string, style: spaced, multiplicity: multiple}                  # (2)!
+      features: {value: string, style: spaced, multiplicity: multiple, separator: ";"}  # (3)!
     positionals:
-      positionals:
-        name: target
-        value: string
-        min: 0
-        max: unbounded
+      - target: {alignment: center, value: string, multiplicity: multiple, required: false}
 ```
 
 1.  `--output=FILE` and `-o=FILE` are accepted; `--output FILE` is not.
-2.  `--include DIR` is accepted; `--include=DIR` is not.
+2.  `--include DIR` may be repeated; `--include=DIR` is not accepted.
 3.  One occurrence, split on `;`. The shell must deliver the semicolons
     inside a single word, so quote the value.
 
-## Verdicts
+| Command line | Outcome |
+| --- | --- |
+| `kaira --verbose --output=build.log target` | accepted |
+| `kaira -v -o=build.log target` | accepted — same as the previous line |
+| `kaira --include src --include include target` | accepted — `"include": ["src", "include"]` |
+| `kaira --features "mpi;cuda;openmp" target` | accepted — `"features": ["mpi", "cuda", "openmp"]` |
+| `kaira target1 --verbose target2 --include src` | accepted — `"positionals": {"target": ["target1", "target2"]}`; flags and options may follow positional words |
+| `kaira --verbose=true` | `invalid_option_form` at 0 — a flag never takes a value |
+| `kaira --output build.log target` | `invalid_option_form` at 0 — `output` is `attached` |
+| `kaira --output=a.log --output=b.log` | `duplicate_option` at 1 — a `single` option occurs at most once |
+| `kaira --include=src target` | `invalid_option_form` at 0 — `include` is `spaced` |
+| `kaira --features=mpi;cuda target` | `invalid_option_form` at 0 — `features` is `spaced` |
+| `kaira --features mpi --features cuda` | `duplicate_option` at 2 — a separator option occurs at most once |
+| `kaira -vo` | `unknown_option` at 0 — no short-option clustering |
+| `kaira target --unknown-option` | `unknown_option` at 1 — undeclared dash-leading words are errors anywhere in the level; put `--` before such a word to pass it through |
 
-=== ":material-check-circle: Accepted"
+For `kaira --verbose --output=build.log --include src --include include --features "mpi;cuda" target`:
 
-    ```console
-    $ kaira --verbose --output=build.log target
-    $ kaira -v -o=build.log target
-    $ kaira --include src --include include target
-    $ kaira --features "mpi;cuda;openmp" target
-    $ kaira target1 --verbose target2 --include src
-    ```
-
-    In the last line the positional values are `target1` and `target2`;
-    `verbose` and `include` are recognized even though they follow a
-    positional.
-
-=== ":material-close-circle: Rejected"
-
-    | Command line | Error | Why |
-    | --- | --- | --- |
-    | `kaira --verbose=true` | `invalid_option_form` at 0 | A flag never takes a value. |
-    | `kaira --output build.log target` | `invalid_option_form` at 0 | `output` is `attached`; the spaced form is refused. |
-    | `kaira --output=a.log --output=b.log` | `duplicate_option` at 1 | A scalar may appear at most once. |
-    | `kaira --include=src target` | `invalid_option_form` at 0 | `include` is `spaced`; the attached form is refused. |
-    | `kaira --features=mpi;cuda target` | `invalid_option_form` at 0 | `features` is `spaced`; the attached form is refused. |
-    | `kaira --features mpi --features cuda` | `duplicate_option` at 2 | A separated option may appear at most once. |
-    | `kaira -vo` | `unknown_option` at 0 | There is no short-option clustering. |
-    | `kaira target --unknown-option` | `unknown_option` at 1 | Undeclared dash-leading words are errors anywhere in the level. |
-
-=== ":material-code-json: Portable result"
-
-    For
-
-    ```console
-    $ kaira --verbose --output=build.log --include src --include include --features "mpi;cuda" target
-    ```
-
-    a conformant parser produces:
-
-    ```json
-    {
-      "program": "kaira",
-      "command_path": [],
-      "levels": [
-        {
-          "options": {
-            "verbose": true,
-            "output": "build.log",
-            "include": ["src", "include"],
-            "features": ["mpi", "cuda"]
-          },
-          "positionals": {"target": ["target"]}
-        }
-      ]
+```json
+{
+  "program": "kaira",
+  "command": "__main__",
+  "path": ["__main__"],
+  "commands": {
+    "__main__": {
+      "flags": ["verbose"],
+      "options": {
+        "output": "build.log",
+        "include": ["src", "include"],
+        "features": ["mpi", "cuda"]
+      },
+      "positionals": {"target": ["target"]}
     }
-    ```
-
-!!! tip "Passing a dash-leading word as a positional"
-
-    `kaira target --unknown-option` fails because `--unknown-option` is read
-    as an option. Put `--` before it to pass it through literally:
-    `kaira target -- --unknown-option`. See [Raw positionals](raw-positionals.md).
+  }
+}
+```

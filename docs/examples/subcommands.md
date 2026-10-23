@@ -1,113 +1,65 @@
 ---
 title: Subcommands
-description: A root command with two subcommands, showing required and optional command stops and per-level option scopes.
+description: A root command with two subcommands, showing per-level flag scopes and a reused short alias.
 ---
 
 # Subcommands
 
-This example declares a root command with two subcommands, `build` and
-`test`. The root and `build` both declare a `verbose` flag with the same
-short alias — legal, because aliases are scoped per level.
+The root lists two children. `__main__` and `__main__.build` both declare
+a `verbose` flag with the same short alias — legal, because names and
+aliases are scoped per command.
 
 ```mermaid
 flowchart TD
-    R["kaira<br/><small>-v / --verbose</small>"] --> B["build<br/><small>-v / --verbose</small>"]
-    R --> T["test"]
-    classDef lvl fill:#eef4fb,stroke:#6f93c0,color:#1f3a5f;
+    R["__main__<br/><small>-v / --verbose</small>"] --> B["__main__.build<br/><small>-v / --verbose</small>"]
+    R --> T["__main__.test"]
+    classDef lvl fill:#eef2f9,stroke:#7f9ac4,color:#243b6b;
     class R,B,T lvl;
 ```
-
-## Declaration
 
 ```yaml title="kaira.korml"
 version: kaira.command-declaration/v1
 program: kaira
-
-command:
-  help: Root command.
-  options:
-    verbose:
-      flag:
-        short: v
-  tail:
-    subcommands:
-      required: true # (1)!
-      commands:
-        build:
-          help: Build the project.
-          options:
-            verbose: # (2)!
-              flag:
-                short: v
-          tail:
-            empty: {}
-
-        test:
-          help: Run tests.
-          tail:
-            empty: {}
+commands:
+  __main__:
+    shape: subcommands
+    flags:
+      verbose: {short: v}
+    subcommands: [__main__.build, __main__.test]   # (1)!
+  __main__.build:
+    shape: none
+    flags:
+      verbose: {short: v}                           # (2)!
+  __main__.test:
+    shape: none
 ```
 
-1.  With `required: true`, the command line must select a child.
-2.  A child may declare the same long name and short alias as its parent.
-    Each level has its own option scope.
+1.  The user types the last segment of the key: `build`, `test`. A
+    `subcommands` command always requires one of them.
+2.  A child may declare the same name and alias as its parent; each level
+    has its own scope.
 
-## Verdicts
+| Command line | Outcome |
+| --- | --- |
+| `kaira build`, `kaira test` | accepted |
+| `kaira -v build -v` | accepted — see below |
+| `kaira` | `missing_subcommand` at 0 — the index is `argv.length`. |
+| `kaira clean` | `unknown_subcommand` at 0 — `clean` is not a listed child's word. |
+| `kaira build target` | `unexpected_argument` at 1 — `build` has `shape: none`. |
+| `kaira test -v` | `unknown_option` at 1 — `test` declares no flags; the root's `-v` is out of scope. |
+| `kaira build -v -v` | `duplicate_option` at 2 — a flag may appear at most once per level. |
+| `kaira -- build` | `unexpected_delimiter` at 0 — `--` never selects a subcommand. |
 
-=== ":material-check-circle: Accepted"
+For `kaira -v build -v`, each level records its own `verbose`:
 
-    ```console
-    $ kaira build
-    $ kaira test
-    $ kaira -v build -v
-    ```
-
-    The last line produces one level per command, each with its own
-    `verbose`:
-
-    ```json
-    {
-      "program": "kaira",
-      "command_path": ["build"],
-      "levels": [
-        {"options": {"verbose": true}, "positionals": null},
-        {"options": {"verbose": true}, "positionals": null}
-      ]
-    }
-    ```
-
-=== ":material-close-circle: Rejected"
-
-    | Command line | Error | Why |
-    | --- | --- | --- |
-    | `kaira` | `missing_subcommand` at 0 | The tail is `required: true`; the index is `argv.length`. |
-    | `kaira clean` | `unknown_subcommand` at 0 | `clean` is not a declared child. |
-    | `kaira build target` | `unexpected_argument` at 1 | `build` has an `empty` tail. |
-    | `kaira test -v` | `unknown_option` at 1 | `test` declares no options; the root's `-v` is out of scope. |
-    | `kaira build -v -v` | `duplicate_option` at 2 | A flag may appear at most once per level. |
-    | `kaira -- build` | `unexpected_delimiter` at 0 | `--` never selects a subcommand. |
-
-## Optional command stop
-
-Set `required: false` (the default) to allow the command line to stop at
-the parent.
-
-```yaml
-tail:
-  subcommands:
-    required: false
-    commands:
-      build:
-        tail:
-          empty: {}
+```json
+{
+  "program": "kaira",
+  "command": "__main__.build",
+  "path": ["__main__", "__main__.build"],
+  "commands": {
+    "__main__":       {"flags": ["verbose"], "options": {}, "positionals": {}},
+    "__main__.build": {"flags": ["verbose"], "options": {}, "positionals": {}}
+  }
+}
 ```
-
-Both of these are now valid:
-
-```console
-$ kaira
-$ kaira build
-```
-
-The first yields a single root level with `"command_path": []`; the second
-yields two levels and `"command_path": ["build"]`.

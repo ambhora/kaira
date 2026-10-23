@@ -1,6 +1,6 @@
 <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 1497 432.0" font-family="Inter, Roboto, Helvetica, Arial, sans-serif" font-size="14" role="img" aria-labelledby="t d">
   <title id="t">Kaira parsing procedure</title>
-  <desc id="d">The declaration is validated. Then, for each word of argv at the current command level: the delimiter switches to raw positionals; a dash-leading word must be a declared option and consumes a value according to its style; a bare word is dispatched by the level's tail mode to a subcommand (opening a new level), a positional value, or an error. At end of input, minimum positional counts and required subcommands are checked and the portable result or an error code with index is produced.</desc>
+  <desc id="d">The declaration is validated. Then, for each word of argv at the current command level: the delimiter switches to raw positionals; a dash-leading word must be a declared option and consumes a value according to its style; a bare word is dispatched by the level's shape to a subcommand (opening a new level), a positional value, or an error. At end of input, minimum positional counts and required subcommands are checked and the portable result or an error code with index is produced.</desc>
   <defs><marker id="a" viewBox="0 0 10 10" refX="9" refY="5" markerWidth="7" markerHeight="7" orient="auto"><path d="M0 0 L10 5 L0 10 z" fill="#5b6b7f"/></marker></defs>
   <style>
     .box { fill: #ffffff; stroke: #5b6b7f; stroke-width: 1.2; }
@@ -38,7 +38,7 @@
 <text class="t" x="914" y="45" text-anchor="middle">raw mode: remaining words</text>
 <text class="t" x="914" y="63" text-anchor="middle">are positional values</text>
 <path class="ln" d="M640 143.0 V45 H800"/>
-<text class="lbl" x="648" y="39.0" text-anchor="start">"--"  (positionals tail only)</text>
+<text class="lbl" x="648" y="39.0" text-anchor="start">"--"  (shape: positionals only)</text>
 <polygon class="box dec" points="795,145.0 860,115.0 925,145.0 860,175.0"/>
 <text class="t" x="860" y="143.0" text-anchor="middle">declared</text>
 <text class="t" x="860" y="159.0" text-anchor="middle">option?</text>
@@ -54,7 +54,7 @@
 <path class="ln" d="M860 175.0 V185 H960"/>
 <text class="lbl" x="868" y="199.0" text-anchor="start">no</text>
 <polygon class="box dec" points="800,280.0 860,255.0 920,280.0 860,305.0"/>
-<text class="t" x="860" y="285.0" text-anchor="middle">tail mode</text>
+<text class="t" x="860" y="285.0" text-anchor="middle">shape</text>
 <path class="ln" d="M680 195.0 H770 V280.0 H800"/>
 <text class="lbl" x="688" y="211.0" text-anchor="start">bare word</text>
 <rect class="box " x="1020" y="220.0" width="204" height="32" rx="6"/>
@@ -77,7 +77,7 @@
 <text class="lbl" x="1266" y="49.0" text-anchor="start">loop</text>
 <rect class="box " x="1130" y="360.0" width="188" height="50" rx="6"/>
 <text class="t" x="1224" y="385" text-anchor="middle">end of input:</text>
-<text class="t" x="1224" y="403" text-anchor="middle">check min / required</text>
+<text class="t" x="1224" y="403" text-anchor="middle">check counts, assign slots</text>
 <path class="ln" d="M485 200 V385 H1130" stroke-dasharray="5 4"/>
 <text class="lbl" x="491.0" y="240" text-anchor="start">no more words</text>
 <rect class="box ok" x="1340" y="346.0" width="147" height="32" rx="6"/>

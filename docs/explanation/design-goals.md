@@ -23,6 +23,7 @@ of other declared names, or on host-language behavior.
 | Implicit short aliases | Two options with the same initial letter would collide silently. |
 | Accepting both `--name value` and `--name=value` for one option | A value beginning with `-` is interpreted differently in each form. |
 | Implicit `--help` or `--version` | Application behavior, not grammar. |
+| Optional subcommands (stopping at a parent) | Makes the leaf command depend on the word count; a parent that can run on its own is declared with `shape: none` or `positionals` instead. |
 | Host-language numeric parsing | Overflow, rounding, and range differ between languages. |
 
 ## 2. Lexical treatment of numbers
@@ -38,7 +39,7 @@ cannot alter acceptance or the portable representation.
 A subcommand opens a new command level with its own option scope. Option
 declarations are not inherited, and no option is global. This keeps each
 command declaration self-contained and gives the result a fixed shape: one
-entry in `levels` per selected command, in order.
+record in `commands` per selected command, keyed by the command's name.
 
 ## 4. Structured errors
 
@@ -64,7 +65,7 @@ $ app --output=report.txt --include src --include tests -- --literal
 
 - `--output=report.txt` is accepted because `output` is declared
   `attached`; `--output report.txt` would be `invalid_option_form`.
-- `--include` is declared `spaced` and `repeatable` and may therefore recur.
+- `--include` is declared `spaced` with `multiplicity: multiple` and may therefore recur.
 - `--` ends option recognition; `--literal` is a positional value.
 
 Each acceptance decision is determined by a field of the declaration.

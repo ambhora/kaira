@@ -1,45 +1,52 @@
 ---
 title: Command-line grammar
-description: How Kaira parses a command line as a sequence of command levels, with option scopes, tail modes, value styles, and the -- delimiter.
+description: How Kaira parses a command line as a sequence of command levels, with per-level scopes, shapes, value styles, positional slots, and the -- delimiter.
 ---
 
 # Command-line grammar
 
-Kaira separates two concerns:
-
-1.  A **command declaration language** (KORML) that describes the command
-    tree.
-2.  A **fixed `argv` interpreter** that reads command-line words using that
-    declaration.
-
-The interpreter is generic. It does not know what a particular command does;
-it only knows what the declaration permits.
+Kaira separates two concerns: a **command declaration language** (KORML)
+that lists a program's commands, and a **fixed `argv` interpreter** that
+reads command-line words using that declaration. The interpreter is
+generic; it knows only what the declaration permits.
 
 ## Command levels
 
 A Kaira command line is parsed as a sequence of *command levels*. The root
-command is the first level; every selected subcommand opens the next.
+command `__main__` is the first level; every selected subcommand opens the
+next.
 
 ```text
-program [root-options] subcommand [child-options and positionals, interleaved]
+program [root flags/options] subcommand [child flags/options and positionals, interleaved]
 ```
 
-Each level has zero or more declared options and **exactly one** tail mode.
+Each level is one entry of `commands` and has zero or more flags and
+options and exactly one `shape`:
 
-| Tail mode | Meaning |
+| `shape` | Meaning |
 | --- | --- |
-| `empty` | The command accepts no bare words at all. |
-| `subcommands` | The first bare word must name a declared child command. |
-| `positionals` | Bare words are positional values; options may be interleaved freely. |
+| `none` | The command accepts no bare words at all. |
+| `subcommands` | The first bare word must be the word of a listed child command. |
+| `positionals` | Bare words are positional values; flags and options may be interleaved freely. |
 
-A level cannot declare both subcommands and positionals. That restriction
-is what makes the grammar unambiguous: a bare word is *always* either a
-subcommand name or a positional value, never "whichever fits".
+A level cannot both select subcommands and accept positional values. That
+restriction is what makes the grammar unambiguous: a bare word is *always*
+either a subcommand word or a positional value, never "whichever fits".
 
-## Option and command scopes
+## Scopes
 
-Options belong to the level where they appear. Consider a program `kaira`
-with a `project` subcommand that itself has a `build` subcommand:
+Flags and options belong to the level where they are declared. Consider a
+program `kaira` with a `project` subcommand that itself has a `build`
+subcommand:
+
+```yaml
+commands:
+  __main__:               {shape: subcommands, subcommands: [__main__.project]}
+  __main__.project:       {shape: subcommands, subcommands: [__main__.project.build],
+                           options: {name: {value: string, style: spaced}}}
+  __main__.project.build: {shape: positionals, flags: {release: {}},
+                           positionals: [{target: {alignment: left, value: string}}]}
+```
 
 ```console
 $ kaira project --name test build --release target
@@ -50,60 +57,50 @@ $ kaira project --name test build --release target
 <figcaption>The subcommand word is a hard boundary. Everything before it belongs to the parent; everything after it belongs to the child.</figcaption>
 </figure>
 
-Reading left to right:
-
-```text
-project:
-  option: --name test
-  tail:   subcommand build        ← scope boundary
-
-build:
-  option: --release
-  tail:   positionals [target]
-```
-
 The first bare word in a `subcommands` level selects the child and
-**irreversibly** opens its scope. Parent options may appear only before that
-word; child options may appear only after it. There are no inherited or
-"global" options in Kaira — if two levels need the same switch, each
-declares it.
+**irreversibly** opens its scope. Parent flags and options may appear only
+before that word; child flags and options may appear only after it. There
+are no inherited or "global" options: if two levels need the same switch,
+each declares it. A `subcommands` level always requires a child; there is
+no stopping at the parent.
 
-Within a `positionals` level, by contrast, options and positional values may
-interleave. If `release` is a declared flag of `build`, this is valid:
+Within a `positionals` level, by contrast, flags, options, and positional
+values may interleave. If `release` is a declared flag of `build`:
 
 ```console
-$ kaira build target --release another-target
+$ kaira project build target --release
 ```
 
-The positional list is `["target", "another-target"]` and `release` is
-`true`. An option that appears after a positional is still an option.
+yields `"flags": ["release"]` and `"positionals": {"target": "target"}`
+for `__main__.project.build`. A flag or option that appears after a
+positional word is still a flag or option.
 
 ## Subcommand or positional?
 
-The current declaration decides, and it decides the same way for every word
-at that level.
+The current level's `shape` decides, and it decides the same way for every
+bare word at that level.
 
 ```mermaid
 stateDiagram-v2
     direction LR
     [*] --> Scan
-    Scan --> Scan : declared option
-    Scan --> Child : bare word<br/>(tail = subcommands)
-    Scan --> Scan : bare word → positional<br/>(tail = positionals)
-    Scan --> Raw : "--"<br/>(tail = positionals)
+    Scan --> Scan : declared flag or option
+    Scan --> Child : bare word<br/>(shape = subcommands)
+    Scan --> Scan : bare word → positional<br/>(shape = positionals)
+    Scan --> Raw : "--"<br/>(shape = positionals)
     Raw --> Raw : any word → positional
-    Scan --> Error : bare word<br/>(tail = empty)
+    Scan --> Error : bare word<br/>(shape = none)
     Scan --> Error : unknown dash-leading word
     Child --> [*] : new level, new scope
 ```
 
-- With a `subcommands` tail, `kaira project build` descends into `build`
-  if `project` declares it; otherwise it is `unknown_subcommand`.
-- With a `positionals` tail, `kaira build target1 target2` yields two
-  positional values of `build`.
-- With an `empty` tail, any bare word is `unexpected_argument`.
+- With `shape: subcommands`, `kaira project build` descends into the child
+  whose word is `build`; any other bare word is `unknown_subcommand`.
+- With `shape: positionals`, `kaira build target1 target2` yields two
+  positional words, to be assigned to slots at end of input.
+- With `shape: none`, any bare word is `unexpected_argument`.
 
-## Option value styles
+## Flags and options
 
 A **flag** has no value:
 
@@ -111,7 +108,8 @@ A **flag** has no value:
 --verbose
 ```
 
-Every value-taking option declares exactly one of two value styles.
+An **option** takes exactly one value per occurrence and declares one of
+two value styles.
 
 === "spaced"
 
@@ -138,28 +136,19 @@ Every value-taking option declares exactly one of two value styles.
     value `--`.
 
 The two styles are not aliases of each other. An option declared `spaced`
-rejects the attached form, and an option declared `attached` rejects the
-spaced form, in both cases with `invalid_option_form`.
+rejects the attached form, and one declared `attached` rejects the spaced
+form, in both cases with `invalid_option_form`.
 
-## Option kinds
+### Multiplicity
 
-The declaration also decides how many times an option may occur and whether
-its value is split.
-
-| Kind | Value | Occurrences | Result shape |
+| Declaration | Occurrences | Values | Result |
 | --- | --- | --- | --- |
-| `flag` | none | at most once | `true` |
-| `scalar` | one | at most once | one value |
-| `repeatable` | one per occurrence | any number | array, in occurrence order |
-| `separated` | one, split on a declared separator | at most once | array, in piece order |
+| flag | at most once | none | name listed in `flags` |
+| option, `single` (default) | at most once | one | one value |
+| option, `multiple` | any number | one per occurrence | array, in occurrence order |
+| option, `multiple` with `separator` | at most once | one, split on the separator | array, in piece order |
 
-## Repeatable versus separated values
-
-Kaira offers two ways to pass several values, and a declaration picks one.
-
-=== "Repeatable"
-
-    Repeat the option once per value.
+=== "Repeated occurrences"
 
     ```console
     $ kaira --include src --include include --include tests target
@@ -169,9 +158,7 @@ Kaira offers two ways to pass several values, and a declaration picks one.
     {"include": ["src", "include", "tests"]}
     ```
 
-=== "Separated"
-
-    Pass one value and let the declared separator split it.
+=== "Separator"
 
     ```console
     $ kaira --features "mpi;cuda;openmp" target
@@ -184,17 +171,17 @@ Kaira offers two ways to pass several values, and a declaration picks one.
     Empty pieces are preserved: with separator `;`, the value `;a;;` splits
     into `["", "a", "", ""]`.
 
-The multiplicity style and the value style are independent choices. For a
-`separated` option declared with `value_style: spaced`:
+Multiplicity and value style are independent. For a separator option
+declared `spaced`:
 
 ```console
 $ kaira --features "mpi;cuda;openmp" target   # accepted
 $ kaira --features=mpi;cuda;openmp target     # rejected: invalid_option_form
 ```
 
-For the same option declared with `value_style: attached`, the two verdicts
-swap. Either way, the word that reaches Kaira must contain the semicolons,
-so most shells need quotes:
+For the same option declared `attached`, the two verdicts swap. Either way,
+the word that reaches Kaira must contain the semicolons, so most shells
+need quotes:
 
 ```console
 $ kaira --features='mpi;cuda;openmp' target
@@ -202,14 +189,54 @@ $ kaira --features='mpi;cuda;openmp' target
 
 !!! note "Quoting is the shell's job"
 
-    Kaira never sees quotes. It sees the word
-    `--features=mpi;cuda;openmp` and nothing else. The quoting shown above
-    exists only to stop the shell from treating `;` as a command separator.
+    Kaira never sees quotes. It sees the word `--features=mpi;cuda;openmp`
+    and nothing else. The quoting above only stops the shell from treating
+    `;` as a command separator.
+
+## Positional slots
+
+A `positionals` command declares an ordered list of named *slots*. Each
+slot has a value type, an `alignment`, and a count range derived from
+`multiplicity`, `required`, and an optional `cardinality`:
+
+| `multiplicity` | `required` | Count |
+| --- | --- | --- |
+| `single` | `true` (default) | exactly 1 |
+| `single` | `false` | 0 or 1 |
+| `multiple` | `true` | 1 or more (or `cardinality.min`…`cardinality.max`) |
+| `multiple` | `false` | 0 or more (or `0`…`cardinality.max`) |
+
+Positional words are collected during the scan and assigned to slots at
+end of input, in the effective order: all `left` slots, then the `center`
+slot, then all `right` slots. The declaration must satisfy two conditions:
+
+1. A `left` or `right` slot has a fixed count (`min = max`).
+2. At most one slot is `center`, and only that slot may have a variable
+   count.
+
+Under these conditions the assignment is unique for every word count: the
+fixed slots take their counts, and the centre slot takes whatever remains,
+which must lie within its range. For example
+
+```yaml
+positionals:
+  - command:   {alignment: left,   value: string}
+  - arguments: {alignment: center, value: string, multiplicity: multiple, required: false}
+  - log:       {alignment: right,  value: string}
+```
+
+with `run make -j4 all build.log` gives `command = "make"`,
+`arguments = ["-j4", "all"]`, `log = "build.log"` — provided `-j4` was
+preceded by `--`; without it, `-j4` is an unknown option. With fewer than
+two words the parse fails with `too_few_positionals`.
+
+A declaration with two variable slots, or a variable `left` or `right`
+slot, is `invalid_declaration`.
 
 ## The `--` delimiter
 
 The exact word `--` ends **option recognition** at the current level. It
-does not end parsing: every remaining word becomes a raw positional value of
+does not end parsing: every remaining word becomes a positional word of
 the current command, including words that look like options, subcommands,
 or further delimiters.
 
@@ -217,13 +244,7 @@ or further delimiters.
 $ kaira run -- --not-an-option build --help
 ```
 
-Raw positionals of `run`:
-
-```text
---not-an-option
-build
---help
-```
+Positional words of `run`: `--not-an-option`, `build`, `--help`.
 
 The delimiter may follow earlier positional values:
 
@@ -231,18 +252,12 @@ The delimiter may follow earlier positional values:
 $ kaira run input -- --not-an-option --help
 ```
 
-Because `--` is only meaningful for a `positionals` tail, it is an error
-(`unexpected_delimiter`) on an `empty` or `subcommands` tail. In particular,
+Because `--` is only meaningful for `shape: positionals`, it is an error
+(`unexpected_delimiter`) on `none` or `subcommands`. In particular,
+`kaira project -- build` does **not** select the `build` subcommand.
 
-```console
-$ kaira project -- build
-```
-
-does **not** select the `build` subcommand. It is valid only if `project`
-accepts positionals, in which case `build` is a positional value.
-
-Without a delimiter, declared options are recognized anywhere in a
-`positionals` level, and any undeclared dash-leading word is
+Without a delimiter, declared flags and options are recognized anywhere in
+a `positionals` level, and any undeclared dash-leading word is
 `unknown_option`.
 
 ## The literal value `--`
@@ -254,8 +269,8 @@ checked first:
 $ kaira --output --     # missing_value at the index of --output
 ```
 
-If an option must be able to carry the literal value `--`, declare it with
-`value_style: attached`:
+An option that must carry the literal value `--` is declared
+`style: attached`:
 
 ```console
 $ kaira --output=--

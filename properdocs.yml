@@ -37,6 +37,7 @@ nav:
       - Primitive types: examples/base-types.md
       - Attached values: examples/attached-values.md
       - Raw positionals: examples/raw-positionals.md
+      - Positional slots: examples/slots.md
       - Nested command tree: examples/nested.md
 
 theme:

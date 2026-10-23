@@ -1,53 +1,37 @@
 ---
 title: Minimal command
-description: The smallest valid Kaira declaration — a command with no options, no subcommands, and no positional arguments.
+description: The smallest valid Kaira declaration - one root command that accepts nothing.
 ---
 
 # Minimal command
 
-This declaration describes a command with no options, no subcommands, and
-no positional arguments. It is the smallest document the schema accepts.
-
-## Declaration
+The smallest document the schema accepts: a root command that accepts no
+flags, options, subcommands, or positional words.
 
 ```yaml title="kaira.korml"
 version: kaira.command-declaration/v1
 program: kaira
-
-command:
-  help: Minimal Kaira command. # (1)!
-  tail:
-    empty: {}
+commands:
+  __main__:
+    shape: none
 ```
 
-1.  `help` is metadata. Kaira does not generate `--help` from it; the
-    application decides whether and how to show it.
+| Command line | Outcome |
+| --- | --- |
+| `kaira` | accepted — `{"flags": [], "options": {}, "positionals": {}}` |
+| `kaira extra` | `unexpected_argument` at 0 — `shape: none` accepts no bare words. |
+| `kaira --verbose` | `unknown_option` at 0 — nothing is declared. |
+| `kaira --` | `unexpected_delimiter` at 0 — `--` is meaningful only for `shape: positionals`. |
 
-## Verdicts
+The full result for `kaira`:
 
-=== ":material-check-circle: Accepted"
-
-    ```console
-    $ kaira
-    ```
-
-    ```json
-    {
-      "program": "kaira",
-      "command_path": [],
-      "levels": [
-        {"options": {}, "positionals": null}
-      ]
-    }
-    ```
-
-    Even with nothing to report, the root level is present and
-    `positionals` is `null` because the tail is not `positionals`.
-
-=== ":material-close-circle: Rejected"
-
-    | Command line | Error | Why |
-    | --- | --- | --- |
-    | `kaira extra` | `unexpected_argument` at 0 | An `empty` tail accepts no bare words. |
-    | `kaira --verbose` | `unknown_option` at 0 | No options are declared. |
-    | `kaira --` | `unexpected_delimiter` at 0 | `--` is meaningful only on a `positionals` tail. |
+```json
+{
+  "program": "kaira",
+  "command": "__main__",
+  "path": ["__main__"],
+  "commands": {
+    "__main__": {"flags": [], "options": {}, "positionals": {}}
+  }
+}
+```

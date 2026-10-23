@@ -5,11 +5,13 @@ A program declares its command tree in KORML; an implementation receives that
 declaration and an already-tokenized argument vector and produces the same
 portable result or error in any language.
 
-The grammar is deliberately small: each command has declared options and
-exactly one tail mode (empty, subcommands, or positionals). Options and
-positionals may be interleaved within a positional command. A subcommand
-starts its **own** command level and option scope. There is no option
-abbreviation or clustering; any short alias must be explicitly declared.
+The declaration is flat: every command, at any depth, is one entry of a
+`commands` mapping, and the tree is formed by listing child keys. Each
+command has flags, options, and exactly one shape (`none`, `subcommands`,
+or `positionals`). A `positionals` command declares named slots with
+alignments and cardinalities such that the assignment of words to slots is
+unique. A subcommand opens its own command level and scope. There is no
+option abbreviation or clustering; any short alias must be declared.
 
 **This repository is the specification, not a parser implementation.** It
 defines the declaration format, parsing semantics, results, and conformance
@@ -30,18 +32,13 @@ grammar or result changes require a new declaration version.
 ```yaml
 version: kaira.command-declaration/v1
 program: example
-command:
-  options:
-    verbose:
-      flag:
-        short: v
-  tail:
+commands:
+  __main__:
+    shape: positionals
+    flags:
+      verbose: {short: v}
     positionals:
-      positionals:
-        name: input
-        value: string
-        min: 1
-        max: 1
+      - input: {alignment: left, value: string}
 ```
 
 For `argv = ["-v", "report.txt"]` (without `argv[0]`), the portable
@@ -50,13 +47,15 @@ result is:
 ```json
 {
   "program": "example",
-  "command_path": [],
-  "levels": [
-    {
-      "options": {"verbose": true},
-      "positionals": {"input": ["report.txt"]}
+  "command": "__main__",
+  "path": ["__main__"],
+  "commands": {
+    "__main__": {
+      "flags": ["verbose"],
+      "options": {},
+      "positionals": {"input": "report.txt"}
     }
-  ]
+  }
 }
 ```
 
@@ -76,10 +75,9 @@ libraries MAY offer additional native numeric conversions.
 No public API, runtime library, language, automatic help behavior, or
 application execution behavior is prescribed here.
 
-Both `--name value` and `--name=value` are supported, but each
-value-taking option declares which **one** it accepts. An optional
-single-character short alias follows that same style; it is never
-generated from the long name.
+Both `--name value` and `--name=value` exist, but each option declares
+which **one** it accepts. An optional single-character short alias follows
+that same style; it is never generated from the long name.
 
 ## Documentation
 

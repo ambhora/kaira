@@ -7,6 +7,11 @@ types:
     value: string
     pattern: "[A-Za-z][A-Za-z0-9_-]*"
 
+  command-key:
+    kind: scalar
+    value: string
+    pattern: "[A-Za-z_][A-Za-z0-9_-]*(\\.[A-Za-z][A-Za-z0-9_-]*)*"
+
   short-identifier:
     kind: scalar
     value: string
@@ -26,6 +31,26 @@ types:
       - spaced
       - attached
 
+  multiplicity:
+    kind: enum
+    values:
+      - single
+      - multiple
+
+  shape:
+    kind: enum
+    values:
+      - none
+      - subcommands
+      - positionals
+
+  alignment:
+    kind: enum
+    values:
+      - left
+      - center
+      - right
+
   count-limit:
     kind: union
     variants:
@@ -37,88 +62,70 @@ types:
           value: literal
           literal: unbounded
 
+  flag:
+    kind: mapping
+    optional:
+      short: short-identifier
+      help: string
+
   option:
-    kind: union
-    variants:
-      flag:
-        mapping:
-          optional:
-            short: short-identifier
-            help: string
-
-      scalar:
-        mapping:
-          required:
-            value: value-type
-            value_style: value-style
-          optional:
-            short: short-identifier
-            help: string
-
-      repeatable:
-        mapping:
-          required:
-            value: value-type
-            value_style: value-style
-          optional:
-            short: short-identifier
-            help: string
-
-      separated:
-        mapping:
-          required:
-            value: value-type
-            value_style: value-style
-            separator: string
-          optional:
-            short: short-identifier
-            help: string
-
-  positional-tail:
     kind: mapping
     required:
-      name: identifier
       value: value-type
+      style: value-style
+    optional:
+      short: short-identifier
+      multiplicity: multiplicity
+      separator: string
+      help: string
+
+  cardinality:
+    kind: mapping
     optional:
       min: integer
       max: count-limit
+
+  positional:
+    kind: mapping
+    required:
+      alignment: alignment
+      value: value-type
+    optional:
+      multiplicity: multiplicity
+      required: boolean
+      cardinality: cardinality
       help: string
 
-  command-tail:
-    kind: union
-    variants:
-      empty:
-        mapping: {}
-
-      subcommands:
-        mapping:
-          required:
-            commands:
-              mapping-of:
-                key: identifier
-                value: command
-          optional:
-            required: boolean
-
-      positionals:
-        mapping:
-          required:
-            positionals: positional-tail
+  positional-entry:
+    kind: mapping-of
+    key: identifier
+    value: positional
 
   command:
     kind: mapping
     required:
-      tail: command-tail
+      shape: shape
     optional:
       help: string
+      flags:
+        mapping-of:
+          key: identifier
+          value: flag
       options:
         mapping-of:
           key: identifier
           value: option
+      subcommands:
+        list-of: command-key
+      positionals:
+        list-of: positional-entry
 
 root:
   kind: mapping
   required:
     version: string
     program: identifier
-    command: command
+    commands:
+      mapping-of:
+        key: command-key
+        value: command

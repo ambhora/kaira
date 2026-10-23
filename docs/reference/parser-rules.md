@@ -1,6 +1,6 @@
 ---
 title: Parser rules
-description: The per-level scanning procedure a conforming Kaira parser follows, with option forms, occurrence limits, and delimiter handling.
+description: The per-level scanning procedure a conforming Kaira parser follows, with flag and option forms, occurrence limits, positional slot assignment, and delimiter handling.
 ---
 
 # Parser rules
@@ -14,18 +14,19 @@ and escaping are therefore the shell's concern, never Kaira's.
 
 ## Per-level parsing
 
-Each command declares one of three mutually exclusive tail modes.
+Parsing starts at `__main__` and proceeds one command level at a time.
+Each command declares one of three shapes.
 
-| Tail | Permitted stream at this level |
+| `shape` | Permitted stream at this level |
 | --- | --- |
-| `empty` | Declared options only. |
-| `subcommands` | Declared options, then one child command name; parsing continues in the child's new scope. |
-| `positionals` | Declared options freely interleaved with positional values; optionally `--` followed by raw positionals. |
+| `none` | Declared flags and options only. |
+| `subcommands` | Declared flags and options, then the word of one listed child; parsing continues in the child's own scope. |
+| `positionals` | Declared flags and options freely interleaved with positional words; optionally `--` followed by raw positional words. |
 
 The procedure for one level:
 
 <figure class="kaira-figure" markdown>
-![Parsing procedure: validate the declaration, then scan argv word by word at the current command level, dispatching on word class and tail mode; check counts at end of input.](../assets/images/parse-flow.svg)
+![Parsing procedure: validate the declaration, then scan argv word by word at the current command level, dispatching on word class and shape; check counts and assign slots at end of input.](../assets/images/parse-flow.svg)
 <figcaption>Each word is classified and dispatched according to the current level's declaration; a subcommand word opens a new level and the loop continues there.</figcaption>
 </figure>
 
@@ -33,44 +34,46 @@ The same procedure as pseudo-code:
 
 ```text
 parse_level(command, argv):
+  flags = []          # long names, in first-occurrence order
   options = {}
-  positionals = []
+  words = []          # positional words with their argv indices
   raw = false
 
   while argv is not empty:
     token = argv.front
     if raw:
-      consume_and_validate_positional(token)
+      words.append(token); check_total_maximum()
     else if token == "--":
-      require command.tail is positionals        # else unexpected_delimiter
+      require command.shape is positionals       # else unexpected_delimiter
       raw = true
       consume token
     else if token starts with "-":
-      consume_and_validate_declared_option(command.options)
-    else if command.tail is empty:
+      consume_declared_flag_or_option(command)   # validates option values
+    else if command.shape is none:
       error unexpected_argument
-    else if command.tail is subcommands:
-      child = lookup_subcommand(token)           # else unknown_subcommand
+    else if command.shape is subcommands:
+      child = child_whose_word_is(token)         # else unknown_subcommand
       return parse_level(child, argv.after_front)
     else:
-      consume_and_validate_positional(token)
+      words.append(token); check_total_maximum()
 
-  check_required_subcommand_or_minimum_positionals()
-  return result_for_level
+  if command.shape is subcommands: error missing_subcommand
+  if command.shape is positionals:
+    assign_words_to_slots(words)                 # too_few_positionals
+    validate_each_word_against_its_slot()        # invalid_value, in word order
+  return record_for_level
 ```
 
 This is explanatory pseudo-code, not a prescribed API. Occurrence checks
 and error precedence are defined normatively in the specification.
 
-## Option parsing
-
-An option consumes zero or one following word.
+## Flag and option parsing
 
 | Declaration | Accepted form | Meaning |
 | --- | --- | --- |
-| `flag` | `--name`, `-n` | No value. |
-| `value_style: spaced` | `--name value`, `-n value` | The value is the next word. |
-| `value_style: attached` | `--name=value`, `-n=value` | The value follows the first `=` in the same word. |
+| flag | `--name`, `-n` | No value. |
+| option, `style: spaced` | `--name value`, `-n value` | The value is the next word. |
+| option, `style: attached` | `--name=value`, `-n=value` | The value follows the first `=` in the same word. |
 
 The declaration decides the accepted form. A parser must not accept both
 `--name value` and `--name=value` for one option. Short aliases are
@@ -78,33 +81,36 @@ explicit, never inferred from long names. Short-option clustering (`-abc`),
 short value concatenation (`-ofile`), and abbreviation are not part of the
 grammar; such words are `unknown_option`.
 
-With `value_style: spaced`, the next word is consumed as the value **even
-if it begins with a dash** — the only exception is the exact delimiter `--`,
+With `style: spaced`, the next word is consumed as the value **even if it
+begins with a dash** — the only exception is the exact delimiter `--`,
 which yields `missing_value`.
 
-With `value_style: attached`, the value is everything after the first `=`,
-including an empty string or further `=` signs. For separated values whose
+With `style: attached`, the value is everything after the first `=`,
+including an empty string or further `=` signs. For separator values whose
 separator is special to a shell, such as `;`, users must quote or escape so
 that the whole word reaches Kaira.
 
-## Option occurrence rules
+Option values are validated as they are consumed; a failure is
+`invalid_value` at the value word (spaced) or at the option word (attached).
 
-| Kind | Occurrence rule |
+## Occurrence rules
+
+| Declaration | Occurrence rule |
 | --- | --- |
-| `flag` | At most once. |
-| `scalar` | At most once. |
-| `repeatable` | Any number of times. |
-| `separated` | At most once. |
+| flag | At most once. |
+| option, `single` | At most once. |
+| option, `multiple` | Any number of times. |
+| option, `multiple` with `separator` | At most once. |
 
 Long and short spellings count together: `-v --verbose` is
-`duplicate_option`. No option is implicitly required, and absent options
-have no default value.
+`duplicate_option`. No flag or option is implicitly required, and absent
+ones have no default value.
 
-## Separated option rule
+## Separator rule
 
-A separated option is one occurrence with one value. After the value is
-consumed, it is split at every literal, non-overlapping occurrence of the
-declared separator, from left to right. Empty pieces are kept.
+An option with `separator` is one occurrence with one value. After the
+value is consumed, it is split at every literal, non-overlapping occurrence
+of the separator, from left to right. Empty pieces are kept.
 
 ```text
 --features "mpi;cuda;openmp"     →  ["mpi", "cuda", "openmp"]
@@ -112,40 +118,51 @@ declared separator, from left to right. Empty pieces are kept.
 --features ""                    →  [""]
 ```
 
-Each piece is validated against the declared value type in order. Whether
-the option is written `--features VALUE` or `--features=VALUE` is decided by
-its `value_style`.
+Each piece is validated against the declared value type in order.
 
-## Tail rules
+## Positional slot assignment
 
-| Tail | Rule |
+Positional words are collected during the scan and assigned at end of
+input. Let the slots in effective order (`left`…, `center`, `right`…) have
+bounds `[min, max]`; `left` and `right` slots have `min = max`, and only the
+`center` slot may vary.
+
+1. **During the scan**, if the sum of all `max` values is finite and the
+   number of positional words exceeds it, report `too_many_positionals` at
+   the offending word.
+2. **At end of input**, give every fixed slot exactly its count, in order,
+   and the remaining words to the `center` slot. If the centre count is
+   below its `min` (or, with no centre slot, if there are fewer words than
+   the fixed slots need), report `too_few_positionals` at `argv.length`.
+3. **Then** validate each word against the value type of the slot it was
+   assigned to, in word order; the first failure is `invalid_value` at
+   that word's index.
+
+Example with `input` (`left`, 1), `extra` (`center`, `int`, 0 or more),
+`output` (`right`, 1):
+
+| `argv` | Outcome |
 | --- | --- |
-| `empty` | Options only; the first bare word is `unexpected_argument`. |
-| `subcommands` | The first bare word must be a declared subcommand; parent parsing ends at that boundary. |
-| `positionals` | Bare words are positional values; options may occur before, between, and after them. |
-
-A declaration cannot have both `subcommands` and `positionals` at the same
-level.
+| `["a", "b"]` | `input = "a"`, `output = "b"` |
+| `["a", "1", "2", "b"]` | `extra = ["1", "2"]` |
+| `["a"]` | `too_few_positionals` at 1 |
+| `["a", "x", "b"]` | `invalid_value` at 1 |
+| `["a", "x", "--bad", "b"]` | `unknown_option` at 2 — scan errors precede slot validation |
 
 ## The `--` delimiter
 
 The exact word `--` ends **option recognition** at the current
-`positionals` level. It may occur before or after positional values.
+`positionals` level. It may occur before or after positional words.
 
-After `--`, every remaining word is a raw positional value of the current
+After `--`, every remaining word is a positional word of the current
 command, including dash-leading words and further `--` words. Without the
-delimiter, any declared option is parsed as an option even when it follows
-a positional, and any undeclared dash-leading word is `unknown_option`.
+delimiter, any declared flag or option is parsed as such even when it
+follows a positional word, and any undeclared dash-leading word is
+`unknown_option`.
 
-```console
-$ kaira run -- --not-an-option --help build
-```
-
-Raw positionals: `--not-an-option`, `--help`, `build`.
-
-`--` is valid only when the current command accepts positionals. On an
-`empty` or `subcommands` tail it is `unexpected_delimiter`, and it never
-selects a subcommand.
+`--` is valid only when the current command has `shape: positionals`. On
+`none` or `subcommands` it is `unexpected_delimiter`, and it never selects
+a subcommand.
 
 ## The literal value `--`
 
@@ -155,16 +172,17 @@ A spaced option cannot receive `--` as its value:
 $ kaira --output --        # missing_value
 ```
 
-Declare the option with `value_style: attached` and write `--output=--` to
-pass the literal value.
+Declare the option with `style: attached` and write `--output=--` to pass
+the literal value.
 
 ## Error precedence
 
-Errors are reported in scan order: the first word that fails, fails the
-parse. Two details matter for implementers:
+1. Errors detected during the scan, at the first word that fails:
+   `unknown_option`, `invalid_option_form`, `missing_value`,
+   `duplicate_option`, option `invalid_value`, `unexpected_argument`,
+   `unknown_subcommand`, `unexpected_delimiter`, `too_many_positionals`.
+2. At end of input: `missing_subcommand` or `too_few_positionals`.
+3. Then positional `invalid_value`, in word order.
 
-- The positional `max` bound is checked as each positional is consumed;
-  `min` is checked only at end of input.
-- Duplicate-option detection precedes validation of the duplicate's value.
-
+Duplicate-option detection precedes validation of the duplicate's value.
 See [Error codes](errors.md) for the full list with examples.

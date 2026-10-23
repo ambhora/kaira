@@ -36,18 +36,18 @@
   <!-- Level cards -->
   <g>
     <rect x="40" y="140" width="380" height="140" rx="12" fill="#eef2f9" stroke="#9fb3cc"/>
-    <text x="60" y="168" font-weight="700" fill="#243b6b">Level 1 — project</text>
-    <text x="60" y="194" fill="#34495e">tail mode: <tspan font-family="JetBrains Mono, Menlo, monospace">subcommands</tspan></text>
+    <text x="60" y="168" font-weight="700" fill="#243b6b">Level 1 — __main__.project</text>
+    <text x="60" y="194" fill="#34495e">shape: <tspan font-family="JetBrains Mono, Menlo, monospace">subcommands</tspan></text>
     <text x="60" y="218" fill="#34495e">options seen: <tspan font-family="JetBrains Mono, Menlo, monospace">name = "test"</tspan></text>
-    <text x="60" y="242" fill="#34495e">positionals: <tspan font-family="JetBrains Mono, Menlo, monospace">null</tspan></text>
-    <text x="60" y="266" fill="#5b6b7f" font-size="13">Parent options must appear before the subcommand word.</text>
+    <text x="60" y="242" fill="#34495e">positionals: <tspan font-family="JetBrains Mono, Menlo, monospace">{}</tspan></text>
+    <text x="60" y="266" fill="#5b6b7f" font-size="13">Parent flags and options must appear before the subcommand word.</text>
   </g>
   <g>
     <rect x="460" y="140" width="380" height="140" rx="12" fill="#e2f3ea" stroke="#8fcfa8"/>
-    <text x="480" y="168" font-weight="700" fill="#1e6b3a">Level 2 — build</text>
-    <text x="480" y="194" fill="#2c5e3f">tail mode: <tspan font-family="JetBrains Mono, Menlo, monospace">positionals</tspan></text>
-    <text x="480" y="218" fill="#2c5e3f">options seen: <tspan font-family="JetBrains Mono, Menlo, monospace">release = true</tspan></text>
-    <text x="480" y="242" fill="#2c5e3f">positionals: <tspan font-family="JetBrains Mono, Menlo, monospace">{"target": ["target"]}</tspan></text>
+    <text x="480" y="168" font-weight="700" fill="#1e6b3a">Level 2 — __main__.project.build</text>
+    <text x="480" y="194" fill="#2c5e3f">shape: <tspan font-family="JetBrains Mono, Menlo, monospace">positionals</tspan></text>
+    <text x="480" y="218" fill="#2c5e3f">flags seen: <tspan font-family="JetBrains Mono, Menlo, monospace">["release"]</tspan></text>
+    <text x="480" y="242" fill="#2c5e3f">positionals: <tspan font-family="JetBrains Mono, Menlo, monospace">{"target": "target"}</tspan></text>
     <text x="480" y="266" fill="#5b6b7f" font-size="13">Options and positionals may interleave freely here.</text>
   </g>
 </svg>

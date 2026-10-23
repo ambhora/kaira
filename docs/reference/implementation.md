@@ -40,25 +40,36 @@ implementation-defined.
       byte for byte.
 - [ ] **Validate the whole declaration before parsing anything.** Exactly
       three root fields; `version` is exactly `kaira.command-declaration/v1`
-      (anything else is `unsupported_version`); unknown fields are errors
-      everywhere, including inside variant payloads.
-- [ ] **Enforce the semantic constraints.** Short aliases unique per level,
-      at least one child under `subcommands.commands`, nonnegative positional
-      bounds with `max >= min`, a nonempty `separator` on every `separated`
-      option, and only the four exact type names.
+      (anything else is `unsupported_version`); `commands` contains
+      `__main__`; unknown fields are errors everywhere.
+- [ ] **Check the tree.** Every listed child key exists, `__main__` is
+      never listed, every other key is listed by exactly one parent, and the
+      words of one parent's children are distinct.
+- [ ] **Enforce the per-command constraints.** `subcommands` present iff
+      `shape: subcommands`, `positionals` present iff `shape: positionals`;
+      long names and short aliases distinct across flags and options; a
+      nonempty `separator` only with `multiplicity: multiple`; only the four
+      exact value type names.
+- [ ] **Enforce the slot rules.** Effective bounds from `multiplicity`,
+      `required`, and `cardinality` must agree; `left`/`right` slots have a
+      fixed count; at most one `center` slot, the only one allowed to vary.
 - [ ] **Scan each level left to right** following the
-      [parser rules](../reference/parser-rules.md). Keep a fresh options map
-      per level. Stop recognizing options after `--`. Descend into a
-      subcommand immediately and never look back.
+      [parser rules](../reference/parser-rules.md). Keep fresh flag, option,
+      and positional-word collections per level. Stop recognizing options
+      after `--`. Descend into a subcommand immediately and never look back.
+- [ ] **Assign positional words to slots at end of input**, fixed slots
+      first, the remainder to the centre slot; then validate words against
+      their slots in word order.
 - [ ] **Implement the four lexical productions** for `int`, `float`,
       `string`, and `boolean` as *string* checks. Never let a host integer
       overflow or a floating-point parse decide acceptance.
-- [ ] **Produce the portable result** with exactly `program`,
-      `command_path`, and `levels`; omit absent options; emit `null` for
-      `positionals` on non-positional tails and an empty array when a
-      positional tail received nothing.
-- [ ] **Report the first error in scan order** with the correct `code` and
-      zero-based `index`; end-of-input errors use `argv.length`.
+- [ ] **Produce the portable result** with exactly `program`, `command`,
+      `path`, and `commands`; one record per selected key with `flags`,
+      `options`, and `positionals`; omit absent options and empty slots;
+      `single` yields a value, `multiple` an array.
+- [ ] **Report errors in the prescribed order**: scan errors at the first
+      failing word, then `missing_subcommand` / `too_few_positionals` at
+      `argv.length`, then positional `invalid_value` in word order.
 - [ ] **Pass the conformance suite.**
 
 ## Running the conformance suite
@@ -69,14 +80,14 @@ implementation-defined.
 {
   "format": "kaira.conformance/v1",
   "declarations": {
-    "options": { "version": "kaira.command-declaration/v1", "program": "app", "command": { "…": "…" } }
+    "options": { "version": "kaira.command-declaration/v1", "program": "app", "commands": { "__main__": { "…": "…" } } }
   },
   "cases": [
     {
       "id": "short-attached",
       "declaration": "options",
       "argv": ["-o=--"],
-      "ok": { "program": "app", "command_path": [], "levels": [ "…" ] }
+      "ok": { "program": "app", "command": "__main__", "path": ["__main__"], "commands": { "…": "…" } }
     },
     {
       "id": "missing-spaced-value",
@@ -151,11 +162,23 @@ A harness in any language does the same four things:
     Each option declares one value style. The other form is
     `invalid_option_form`.
 
-!!! failure "Resolving parent options inside a child level"
+!!! failure "Resolving parent flags or options inside a child level"
 
     After a subcommand word is consumed, only the child's declarations are
-    in scope. `app test -v` is `unknown_option` at index 1 even when the root
-    declares `-v`.
+    in scope. `app test -v` is `unknown_option` at index 1 even when
+    `__main__` declares `-v`.
+
+!!! failure "Validating positional words as they are read"
+
+    With several slots the slot of a word is known only at end of input.
+    A parser that validates eagerly reports `invalid_value` where the
+    specification requires `unknown_option` for a later word, and fails
+    `slots-scan-error-before-value-error`.
+
+!!! failure "Matching subcommand keys instead of words"
+
+    The user types the word (`build`), not the key (`__main__.build`).
+    `["__main__.install", "x"]` is `unknown_subcommand`.
 
 !!! failure "Re-tokenizing `argv` elements"
 

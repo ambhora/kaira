@@ -12,8 +12,8 @@ hide:
 
 Kaira is a specification for declaring command-line interfaces and for
 interpreting argument vectors against such declarations. A declaration is
-written in KORML and describes a program's command tree: its options,
-subcommands, and positional arguments. The specification fixes the
+written in KORML and lists a program's commands, each with its flags,
+options, subcommands, and positional slots. The specification fixes the
 declaration format, its validation rules, the interpretation procedure, and
 a portable result representation, so that independent implementations in
 different languages produce identical results and error codes for identical
@@ -27,23 +27,19 @@ inputs.
 
 ### Properties
 
-Determinism
-:   The outcome depends on the declaration and the argument vector alone;
-    there is no abbreviation, clustering, or implicit alias.
-    ([Design goals](explanation/design-goals.md))
+**Determinism:** the outcome depends on the declaration and the argument
+vector alone; there is no abbreviation, clustering, or implicit alias
+([design goals](explanation/design-goals.md)).
 
-Value portability
-:   `int` and `float` values are validated lexically and kept as text, so
-    results do not depend on host numeric types.
-    ([Results](reference/results.md))
+**Value portability:** `int` and `float` values are validated lexically and
+kept as text, so results do not depend on host numeric types
+([results](reference/results.md)).
 
-Scoped command levels
-:   Each subcommand opens a new level with its own options; nothing is
-    inherited. ([Grammar](explanation/grammar.md))
+**Scoped commands:** each selected subcommand opens a new level with its own
+flags and options; nothing is inherited ([grammar](explanation/grammar.md)).
 
-Conformance
-:   A shared vector file fixes the expected result or error for each case.
-    ([Conformance suite](reference/results.md#conformance-suite))
+**Conformance:** a shared vector file fixes the expected result or error for
+each case ([conformance suite](reference/results.md#conformance-suite)).
 
 </div>
 
@@ -52,9 +48,9 @@ Conformance
 ### Scope
 
 **Specified:** the KORML declaration format and its validation; per-level
-interpretation of options, subcommands, and positionals; the portable result
-and error codes; four primitive value types with exact lexical grammars; a
-language-neutral conformance suite.
+interpretation of flags, options, subcommands, and positional slots; the
+portable result and error codes; four primitive value types with exact
+lexical grammars; a language-neutral conformance suite.
 
 **Out of scope:** implementation APIs; shell tokenization and quoting;
 diagnostic messages and help output; application-level types such as paths
@@ -73,64 +69,63 @@ or dates; default values, environment variables, and configuration files.
 
 ## Example
 
-The tabs below show the four artefacts involved in one parse for a program
-`example` that accepts a `--verbose` flag (short alias `-v`) and exactly
-one positional argument: the declaration, the command line as the shell
-tokenizes it, the portable result for a valid command line, and the
-portable error for an invalid one.
+A program `example` with one flag, `--verbose` (short `-v`), and one
+required positional argument, `input`. The tabs show the declaration, a
+command line as the shell tokenizes it, the portable result, and the
+portable error for a command line that omits the argument.
 
-=== ":material-file-code: Declaration"
+=== "Declaration"
 
     ```yaml title="example.korml"
     version: kaira.command-declaration/v1
     program: example
-    command:
-      options:
-        verbose:
-          flag:
-            short: v # (1)!
-      tail:
-        positionals: # (2)!
-          positionals:
-            name: input
-            value: string
-            min: 1
-            max: 1
+    commands:
+      __main__:                      # (1)!
+        shape: positionals           # (2)!
+        flags:
+          verbose: {short: v}        # (3)!
+        positionals:
+          - input: {alignment: left, value: string}   # (4)!
     ```
 
-    1.  Short aliases exist only when declared. Kaira never derives `-v` from `verbose` on its own.
-    2.  Every command has exactly one tail mode. This one accepts a single positional value named `input`.
+    1.  Every command is an entry of `commands`; `__main__` is the root.
+    2.  `shape` states what bare words mean at this level: `none`,
+        `subcommands`, or `positionals`.
+    3.  A flag takes no value. Its short alias exists only because it is
+        declared here.
+    4.  One positional slot, `single` and `required` by default, so it
+        accepts exactly one word.
 
-=== ":material-console: Command line"
+=== "Command line"
 
     ```console
     $ example -v report.txt
     ```
 
-    The shell has already split the line into words, so the parser receives:
+    The shell has already split the line into words, so the parser receives
+    `["-v", "report.txt"]`.
 
-    ```json
-    ["-v", "report.txt"]
-    ```
-
-=== ":material-check-circle: Portable result"
+=== "Portable result"
 
     ```json
     {
       "program": "example",
-      "command_path": [],
-      "levels": [
-        {
-          "options": {"verbose": true},
-          "positionals": {"input": ["report.txt"]}
+      "command": "__main__",
+      "path": ["__main__"],
+      "commands": {
+        "__main__": {
+          "flags": ["verbose"],
+          "options": {},
+          "positionals": {"input": "report.txt"}
         }
-      ]
+      }
     }
     ```
 
-    Result keys are the declared long option names, irrespective of the spelling used on the command line.
+    The result is keyed by the same command names as the declaration.
+    Flags are listed by long name; a `single` slot yields one value.
 
-=== ":material-close-circle: Portable error"
+=== "Portable error"
 
     ```console
     $ example -v
@@ -140,7 +135,9 @@ portable error for an invalid one.
     {"code": "too_few_positionals", "index": 1}
     ```
 
-    An error consists of a code from a closed set and a zero-based index into `argv`. Diagnostic text is implementation-defined.
+    An error consists of a code from a closed set and a zero-based index
+    into `argv` (here the end of input). Diagnostic text is
+    implementation-defined.
 
 !!! note "Status"
 
