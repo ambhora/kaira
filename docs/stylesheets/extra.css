@@ -140,6 +140,11 @@
   text-align: left;
 }
 
+.md-typeset .kaira-figure.kaira-figure--narrow {
+  max-width: 54rem;
+  margin-left: 0;
+}
+
 /* Hand-drawn SVGs use fixed light fills; keep them readable in dark mode. */
 [data-md-color-scheme="slate"] .kaira-figure {
   background: #f4f7fb;

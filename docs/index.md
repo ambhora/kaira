@@ -23,9 +23,9 @@ inputs.
 
 ## Command-line model
 
-<figure class="kaira-figure" markdown>
-![A command line names a program, its flags and options, then optionally a subcommand; everything after the subcommand belongs to it - flags, options and positional arguments in any order. Positional arguments are a fixed number first, a variable number in the middle, a fixed number last. After -- every word is an argument.](assets/images/command-line-model.svg)
-<figcaption>A command line is a program, its flags and options, and either a subcommand (which has its own) or positional arguments. A subcommand's arguments may be interleaved with its flags and options; a fixed number of arguments at each end and one variable group in the middle give every word exactly one place.</figcaption>
+<figure class="kaira-figure kaira-figure--narrow" markdown>
+![Three forms of a command line: a command with a subcommand; a command with positional arguments (fixed, variable, fixed) among which flags and options may appear; nested subcommands of any depth, each with its own flags, options and arguments.](assets/images/command-line-model.svg)
+<figcaption>A command has flags and options and either a subcommand or positional arguments. Subcommands nest to any depth, each level with its own flags, options and arguments; a fixed number of arguments at each end and one variable group in the middle give every word exactly one place.</figcaption>
 </figure>
 
 ## Using Kaira in a program

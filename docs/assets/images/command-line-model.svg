@@ -1,47 +1,80 @@
-<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 1180 224" font-family="Inter, Roboto, Helvetica, Arial, sans-serif" role="img" aria-labelledby="t d">
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 971 312" font-family="Inter, Roboto, Helvetica, Arial, sans-serif" role="img" aria-labelledby="t d">
   <title id="t">Model of a Kaira command line</title>
-  <desc id="d">A command line names a program, then the program's flags and options, then optionally a subcommand. Everything after the subcommand word belongs to the subcommand: its flags and options and its positional arguments, in any order. Positional arguments consist of a fixed number first, a variable number in the middle, and a fixed number last. After the delimiter -- every word is an argument.</desc>
-<text x="18" y="64" font-family="JetBrains Mono, Menlo, monospace" font-size="15" fill="#5b6b7f">$</text>
-<rect x="40" y="44" width="56" height="30" rx="6" fill="#eef2f9" stroke="#7f9ac4"/>
-<text x="68" y="64" text-anchor="middle" font-family="JetBrains Mono, Menlo, monospace" font-size="15" fill="#243b6b">prog</text>
-<rect x="110" y="44" width="73" height="30" rx="6" fill="#eef2f9" stroke="#7f9ac4"/>
-<text x="146" y="64" text-anchor="middle" font-family="JetBrains Mono, Menlo, monospace" font-size="15" fill="#243b6b">--flag</text>
-<rect x="197" y="44" width="116" height="30" rx="6" fill="#eef2f9" stroke="#7f9ac4"/>
-<text x="255" y="64" text-anchor="middle" font-family="JetBrains Mono, Menlo, monospace" font-size="15" fill="#243b6b">--opt value</text>
-<rect x="327" y="44" width="116" height="30" rx="6" fill="#eef2f9" stroke="#7f9ac4"/>
-<text x="385" y="64" text-anchor="middle" font-family="JetBrains Mono, Menlo, monospace" font-size="15" fill="#243b6b">--opt=value</text>
-<rect x="457" y="44" width="108" height="30" rx="6" fill="#fff8e6" stroke="#c9a227"/>
-<text x="511" y="64" text-anchor="middle" font-family="JetBrains Mono, Menlo, monospace" font-size="15" fill="#6b5a1a">subcommand</text>
-<rect x="579" y="44" width="73" height="30" rx="6" fill="#e2f3ea" stroke="#5fae7f"/>
-<text x="616" y="64" text-anchor="middle" font-family="JetBrains Mono, Menlo, monospace" font-size="15" fill="#1e6b3a">--flag</text>
-<rect x="666" y="44" width="47" height="30" rx="6" fill="#e2f3ea" stroke="#5fae7f"/>
-<text x="690" y="64" text-anchor="middle" font-family="JetBrains Mono, Menlo, monospace" font-size="15" fill="#1e6b3a">arg</text>
-<rect x="727" y="44" width="47" height="30" rx="6" fill="#e2f3ea" stroke="#5fae7f"/>
-<text x="750" y="64" text-anchor="middle" font-family="JetBrains Mono, Menlo, monospace" font-size="15" fill="#1e6b3a">arg</text>
-<rect x="788" y="44" width="47" height="30" rx="6" fill="#e2f3ea" stroke="#5fae7f"/>
-<text x="812" y="64" text-anchor="middle" font-family="JetBrains Mono, Menlo, monospace" font-size="15" fill="#1e6b3a">arg</text>
-<rect x="849" y="44" width="39" height="30" rx="6" fill="#f4f6f8" stroke="#8a98a8"/>
-<text x="868" y="64" text-anchor="middle" font-family="JetBrains Mono, Menlo, monospace" font-size="15" fill="#5b6b7f">--</text>
-<rect x="902" y="44" width="90" height="30" rx="6" fill="#e2f3ea" stroke="#5fae7f"/>
-<text x="947" y="64" text-anchor="middle" font-family="JetBrains Mono, Menlo, monospace" font-size="15" fill="#1e6b3a">-literal</text>
-<rect x="1006" y="44" width="47" height="30" rx="6" fill="#e2f3ea" stroke="#5fae7f"/>
-<text x="1030" y="64" text-anchor="middle" font-family="JetBrains Mono, Menlo, monospace" font-size="15" fill="#1e6b3a">arg</text>
-<path d="M110 84 v8 h333 v-8" fill="none" stroke="#243b6b" stroke-width="1.5"/>
-<text x="110" y="104" text-anchor="start" font-size="12" fill="#243b6b" font-weight="600">flags and options of the command</text>
-<text x="511" y="18" text-anchor="middle" font-size="12" fill="#6b5a1a" font-weight="600">subcommand</text>
-<text x="511" y="32" text-anchor="middle" font-size="11" fill="#6b5a1a">everything after it belongs to the subcommand</text>
-<line x1="450" y1="38" x2="450" y2="90" stroke="#c9a227" stroke-width="1.5" stroke-dasharray="4 3"/>
-<path d="M579 84 v8 h474 v-8" fill="none" stroke="#1e6b3a" stroke-width="1.5"/>
-<text x="579" y="104" text-anchor="start" font-size="12" fill="#1e6b3a" font-weight="600">flags, options and positional arguments of the subcommand, in any order</text>
-<path d="M666 128 v8 h47 v-8" fill="none" stroke="#1e6b3a" stroke-width="1.5"/>
-<text x="690" y="148" text-anchor="middle" font-size="12" fill="#1e6b3a" font-weight="normal">fixed</text>
-<path d="M727 128 v8 h265 v-8" fill="none" stroke="#1e6b3a" stroke-width="1.5"/>
-<text x="860" y="148" text-anchor="middle" font-size="12" fill="#1e6b3a" font-weight="normal">variable number</text>
-<path d="M1006 128 v8 h47 v-8" fill="none" stroke="#1e6b3a" stroke-width="1.5"/>
-<text x="1030" y="148" text-anchor="middle" font-size="12" fill="#1e6b3a" font-weight="normal">fixed</text>
-<text x="666" y="168" font-size="11" fill="#1e6b3a">positional arguments: a fixed number, then a variable number, then a fixed number</text>
-<text x="320" y="194" text-anchor="middle" font-size="11" fill="#5b6b7f">an option takes one value, either as the next word or after =;</text>
-<text x="320" y="208" text-anchor="middle" font-size="11" fill="#5b6b7f">a flag takes none; each may have a one-letter short form</text>
-<text x="908" y="194" text-anchor="middle" font-size="11" fill="#5b6b7f">after -- every word is an argument,</text>
-<text x="908" y="208" text-anchor="middle" font-size="11" fill="#5b6b7f">even one that starts with a dash</text>
+  <desc id="d">Three forms. 1: a command with flags and options followed by a subcommand with its own flags, options and arguments. 2: a command with positional arguments - a fixed number, then a variable number, then a fixed number - among which flags and options may appear, and after -- every word is an argument. 3: nested subcommands of any depth, each level with its own flags, options and arguments.</desc>
+<text x="14" y="24" font-size="12" font-weight="600" fill="#1f2d3d">1 · Command with a subcommand</text>
+<text x="20" y="51" font-family="JetBrains Mono, Menlo, monospace" font-size="13" fill="#5b6b7f">$</text>
+<rect x="40" y="34" width="46" height="24" rx="5" fill="#eef2f9" stroke="#7f9ac4"/>
+<text x="63" y="51" text-anchor="middle" font-family="JetBrains Mono, Menlo, monospace" font-size="13" fill="#243b6b">prog</text>
+<rect x="96" y="34" width="61" height="24" rx="5" fill="#eef2f9" stroke="#7f9ac4"/>
+<text x="126" y="51" text-anchor="middle" font-family="JetBrains Mono, Menlo, monospace" font-size="13" fill="#243b6b">--flag</text>
+<rect x="167" y="34" width="99" height="24" rx="5" fill="#eef2f9" stroke="#7f9ac4"/>
+<text x="216" y="51" text-anchor="middle" font-family="JetBrains Mono, Menlo, monospace" font-size="13" fill="#243b6b">--opt=value</text>
+<rect x="276" y="34" width="92" height="24" rx="5" fill="#fff8e6" stroke="#c9a227"/>
+<text x="322" y="51" text-anchor="middle" font-family="JetBrains Mono, Menlo, monospace" font-size="13" fill="#6b5a1a">subcommand</text>
+<rect x="378" y="34" width="61" height="24" rx="5" fill="#e2f3ea" stroke="#5fae7f"/>
+<text x="408" y="51" text-anchor="middle" font-family="JetBrains Mono, Menlo, monospace" font-size="13" fill="#1e6b3a">--flag</text>
+<rect x="449" y="34" width="38" height="24" rx="5" fill="#e2f3ea" stroke="#5fae7f"/>
+<text x="468" y="51" text-anchor="middle" font-family="JetBrains Mono, Menlo, monospace" font-size="13" fill="#1e6b3a">arg</text>
+<rect x="497" y="34" width="38" height="24" rx="5" fill="#e2f3ea" stroke="#5fae7f"/>
+<text x="516" y="51" text-anchor="middle" font-family="JetBrains Mono, Menlo, monospace" font-size="13" fill="#1e6b3a">arg</text>
+<path d="M96 64 v6 h170 v-6" fill="none" stroke="#243b6b" stroke-width="1.3"/>
+<text x="96" y="84" text-anchor="start" font-size="11" fill="#243b6b">flags and options of the command</text>
+<path d="M276 64 v6 h92 v-6" fill="none" stroke="#6b5a1a" stroke-width="1.3"/>
+<text x="322" y="84" text-anchor="middle" font-size="11" fill="#6b5a1a">boundary</text>
+<path d="M378 64 v6 h157 v-6" fill="none" stroke="#1e6b3a" stroke-width="1.3"/>
+<text x="378" y="84" text-anchor="start" font-size="11" fill="#1e6b3a">the subcommand's own flags, options and arguments</text>
+<text x="14" y="120" font-size="12" font-weight="600" fill="#1f2d3d">2 · Command with positional arguments</text>
+<text x="20" y="147" font-family="JetBrains Mono, Menlo, monospace" font-size="13" fill="#5b6b7f">$</text>
+<rect x="40" y="130" width="46" height="24" rx="5" fill="#eef2f9" stroke="#7f9ac4"/>
+<text x="63" y="147" text-anchor="middle" font-family="JetBrains Mono, Menlo, monospace" font-size="13" fill="#243b6b">prog</text>
+<rect x="96" y="130" width="61" height="24" rx="5" fill="#eef2f9" stroke="#7f9ac4"/>
+<text x="126" y="147" text-anchor="middle" font-family="JetBrains Mono, Menlo, monospace" font-size="13" fill="#243b6b">--flag</text>
+<rect x="167" y="130" width="38" height="24" rx="5" fill="#e2f3ea" stroke="#5fae7f"/>
+<text x="186" y="147" text-anchor="middle" font-family="JetBrains Mono, Menlo, monospace" font-size="13" fill="#1e6b3a">arg</text>
+<rect x="215" y="130" width="38" height="24" rx="5" fill="#e2f3ea" stroke="#5fae7f"/>
+<text x="234" y="147" text-anchor="middle" font-family="JetBrains Mono, Menlo, monospace" font-size="13" fill="#1e6b3a">arg</text>
+<rect x="263" y="130" width="38" height="24" rx="5" fill="#e2f3ea" stroke="#5fae7f"/>
+<text x="282" y="147" text-anchor="middle" font-family="JetBrains Mono, Menlo, monospace" font-size="13" fill="#1e6b3a">arg</text>
+<rect x="311" y="130" width="54" height="24" rx="5" fill="#eef2f9" stroke="#7f9ac4"/>
+<text x="338" y="147" text-anchor="middle" font-family="JetBrains Mono, Menlo, monospace" font-size="13" fill="#243b6b">--opt</text>
+<rect x="375" y="130" width="54" height="24" rx="5" fill="#eef2f9" stroke="#7f9ac4"/>
+<text x="402" y="147" text-anchor="middle" font-family="JetBrains Mono, Menlo, monospace" font-size="13" fill="#243b6b">value</text>
+<rect x="439" y="130" width="31" height="24" rx="5" fill="#f4f6f8" stroke="#8a98a8"/>
+<text x="454" y="147" text-anchor="middle" font-family="JetBrains Mono, Menlo, monospace" font-size="13" fill="#5b6b7f">--</text>
+<rect x="480" y="130" width="76" height="24" rx="5" fill="#e2f3ea" stroke="#5fae7f"/>
+<text x="518" y="147" text-anchor="middle" font-family="JetBrains Mono, Menlo, monospace" font-size="13" fill="#1e6b3a">-literal</text>
+<rect x="566" y="130" width="38" height="24" rx="5" fill="#e2f3ea" stroke="#5fae7f"/>
+<text x="585" y="147" text-anchor="middle" font-family="JetBrains Mono, Menlo, monospace" font-size="13" fill="#1e6b3a">arg</text>
+<path d="M167 160 v6 h38 v-6" fill="none" stroke="#1e6b3a" stroke-width="1.3"/>
+<text x="186" y="180" text-anchor="middle" font-size="11" fill="#1e6b3a">fixed</text>
+<path d="M215 160 v6 h341 v-6" fill="none" stroke="#1e6b3a" stroke-width="1.3"/>
+<text x="386" y="180" text-anchor="middle" font-size="11" fill="#1e6b3a">variable number</text>
+<path d="M566 160 v6 h38 v-6" fill="none" stroke="#1e6b3a" stroke-width="1.3"/>
+<text x="585" y="180" text-anchor="middle" font-size="11" fill="#1e6b3a">fixed</text>
+<text x="96" y="196" font-size="11" fill="#5b6b7f">flags and options may appear anywhere among the arguments; an option's value is the next word or follows =; after -- every word is an argument</text>
+<text x="14" y="226" font-size="12" font-weight="600" fill="#1f2d3d">3 · Nested subcommands (any depth; each level has its own flags, options and arguments)</text>
+<text x="20" y="253" font-family="JetBrains Mono, Menlo, monospace" font-size="13" fill="#5b6b7f">$</text>
+<rect x="40" y="236" width="46" height="24" rx="5" fill="#eef2f9" stroke="#7f9ac4"/>
+<text x="63" y="253" text-anchor="middle" font-family="JetBrains Mono, Menlo, monospace" font-size="13" fill="#243b6b">prog</text>
+<rect x="96" y="236" width="31" height="24" rx="5" fill="#eef2f9" stroke="#7f9ac4"/>
+<text x="112" y="253" text-anchor="middle" font-family="JetBrains Mono, Menlo, monospace" font-size="13" fill="#243b6b">-v</text>
+<rect x="137" y="236" width="61" height="24" rx="5" fill="#fff8e6" stroke="#c9a227"/>
+<text x="168" y="253" text-anchor="middle" font-family="JetBrains Mono, Menlo, monospace" font-size="13" fill="#6b5a1a">remote</text>
+<rect x="208" y="236" width="38" height="24" rx="5" fill="#f3e9f7" stroke="#a98bc0"/>
+<text x="227" y="253" text-anchor="middle" font-family="JetBrains Mono, Menlo, monospace" font-size="13" fill="#5b3f73">add</text>
+<rect x="256" y="236" width="31" height="24" rx="5" fill="#e2f3ea" stroke="#5fae7f"/>
+<text x="272" y="253" text-anchor="middle" font-family="JetBrains Mono, Menlo, monospace" font-size="13" fill="#1e6b3a">-v</text>
+<rect x="297" y="236" width="54" height="24" rx="5" fill="#e2f3ea" stroke="#5fae7f"/>
+<text x="324" y="253" text-anchor="middle" font-family="JetBrains Mono, Menlo, monospace" font-size="13" fill="#1e6b3a">--opt</text>
+<rect x="361" y="236" width="54" height="24" rx="5" fill="#e2f3ea" stroke="#5fae7f"/>
+<text x="388" y="253" text-anchor="middle" font-family="JetBrains Mono, Menlo, monospace" font-size="13" fill="#1e6b3a">value</text>
+<rect x="425" y="236" width="38" height="24" rx="5" fill="#e2f3ea" stroke="#5fae7f"/>
+<text x="444" y="253" text-anchor="middle" font-family="JetBrains Mono, Menlo, monospace" font-size="13" fill="#1e6b3a">url</text>
+<path d="M96 266 v6 h31 v-6" fill="none" stroke="#243b6b" stroke-width="1.3"/>
+<text x="112" y="286" text-anchor="middle" font-size="11" fill="#243b6b">prog</text>
+<path d="M137 266 v6 h61 v-6" fill="none" stroke="#6b5a1a" stroke-width="1.3"/>
+<text x="168" y="286" text-anchor="middle" font-size="11" fill="#6b5a1a">remote</text>
+<path d="M256 266 v6 h207 v-6" fill="none" stroke="#1e6b3a" stroke-width="1.3"/>
+<text x="256" y="286" text-anchor="start" font-size="11" fill="#1e6b3a">remote add</text>
+<text x="96" y="302" font-size="11" fill="#5b6b7f">the same name or short form may be declared again at a deeper level (-v here means something else under add)</text>
 </svg>
