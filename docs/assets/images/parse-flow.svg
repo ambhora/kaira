@@ -4,7 +4,7 @@
   <defs><marker id="a" viewBox="0 0 10 10" refX="9" refY="5" markerWidth="7" markerHeight="7" orient="auto"><path d="M0 0 L10 5 L0 10 z" fill="#5b6b7f"/></marker></defs>
   <style>
     .box { fill: #ffffff; stroke: #5b6b7f; stroke-width: 1.2; }
-    .in { fill: #eef4fb; stroke: #6f93c0; } .dec { fill: #fff8e6; stroke: #c9a227; }
+    .in { fill: #eef2f9; stroke: #7f9ac4; } .dec { fill: #fff8e6; stroke: #c9a227; }
     .ok { fill: #e9f7ef; stroke: #5fae7f; } .err { fill: #fdeeee; stroke: #d08484; }
     .ln { fill: none; stroke: #5b6b7f; stroke-width: 1.2; marker-end: url(#a); }
     .ln2 { fill: none; stroke: #5b6b7f; stroke-width: 1.2; }

@@ -1,10 +1,10 @@
-<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 1565 238" font-family="Inter, Roboto, Helvetica, Arial, sans-serif" font-size="14" role="img" aria-labelledby="t d">
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 12 1565 226" font-family="Inter, Roboto, Helvetica, Arial, sans-serif" font-size="14" role="img" aria-labelledby="t d">
   <title id="t">Using Kaira in a program</title>
   <desc id="d">The developer writes a KORML declaration once. At start-up the program loads it with a Kaira library for its language and passes the process argv. The library returns either a typed result (options, positionals, command path), which the application logic consumes, or an error consisting of a code and an argv index. Steps 2 to 4 behave identically in every library; the declaration is portable across languages.</desc>
   <defs><marker id="a" viewBox="0 0 10 10" refX="9" refY="5" markerWidth="7" markerHeight="7" orient="auto"><path d="M0 0 L10 5 L0 10 z" fill="#5b6b7f"/></marker></defs>
   <style>
     .box { fill: #ffffff; stroke: #5b6b7f; stroke-width: 1.2; }
-    .you { fill: #eef4fb; stroke: #6f93c0; } .in { fill: #f4f6f8; stroke: #8a98a8; }
+    .you { fill: #eef2f9; stroke: #7f9ac4; } .in { fill: #f4f6f8; stroke: #8a98a8; }
     .ok { fill: #e9f7ef; stroke: #5fae7f; } .err { fill: #fdeeee; stroke: #d08484; }
     .ln { fill: none; stroke: #5b6b7f; stroke-width: 1.2; marker-end: url(#a); }
     .br { fill: none; stroke: #8a98a8; stroke-width: 1; }

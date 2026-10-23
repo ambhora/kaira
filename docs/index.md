@@ -21,6 +21,49 @@ inputs.
 
 </div>
 
+<div class="grid kaira-columns" markdown>
+
+<div markdown>
+
+### Properties
+
+Determinism
+:   The outcome depends on the declaration and the argument vector alone;
+    there is no abbreviation, clustering, or implicit alias.
+    ([Design goals](explanation/design-goals.md))
+
+Value portability
+:   `int` and `float` values are validated lexically and kept as text, so
+    results do not depend on host numeric types.
+    ([Results](reference/results.md))
+
+Scoped command levels
+:   Each subcommand opens a new level with its own options; nothing is
+    inherited. ([Grammar](explanation/grammar.md))
+
+Conformance
+:   A shared vector file fixes the expected result or error for each case.
+    ([Conformance suite](reference/results.md#conformance-suite))
+
+</div>
+
+<div markdown>
+
+### Scope
+
+**Specified:** the KORML declaration format and its validation; per-level
+interpretation of options, subcommands, and positionals; the portable result
+and error codes; four primitive value types with exact lexical grammars; a
+language-neutral conformance suite.
+
+**Out of scope:** implementation APIs; shell tokenization and quoting;
+diagnostic messages and help output; application-level types such as paths
+or dates; default values, environment variables, and configuration files.
+
+</div>
+
+</div>
+
 ## Overview
 
 <figure class="kaira-figure" markdown>
@@ -99,40 +142,6 @@ portable error for an invalid one.
 
     An error consists of a code from a closed set and a zero-based index into `argv`. Diagnostic text is implementation-defined.
 
-## Properties
-
-Determinism
-:   The interpretation of an argument vector is a function of the declaration
-    and the vector alone. The grammar contains no abbreviation, short-option
-    clustering, implicit aliases, or implicit options; recognized spellings
-    are exactly those declared. See [Design goals](explanation/design-goals.md).
-
-Value portability
-:   Results use JSON-compatible types. `int` and `float` arguments are
-    validated lexically and carried as their original decimal text, so
-    acceptance and representation are independent of host-language numeric
-    types. See [Portable results](reference/results.md).
-
-Scoped command levels
-:   Each selected subcommand opens a new command level with its own option
-    scope; option declarations are never inherited across levels. See
-    [Command-line grammar](explanation/grammar.md).
-
-Conformance
-:   A language-neutral vector file specifies the expected result or error
-    code and index for each case. See
-    [Conformance suite](reference/results.md#conformance-suite).
-
-## Scope
-
-| Specified | Out of scope |
-| --- | --- |
-| The KORML declaration format and its validation rules | Implementation APIs and data structures |
-| The per-level interpretation of options, subcommands, and positionals | Shell tokenization, quoting, and escaping |
-| The portable result representation and error codes | Diagnostic messages and help output |
-| Four primitive value types with exact lexical grammars | Application-level types (paths, dates, enumerations) |
-| A language-neutral conformance suite | Default values, environment variables, configuration files |
-
 !!! note "Status"
 
     This site documents version 1 of the specification, which is currently a
@@ -142,12 +151,3 @@ Conformance
     explanatory and do not add requirements. Once version 1 is declared
     stable, any change that affects results or error categories requires a
     new declaration version.
-
-## Contents
-
-| Section | Content |
-| --- | --- |
-| [Getting started](getting-started/index.md) | Using Kaira in a program; [writing a declaration](getting-started/writing-a-declaration.md). |
-| [Explanation](explanation/index.md) | [Design goals](explanation/design-goals.md) and the [command-line grammar](explanation/grammar.md). |
-| [Reference](reference/index.md) | The [normative specification](reference/specification.md), [KORML schema](reference/schema.md), [parser rules](reference/parser-rules.md), [results and conformance](reference/results.md), [error codes](reference/errors.md), and [implementation and conformance](reference/implementation.md). |
-| [Examples](examples/index.md) | Complete declarations with accepted and rejected argument vectors. |
