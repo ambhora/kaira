@@ -1,0 +1,13 @@
+[project]
+name = "kaira-docs"
+version = "0.1.0"
+description = "Documentation for the language-independent Kaira CLI parsing specification."
+readme = "README.md"
+requires-python = ">=3.10"
+dependencies = [
+  "properdocs>=1.6",
+  "mkdocs-material>=9.5",
+]
+
+[tool.pytest.ini_options]
+addopts = "-q"

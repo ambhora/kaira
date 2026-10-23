@@ -1,0 +1,172 @@
+site_name: Kaira
+site_description: >-
+  Kaira is a deterministic, language-independent specification for declaring
+  and parsing command-line interfaces. One KORML declaration, one argv, one
+  portable result — in any language.
+site_url: https://ambhora.github.io/kaira/
+site_author: Kaira contributors
+repo_url: https://github.com/ambhora/kaira
+repo_name: ambhora/kaira
+edit_uri: ""
+copyright: >-
+  Kaira specification v1 (draft).
+  Documentation built with ProperDocs and Material.
+
+nav:
+  - Home: index.md
+  - Getting started:
+      - getting-started/index.md
+      - Writing a declaration: getting-started/writing-a-declaration.md
+  - Explanation:
+      - explanation/index.md
+      - Design goals: explanation/design-goals.md
+      - Command-line grammar: explanation/grammar.md
+  - Reference:
+      - reference/index.md
+      - Normative specification: reference/specification.md
+      - KORML schema: reference/schema.md
+      - Parser rules: reference/parser-rules.md
+      - Portable results and conformance: reference/results.md
+      - Error codes: reference/errors.md
+      - Implementation and conformance: reference/implementation.md
+  - Examples:
+      - examples/index.md
+      - Minimal command: examples/minimal.md
+      - Subcommands: examples/subcommands.md
+      - Options: examples/options.md
+      - Primitive types: examples/base-types.md
+      - Attached values: examples/attached-values.md
+      - Raw positionals: examples/raw-positionals.md
+      - Nested command tree: examples/nested.md
+
+theme:
+  name: material
+  language: en
+  logo: assets/logo.svg
+  favicon: assets/favicon.svg
+  icon:
+    repo: fontawesome/brands/github
+    admonition:
+      success: material/check-circle
+      failure: material/close-circle
+      example: material/console
+      note: material/information
+      tip: material/lightbulb-on
+      warning: material/alert
+  font:
+    text: Inter
+    code: JetBrains Mono
+  features:
+    - navigation.instant
+    - navigation.instant.progress
+    - navigation.tracking
+    - navigation.tabs
+    - navigation.tabs.sticky
+    - navigation.sections
+    - navigation.indexes
+    - navigation.path
+    - navigation.top
+    - navigation.footer
+    - toc.follow
+    - search.suggest
+    - search.highlight
+    - search.share
+    - content.code.copy
+    - content.code.annotate
+    - content.tabs.link
+    - content.tooltips
+  palette:
+    # Follow the operating-system preference by default.
+    - media: "(prefers-color-scheme)"
+      toggle:
+        icon: material/brightness-auto
+        name: Switch to light mode
+    - media: "(prefers-color-scheme: light)"
+      scheme: default
+      primary: custom
+      accent: custom
+      toggle:
+        icon: material/weather-sunny
+        name: Switch to dark mode
+    - media: "(prefers-color-scheme: dark)"
+      scheme: slate
+      primary: custom
+      accent: custom
+      toggle:
+        icon: material/weather-night
+        name: Switch to system preference
+
+extra_css:
+  - stylesheets/extra.css
+
+extra:
+  status:
+    draft: Draft — subject to change
+  social:
+    - icon: fontawesome/brands/github
+      link: https://github.com/ambhora/kaira
+      name: Kaira on GitHub
+    - icon: material/file-document-outline
+      link: https://github.com/ambhora/kaira/blob/main/src/SPECIFICATION.md
+      name: Normative specification source
+    - icon: material/test-tube
+      link: https://github.com/ambhora/kaira/blob/main/conformance/v1.json
+      name: Conformance vectors
+
+markdown_extensions:
+  # Python-Markdown
+  - abbr
+  - admonition
+  - attr_list
+  - def_list
+  - footnotes
+  - md_in_html
+  - tables
+  - toc:
+      permalink: true
+      permalink_title: Link to this section
+      toc_depth: 3
+  # PyMdown extensions
+  - pymdownx.betterem
+  - pymdownx.caret
+  - pymdownx.details
+  - pymdownx.emoji:
+      emoji_index: !!python/name:material.extensions.emoji.twemoji
+      emoji_generator: !!python/name:material.extensions.emoji.to_svg
+  - pymdownx.highlight:
+      anchor_linenums: true
+      line_spans: __span
+      pygments_lang_class: true
+  - pymdownx.inlinehilite
+  - pymdownx.keys
+  - pymdownx.mark
+  - pymdownx.smartsymbols
+  - pymdownx.snippets:
+      base_path:
+        - .
+      check_paths: true
+  - pymdownx.superfences:
+      custom_fences:
+        - name: mermaid
+          class: mermaid
+          format: !!python/name:pymdownx.superfences.fence_code_format
+  - pymdownx.tabbed:
+      alternate_style: true
+      slugify: !!python/object/apply:pymdownx.slugs.slugify
+        kwds:
+          case: lower
+  - pymdownx.tasklist:
+      custom_checkbox: true
+  - pymdownx.tilde
+
+plugins:
+  - search:
+      separator: '[\s\-,:!=\[\]()"/]+|(?!\b)(?=[A-Z][a-z])|\.(?!\d)|&[lg]t;'
+
+validation:
+  omitted_files: warn
+  absolute_links: warn
+  unrecognized_links: warn
+  anchors: warn
+
+strict: true

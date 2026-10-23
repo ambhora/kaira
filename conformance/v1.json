@@ -1,0 +1,507 @@
+{
+  "format": "kaira.conformance/v1",
+  "declarations": {
+    "empty": {
+      "version": "kaira.command-declaration/v1",
+      "program": "app",
+      "command": {"tail": {"empty": {}}}
+    },
+    "options": {
+      "version": "kaira.command-declaration/v1",
+      "program": "app",
+      "command": {
+        "options": {
+          "verbose": {"flag": {"short": "v"}},
+          "output": {"scalar": {"short": "o", "value": "string", "value_style": "attached"}},
+          "include": {"repeatable": {"value": "string", "value_style": "spaced"}},
+          "features": {"separated": {"value": "string", "value_style": "spaced", "separator": ";"}}
+        },
+        "tail": {"positionals": {"positionals": {"name": "target", "value": "string", "min": 0, "max": 3}}}
+      }
+    },
+    "commands": {
+      "version": "kaira.command-declaration/v1",
+      "program": "app",
+      "command": {
+        "options": {"verbose": {"flag": {"short": "v"}}},
+        "tail": {
+          "subcommands": {
+            "required": true,
+            "commands": {
+              "build": {
+                "options": {"verbose": {"flag": {"short": "v"}}},
+                "tail": {"empty": {}}
+              },
+              "test": {"tail": {"empty": {}}}
+            }
+          }
+        }
+      }
+    },
+    "optional_subcommand": {
+      "version": "kaira.command-declaration/v1",
+      "program": "app",
+      "command": {
+        "tail": {
+          "subcommands": {
+            "commands": {"build": {"tail": {"empty": {}}}}
+          }
+        }
+      }
+    },
+    "values": {
+      "version": "kaira.command-declaration/v1",
+      "program": "app",
+      "command": {
+        "options": {
+          "count": {"scalar": {"value": "int", "value_style": "attached"}},
+          "ratio": {"scalar": {"value": "float", "value_style": "spaced"}},
+          "enabled": {"scalar": {"value": "boolean", "value_style": "spaced"}},
+          "define": {"repeatable": {"value": "string", "value_style": "attached"}}
+        },
+        "tail": {"empty": {}}
+      }
+    },
+    "typed_positionals": {
+      "version": "kaira.command-declaration/v1",
+      "program": "app",
+      "command": {
+        "tail": {"positionals": {"positionals": {"name": "number", "value": "int", "min": 1, "max": 1}}}
+      }
+    },
+    "typed_collections": {
+      "version": "kaira.command-declaration/v1",
+      "program": "app",
+      "command": {
+        "options": {
+          "numbers": {"repeatable": {"value": "int", "value_style": "spaced"}},
+          "switches": {"separated": {"value": "boolean", "value_style": "attached", "separator": ","}}
+        },
+        "tail": {"empty": {}}
+      }
+    },
+    "two_positionals": {
+      "version": "kaira.command-declaration/v1",
+      "program": "app",
+      "command": {
+        "tail": {"positionals": {"positionals": {"name": "file", "value": "string", "min": 2, "max": 2}}}
+      }
+    }
+  },
+  "cases": [
+    {
+      "id": "empty-accept",
+      "declaration": "empty",
+      "argv": [],
+      "ok": {"program": "app", "command_path": [], "levels": [{"options": {}, "positionals": null}]}
+    },
+    {
+      "id": "empty-extra",
+      "declaration": "empty",
+      "argv": ["extra"],
+      "error": {"code": "unexpected_argument", "index": 0}
+    },
+    {
+      "id": "empty-delimiter",
+      "declaration": "empty",
+      "argv": ["--"],
+      "error": {"code": "unexpected_delimiter", "index": 0}
+    },
+    {
+      "id": "options-all",
+      "declaration": "options",
+      "argv": ["-v", "--output=a.log", "--include", "src", "--include", "inc", "--features", "mpi;cuda", "app"],
+      "ok": {
+        "program": "app",
+        "command_path": [],
+        "levels": [
+          {
+            "options": {"verbose": true, "output": "a.log", "include": ["src", "inc"], "features": ["mpi", "cuda"]},
+            "positionals": {"target": ["app"]}
+          }
+        ]
+      }
+    },
+    {
+      "id": "options-absent",
+      "declaration": "options",
+      "argv": [],
+      "ok": {"program": "app", "command_path": [], "levels": [{"options": {}, "positionals": {"target": []}}]}
+    },
+    {
+      "id": "short-attached",
+      "declaration": "options",
+      "argv": ["-o=--"],
+      "ok": {"program": "app", "command_path": [], "levels": [{"options": {"output": "--"}, "positionals": {"target": []}}]}
+    },
+    {
+      "id": "empty-attached-path",
+      "declaration": "options",
+      "argv": ["--output="],
+      "ok": {"program": "app", "command_path": [], "levels": [{"options": {"output": ""}, "positionals": {"target": []}}]}
+    },
+    {
+      "id": "separated-empty-pieces",
+      "declaration": "options",
+      "argv": ["--features", ";a;;"],
+      "ok": {"program": "app", "command_path": [], "levels": [{"options": {"features": ["", "a", "", ""]}, "positionals": {"target": []}}]}
+    },
+    {
+      "id": "spaced-dash-value",
+      "declaration": "options",
+      "argv": ["--include", "--verbose"],
+      "ok": {"program": "app", "command_path": [], "levels": [{"options": {"include": ["--verbose"]}, "positionals": {"target": []}}]}
+    },
+    {
+      "id": "raw-positionals",
+      "declaration": "options",
+      "argv": ["--", "--bad", "--", "-2"],
+      "ok": {"program": "app", "command_path": [], "levels": [{"options": {}, "positionals": {"target": ["--bad", "--", "-2"]}}]}
+    },
+    {
+      "id": "positional-after-first-looks-like-option",
+      "declaration": "options",
+      "argv": ["target", "--include", "src"],
+      "ok": {
+        "program": "app",
+        "command_path": [],
+        "levels": [{"options": {"include": ["src"]}, "positionals": {"target": ["target"]}}]
+      }
+    },
+    {
+      "id": "options-interleaved-with-positionals",
+      "declaration": "options",
+      "argv": ["one", "-v", "two", "--output=x", "--features", "a;b", "three"],
+      "ok": {
+        "program": "app",
+        "command_path": [],
+        "levels": [
+          {
+            "options": {"verbose": true, "output": "x", "features": ["a", "b"]},
+            "positionals": {"target": ["one", "two", "three"]}
+          }
+        ]
+      }
+    },
+    {
+      "id": "delimiter-after-positionals",
+      "declaration": "options",
+      "argv": ["a", "--", "--verbose", "b"],
+      "ok": {
+        "program": "app",
+        "command_path": [],
+        "levels": [{"options": {}, "positionals": {"target": ["a", "--verbose", "b"]}}]
+      }
+    },
+    {
+      "id": "repeated-options-between-positionals",
+      "declaration": "options",
+      "argv": ["a", "--include", "x", "b", "--include", "y"],
+      "ok": {
+        "program": "app",
+        "command_path": [],
+        "levels": [{"options": {"include": ["x", "y"]}, "positionals": {"target": ["a", "b"]}}]
+      }
+    },
+    {
+      "id": "unknown-option-after-positional",
+      "declaration": "options",
+      "argv": ["target", "--bad"],
+      "error": {"code": "unknown_option", "index": 1}
+    },
+    {
+      "id": "short-alias-must-be-declared",
+      "declaration": "options",
+      "argv": ["-i", "src"],
+      "error": {"code": "unknown_option", "index": 0}
+    },
+    {
+      "id": "unknown-option",
+      "declaration": "options",
+      "argv": ["--bad"],
+      "error": {"code": "unknown_option", "index": 0}
+    },
+    {
+      "id": "flag-attached-is-invalid",
+      "declaration": "options",
+      "argv": ["--verbose=true"],
+      "error": {"code": "invalid_option_form", "index": 0}
+    },
+    {
+      "id": "spaced-form-required",
+      "declaration": "options",
+      "argv": ["--include=src"],
+      "error": {"code": "invalid_option_form", "index": 0}
+    },
+    {
+      "id": "attached-form-required",
+      "declaration": "options",
+      "argv": ["--output", "a.log"],
+      "error": {"code": "invalid_option_form", "index": 0}
+    },
+    {
+      "id": "no-short-clusters",
+      "declaration": "options",
+      "argv": ["-vo"],
+      "error": {"code": "unknown_option", "index": 0}
+    },
+    {
+      "id": "missing-spaced-value",
+      "declaration": "options",
+      "argv": ["--include", "--"],
+      "error": {"code": "missing_value", "index": 0}
+    },
+    {
+      "id": "duplicate-flag-alias",
+      "declaration": "options",
+      "argv": ["-v", "--verbose"],
+      "error": {"code": "duplicate_option", "index": 1}
+    },
+    {
+      "id": "duplicate-scalar",
+      "declaration": "options",
+      "argv": ["--output=a", "--output=b"],
+      "error": {"code": "duplicate_option", "index": 1}
+    },
+    {
+      "id": "too-many-positionals",
+      "declaration": "options",
+      "argv": ["a", "--verbose", "b", "c", "d"],
+      "error": {"code": "too_many_positionals", "index": 4}
+    },
+    {
+      "id": "too-few-positionals",
+      "declaration": "two_positionals",
+      "argv": ["a"],
+      "error": {"code": "too_few_positionals", "index": 1}
+    },
+    {
+      "id": "nested-option-scopes",
+      "declaration": "commands",
+      "argv": ["-v", "build", "-v"],
+      "ok": {
+        "program": "app",
+        "command_path": ["build"],
+        "levels": [
+          {"options": {"verbose": true}, "positionals": null},
+          {"options": {"verbose": true}, "positionals": null}
+        ]
+      }
+    },
+    {
+      "id": "missing-required-subcommand",
+      "declaration": "commands",
+      "argv": [],
+      "error": {"code": "missing_subcommand", "index": 0}
+    },
+    {
+      "id": "unknown-subcommand",
+      "declaration": "commands",
+      "argv": ["deploy"],
+      "error": {"code": "unknown_subcommand", "index": 0}
+    },
+    {
+      "id": "delimiter-cannot-select-subcommand",
+      "declaration": "commands",
+      "argv": ["--", "build"],
+      "error": {"code": "unexpected_delimiter", "index": 0}
+    },
+    {
+      "id": "parent-option-not-in-child",
+      "declaration": "commands",
+      "argv": ["test", "-v"],
+      "error": {"code": "unknown_option", "index": 1}
+    },
+    {
+      "id": "optional-stop",
+      "declaration": "optional_subcommand",
+      "argv": [],
+      "ok": {"program": "app", "command_path": [], "levels": [{"options": {}, "positionals": null}]}
+    },
+    {
+      "id": "lexically-validated-large-numbers",
+      "declaration": "values",
+      "argv": ["--count=123456789012345678901234567890", "--ratio", "1.5e+1000", "--enabled", "true", "--define=A=="],
+      "ok": {
+        "program": "app",
+        "command_path": [],
+        "levels": [
+          {
+            "options": {
+              "count": "123456789012345678901234567890",
+              "ratio": "1.5e+1000",
+              "enabled": true,
+              "define": ["A=="]
+            },
+            "positionals": null
+          }
+        ]
+      }
+    },
+    {
+      "id": "invalid-int",
+      "declaration": "values",
+      "argv": ["--count=01"],
+      "error": {"code": "invalid_value", "index": 0}
+    },
+    {
+      "id": "invalid-float",
+      "declaration": "values",
+      "argv": ["--ratio", "NaN"],
+      "error": {"code": "invalid_value", "index": 1}
+    },
+    {
+      "id": "invalid-boolean",
+      "declaration": "values",
+      "argv": ["--enabled", "TRUE"],
+      "error": {"code": "invalid_value", "index": 1}
+    },
+    {
+      "id": "string-does-not-validate-assignment",
+      "declaration": "values",
+      "argv": ["--define==x"],
+      "ok": {"program": "app", "command_path": [], "levels": [{"options": {"define": ["=x"]}, "positionals": null}]}
+    },
+    {
+      "id": "arbitrary-int-positional-after-delimiter",
+      "declaration": "typed_positionals",
+      "argv": ["--", "-123456789012345678901234567890"],
+      "ok": {"program": "app", "command_path": [], "levels": [{"options": {}, "positionals": {"number": ["-123456789012345678901234567890"]}}]}
+    },
+    {
+      "id": "typed-repeatable-and-separated-values",
+      "declaration": "typed_collections",
+      "argv": ["--numbers", "123456789012345678901234567890", "--numbers", "-2", "--switches=true,false,true"],
+      "ok": {"program": "app", "command_path": [], "levels": [{"options": {"numbers": ["123456789012345678901234567890", "-2"], "switches": [true, false, true]}, "positionals": null}]}
+    },
+    {
+      "id": "separated-invalid-boolean",
+      "declaration": "typed_collections",
+      "argv": ["--switches=true,FALSE"],
+      "error": {"code": "invalid_value", "index": 0}
+    },
+    {
+      "id": "float-integer-shaped",
+      "declaration": "values",
+      "argv": ["--ratio", "1"],
+      "ok": {"program": "app", "command_path": [], "levels": [{"options": {"ratio": "1"}, "positionals": null}]}
+    },
+    {
+      "id": "float-negative-zero",
+      "declaration": "values",
+      "argv": ["--ratio", "-0"],
+      "ok": {"program": "app", "command_path": [], "levels": [{"options": {"ratio": "-0"}, "positionals": null}]}
+    },
+    {
+      "id": "negative-arbitrary-int",
+      "declaration": "values",
+      "argv": ["--count=-1234567890123456789012345678901234567890"],
+      "ok": {"program": "app", "command_path": [], "levels": [{"options": {"count": "-1234567890123456789012345678901234567890"}, "positionals": null}]}
+    },
+    {
+      "id": "float-large-mantissa-and-exponent",
+      "declaration": "values",
+      "argv": ["--ratio", "12345678901234567890.0000000000000000001e-999999999999999999"],
+      "ok": {"program": "app", "command_path": [], "levels": [{"options": {"ratio": "12345678901234567890.0000000000000000001e-999999999999999999"}, "positionals": null}]}
+    },
+    {
+      "id": "boolean-false",
+      "declaration": "values",
+      "argv": ["--enabled", "false"],
+      "ok": {"program": "app", "command_path": [], "levels": [{"options": {"enabled": false}, "positionals": null}]}
+    },
+    {
+      "id": "invalid-int-plus",
+      "declaration": "values",
+      "argv": ["--count=+1"],
+      "error": {"code": "invalid_value", "index": 0}
+    },
+    {
+      "id": "invalid-float-infinity",
+      "declaration": "values",
+      "argv": ["--ratio", "Infinity"],
+      "error": {"code": "invalid_value", "index": 1}
+    },
+    {
+      "id": "empty-attached-string",
+      "declaration": "values",
+      "argv": ["--define="],
+      "ok": {"program": "app", "command_path": [], "levels": [{"options": {"define": [""]}, "positionals": null}]}
+    },
+    {
+      "id": "unicode-string",
+      "declaration": "options",
+      "argv": ["--output=東京"],
+      "ok": {"program": "app", "command_path": [], "levels": [{"options": {"output": "東京"}, "positionals": {"target": []}}]}
+    }
+  ],
+  "invalid_declarations": [
+    {
+      "id": "version-not-supported",
+      "declaration": {"version": "kaira.command-declaration/v2", "program": "app", "command": {"tail": {"empty": {}}}},
+      "error": {"code": "unsupported_version"}
+    },
+    {
+      "id": "repeated-short-alias",
+      "declaration": {
+        "version": "kaira.command-declaration/v1",
+        "program": "app",
+        "command": {
+          "options": {"alpha": {"flag": {"short": "a"}}, "another": {"flag": {"short": "a"}}},
+          "tail": {"empty": {}}
+        }
+      },
+      "error": {"code": "invalid_declaration"}
+    },
+    {
+      "id": "empty-separator",
+      "declaration": {
+        "version": "kaira.command-declaration/v1",
+        "program": "app",
+        "command": {
+          "options": {"list": {"separated": {"value": "string", "value_style": "spaced", "separator": ""}}},
+          "tail": {"empty": {}}
+        }
+      },
+      "error": {"code": "invalid_declaration"}
+    },
+    {
+      "id": "inverted-positional-bounds",
+      "declaration": {
+        "version": "kaira.command-declaration/v1",
+        "program": "app",
+        "command": {
+          "tail": {"positionals": {"positionals": {"name": "x", "value": "string", "min": 2, "max": 1}}}
+        }
+      },
+      "error": {"code": "invalid_declaration"}
+    },
+    {
+      "id": "legacy-integer-is-not-a-type",
+      "declaration": {
+        "version": "kaira.command-declaration/v1",
+        "program": "app",
+        "command": {"options": {"count": {"scalar": {"value": "integer", "value_style": "spaced"}}}, "tail": {"empty": {}}}
+      },
+      "error": {"code": "invalid_declaration"}
+    },
+    {
+      "id": "path-is-not-a-base-type",
+      "declaration": {
+        "version": "kaira.command-declaration/v1",
+        "program": "app",
+        "command": {"options": {"file": {"scalar": {"value": "path", "value_style": "spaced"}}}, "tail": {"empty": {}}}
+      },
+      "error": {"code": "invalid_declaration"}
+    },
+    {
+      "id": "unknown-field",
+      "declaration": {
+        "version": "kaira.command-declaration/v1",
+        "program": "app",
+        "command": {"tail": {"empty": {"allow_explicit_empty": true}}}
+      },
+      "error": {"code": "invalid_declaration"}
+    }
+  ]
+}

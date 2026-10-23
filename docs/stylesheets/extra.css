@@ -1,0 +1,91 @@
+/* Kaira palette: deep navy primary with a teal accent. */
+:root {
+  --md-primary-fg-color: #1f3a5f;
+  --md-primary-fg-color--light: #2b5f8a;
+  --md-primary-fg-color--dark: #142843;
+  --md-accent-fg-color: #0f8b8d;
+  --md-accent-fg-color--transparent: rgba(15, 139, 141, 0.1);
+}
+
+[data-md-color-scheme="slate"] {
+  --md-primary-fg-color: #142843;
+  --md-primary-fg-color--light: #1f3a5f;
+  --md-primary-fg-color--dark: #0b1728;
+  --md-accent-fg-color: #4fc3c5;
+  --md-accent-fg-color--transparent: rgba(79, 195, 197, 0.12);
+}
+
+/* Landing-page intro: plain, left-aligned, no banner. */
+.md-typeset .kaira-intro {
+  max-width: 44rem;
+  margin: 1rem 0 2.5rem;
+  padding-bottom: 2rem;
+  border-bottom: 1px solid var(--md-default-fg-color--lightest);
+}
+
+.md-typeset .kaira-intro h1 {
+  margin-bottom: 0.4rem;
+  font-weight: 700;
+  letter-spacing: -0.01em;
+}
+
+.md-typeset .kaira-intro .md-button {
+  margin: 0.4rem 0.5rem 0 0;
+}
+
+.md-typeset .kaira-intro small {
+  display: block;
+  margin-top: 1rem;
+  color: var(--md-default-fg-color--light);
+}
+
+/* Illustrations. */
+.md-typeset .kaira-figure {
+  width: 100%;
+  max-width: none;
+  box-sizing: border-box;
+  margin: 1rem 0 1.5rem;
+  padding: 0.75rem;
+  border: 1px solid var(--md-default-fg-color--lightest);
+  border-radius: 0.75rem;
+  background: var(--md-code-bg-color);
+}
+
+.kaira-figure img,
+.kaira-figure svg {
+  display: block;
+  width: 100%;
+  height: auto;
+}
+
+.kaira-figure figcaption {
+  margin: 0.75rem 0 0;
+  font-size: 0.75rem;
+  color: var(--md-default-fg-color--light);
+  text-align: center;
+}
+
+/* Hand-drawn SVGs use fixed light fills; keep them readable in dark mode. */
+[data-md-color-scheme="slate"] .kaira-figure {
+  background: #f4f7fb;
+  border-color: #c9d3df;
+}
+
+[data-md-color-scheme="slate"] .kaira-figure figcaption {
+  color: #4a5a6e;
+}
+
+/* Softer grid cards with a hover lift. */
+.md-typeset .grid.cards > ul > li {
+  transition: transform 120ms ease, box-shadow 120ms ease;
+}
+
+.md-typeset .grid.cards > ul > li:hover {
+  transform: translateY(-2px);
+  box-shadow: 0 6px 18px rgba(0, 0, 0, 0.08);
+}
+
+/* Compact "Accepted / Rejected" command listings. */
+.md-typeset .kaira-verdict pre > code {
+  font-size: 0.8rem;
+}
