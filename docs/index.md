@@ -23,7 +23,7 @@ inputs.
 
 ## Command-line model
 
-<figure class="kaira-figure kaira-figure--narrow" markdown>
+<figure class="kaira-figure" markdown>
 ![Three forms of a command line: a command with a subcommand; a command with positional arguments (fixed, variable, fixed) among which flags and options may appear; nested subcommands of any depth, each with its own flags, options and arguments.](assets/images/command-line-model.svg)
 <figcaption>A command has flags and options and either a subcommand or positional arguments. Subcommands nest to any depth, each level with its own flags, options and arguments; a fixed number of arguments at each end and one variable group in the middle give every word exactly one place.</figcaption>
 </figure>

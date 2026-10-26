@@ -6,6 +6,8 @@
   --md-accent-fg-color: #0f8b8d;
   --md-accent-fg-color--transparent: rgba(15, 139, 141, 0.08);
   --kaira-rule: var(--md-default-fg-color--lightest);
+  --kaira-figure-bg: #fafbfc;
+  --kaira-figure-border: #e4e8ed;
 }
 
 [data-md-color-scheme="slate"] {
@@ -15,6 +17,8 @@
   --md-accent-fg-color: #4fc3c5;
   --md-accent-fg-color--transparent: rgba(79, 195, 197, 0.08);
   --md-typeset-a-color: #8fb0d4;
+  --kaira-figure-bg: rgba(255, 255, 255, 0.025);
+  --kaira-figure-border: rgba(255, 255, 255, 0.08);
 }
 
 /* Header and tabs: page background, a single hairline, no shadow. */
@@ -115,7 +119,7 @@ html .md-footer-meta.md-typeset a {
 
 /* Dense typography: smaller leading, tighter block spacing, wider column. */
 .md-grid {
-  max-width: 74rem;
+  max-width: 56rem;
 }
 
 .md-typeset {
@@ -210,12 +214,16 @@ html .md-footer-meta.md-typeset a {
   letter-spacing: -0.01em;
 }
 
-/* Illustrations: no frame; captions in small type below. */
+/* Illustrations: a light panel with a hairline border; caption inside. */
 .md-typeset .kaira-figure {
   width: 100%;
   max-width: none;
+  box-sizing: border-box;
   margin: 0.75rem 0 1.1rem;
-  padding: 0;
+  padding: 0.6rem 0.8rem 0.5rem;
+  border: 1px solid var(--kaira-figure-border);
+  border-radius: 0.2rem;
+  background: var(--kaira-figure-bg);
 }
 
 .kaira-figure img,
@@ -232,11 +240,6 @@ html .md-footer-meta.md-typeset a {
   font-style: normal;
   color: var(--md-default-fg-color--light);
   text-align: left;
-}
-
-.md-typeset .kaira-figure.kaira-figure--narrow {
-  max-width: 54rem;
-  margin-left: 0;
 }
 
 /* The diagrams are drawn in light colours with near-neutral hues; invert
