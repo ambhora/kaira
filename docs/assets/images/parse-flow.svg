@@ -4,27 +4,27 @@
   <defs><marker id="a" viewBox="0 0 10 10" refX="9" refY="5" markerWidth="7" markerHeight="7" orient="auto"><path d="M0 0 L10 5 L0 10 z" fill="#5b6b7f"/></marker></defs>
   <style>
     .box { fill: #ffffff; stroke: #5b6b7f; stroke-width: 1.2; }
-    .in { fill: #eef2f9; stroke: #7f9ac4; } .dec { fill: #fff8e6; stroke: #c9a227; }
-    .ok { fill: #e9f7ef; stroke: #5fae7f; } .err { fill: #fdeeee; stroke: #d08484; }
+    .in { fill: #ffffff; stroke: #9aa5b1; } .dec { fill: #ffffff; stroke: #1f3a5f; }
+    .ok { fill: #f2f7f7; stroke: #6f9fa0; } .err { fill: #ffffff; stroke: #a8746f; }
     .ln { fill: none; stroke: #5b6b7f; stroke-width: 1.2; marker-end: url(#a); }
     .ln2 { fill: none; stroke: #5b6b7f; stroke-width: 1.2; }
     .lbl { fill: #5b6b7f; font-size: 12px; } .t { fill: #1f2d3d; }
     .m { font-family: "JetBrains Mono", Menlo, monospace; font-size: 12.5px; }
   </style>
-<rect class="box in" x="10" y="30" width="163" height="32" rx="6"/>
+<rect class="box in" x="10" y="30" width="163" height="32" rx="2"/>
 <text class="t" x="92" y="55" text-anchor="middle">KORML declaration</text>
-<rect class="box in" x="10" y="250" width="237" height="50" rx="6"/>
+<rect class="box in" x="10" y="250" width="237" height="50" rx="2"/>
 <text class="t" x="128" y="275" text-anchor="middle">argv</text>
 <text class="t" x="128" y="293" text-anchor="middle">(words, excluding argv[0])</text>
-<rect class="box " x="210" y="30" width="188" height="32" rx="6"/>
+<rect class="box " x="210" y="30" width="188" height="32" rx="2"/>
 <text class="t" x="304" y="55" text-anchor="middle">validate declaration</text>
 <path class="ln" d="M170 46 H210"/>
-<rect class="box err" x="210" y="100" width="179" height="50" rx="6"/>
+<rect class="box err" x="210" y="100" width="179" height="50" rx="2"/>
 <text class="t m" x="300" y="125" text-anchor="middle">invalid_declaration</text>
 <text class="t m" x="300" y="143" text-anchor="middle">unsupported_version</text>
 <path class="ln" d="M304 62 V100"/>
 <text class="lbl" x="310.0" y="92" text-anchor="start">invalid</text>
-<rect class="box " x="420" y="150" width="130" height="50" rx="6"/>
+<rect class="box " x="420" y="150" width="130" height="50" rx="2"/>
 <text class="t" x="485" y="175" text-anchor="middle">next word at</text>
 <text class="t" x="485" y="193" text-anchor="middle">current level</text>
 <path class="ln" d="M398 46 H400 V175 H420"/>
@@ -34,7 +34,7 @@
 <text class="t" x="640" y="173.0" text-anchor="middle">word</text>
 <text class="t" x="640" y="189.0" text-anchor="middle">class</text>
 <path class="ln" d="M550 175 H580"/>
-<rect class="box " x="800" y="20" width="228" height="50" rx="6"/>
+<rect class="box " x="800" y="20" width="228" height="50" rx="2"/>
 <text class="t" x="914" y="45" text-anchor="middle">raw mode: remaining words</text>
 <text class="t" x="914" y="63" text-anchor="middle">are positional values</text>
 <path class="ln" d="M640 143.0 V45 H800"/>
@@ -44,12 +44,12 @@
 <text class="t" x="860" y="159.0" text-anchor="middle">option?</text>
 <path class="ln" d="M680 155.0 H780 V145.0 H795"/>
 <text class="lbl" x="688" y="149.0" text-anchor="start">starts with "-"</text>
-<rect class="box " x="960" y="99.0" width="212" height="50" rx="6"/>
+<rect class="box " x="960" y="99.0" width="212" height="50" rx="2"/>
 <text class="t" x="1066" y="124" text-anchor="middle">consume value per style</text>
 <text class="t" x="1066" y="142" text-anchor="middle">spaced | attached</text>
 <path class="ln" d="M925 145.0 H960"/>
 <text class="lbl" x="930" y="139.0" text-anchor="start">yes</text>
-<rect class="box err" x="960" y="169.0" width="138" height="32" rx="6"/>
+<rect class="box err" x="960" y="169.0" width="138" height="32" rx="2"/>
 <text class="t m" x="1029" y="194" text-anchor="middle">unknown_option</text>
 <path class="ln" d="M860 175.0 V185 H960"/>
 <text class="lbl" x="868" y="199.0" text-anchor="start">no</text>
@@ -57,15 +57,15 @@
 <text class="t" x="860" y="285.0" text-anchor="middle">shape</text>
 <path class="ln" d="M680 195.0 H770 V280.0 H800"/>
 <text class="lbl" x="688" y="211.0" text-anchor="start">bare word</text>
-<rect class="box " x="1020" y="220.0" width="204" height="32" rx="6"/>
+<rect class="box " x="1020" y="220.0" width="204" height="32" rx="2"/>
 <text class="t" x="1122" y="245" text-anchor="middle">descend to child level</text>
 <path class="ln" d="M920 280.0 H990 V236 H1020"/>
 <text class="lbl m" x="1014" y="228.0" text-anchor="end">subcommands</text>
-<rect class="box " x="1020" y="264.0" width="212" height="32" rx="6"/>
+<rect class="box " x="1020" y="264.0" width="212" height="32" rx="2"/>
 <text class="t" x="1126" y="289" text-anchor="middle">append positional value</text>
 <path class="ln" d="M990 280 H1020"/>
 <text class="lbl m" x="1014" y="260.0" text-anchor="end">positionals</text>
-<rect class="box err" x="1020" y="308.0" width="179" height="32" rx="6"/>
+<rect class="box err" x="1020" y="308.0" width="179" height="32" rx="2"/>
 <text class="t m" x="1110" y="333" text-anchor="middle">unexpected_argument</text>
 <path class="ln" d="M990 280 V324 H1020"/>
 <text class="lbl m" x="1014" y="340.0" text-anchor="end">empty</text>
@@ -75,15 +75,15 @@
 <path class="ln2" d="M1232 280 H1260"/>
 <path class="ln" d="M1260 280 V8 H485 V150"/>
 <text class="lbl" x="1266" y="49.0" text-anchor="start">loop</text>
-<rect class="box " x="1130" y="360.0" width="188" height="50" rx="6"/>
+<rect class="box " x="1130" y="360.0" width="188" height="50" rx="2"/>
 <text class="t" x="1224" y="385" text-anchor="middle">end of input:</text>
 <text class="t" x="1224" y="403" text-anchor="middle">check counts, assign slots</text>
 <path class="ln" d="M485 200 V385 H1130" stroke-dasharray="5 4"/>
 <text class="lbl" x="491.0" y="240" text-anchor="start">no more words</text>
-<rect class="box ok" x="1340" y="346.0" width="147" height="32" rx="6"/>
+<rect class="box ok" x="1340" y="346.0" width="147" height="32" rx="2"/>
 <text class="t" x="1414" y="371" text-anchor="middle">portable result</text>
 <path class="ln" d="M1318 379 H1340"/>
-<rect class="box err" x="1340" y="390.0" width="114" height="32" rx="6"/>
+<rect class="box err" x="1340" y="390.0" width="114" height="32" rx="2"/>
 <text class="t m" x="1397" y="415" text-anchor="middle">code, index</text>
 <path class="ln" d="M1318 391 H1340"/>
 </svg>

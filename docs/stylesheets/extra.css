@@ -1,18 +1,116 @@
-/* Palette: navy header, teal accent. */
+/* Palette: navy text and links, teal for hover and focus only. */
 :root {
   --md-primary-fg-color: #1f3a5f;
   --md-primary-fg-color--light: #2b5f8a;
   --md-primary-fg-color--dark: #142843;
   --md-accent-fg-color: #0f8b8d;
-  --md-accent-fg-color--transparent: rgba(15, 139, 141, 0.1);
+  --md-accent-fg-color--transparent: rgba(15, 139, 141, 0.08);
+  --kaira-rule: var(--md-default-fg-color--lightest);
 }
 
 [data-md-color-scheme="slate"] {
-  --md-primary-fg-color: #142843;
-  --md-primary-fg-color--light: #1f3a5f;
-  --md-primary-fg-color--dark: #0b1728;
+  --md-primary-fg-color: #8fb0d4;
+  --md-primary-fg-color--light: #a9c3df;
+  --md-primary-fg-color--dark: #6f93bb;
   --md-accent-fg-color: #4fc3c5;
-  --md-accent-fg-color--transparent: rgba(79, 195, 197, 0.12);
+  --md-accent-fg-color--transparent: rgba(79, 195, 197, 0.08);
+  --md-typeset-a-color: #8fb0d4;
+}
+
+/* Header and tabs: page background, a single hairline, no shadow. */
+.md-header,
+.md-tabs {
+  background-color: var(--md-default-bg-color);
+  color: var(--md-default-fg-color);
+}
+
+.md-header,
+.md-header--shadow {
+  box-shadow: none;
+}
+
+.md-tabs {
+  border-bottom: 1px solid var(--kaira-rule);
+}
+
+.md-header__topic:first-child {
+  font-weight: 600;
+}
+
+.md-header__button.md-logo {
+  color: var(--md-primary-fg-color);
+}
+
+.md-tabs__link {
+  margin-top: 0.5rem;
+  font-size: 0.7rem;
+  opacity: 1;
+  color: var(--md-default-fg-color--light);
+}
+
+.md-tabs__item--active .md-tabs__link {
+  color: var(--md-default-fg-color);
+  font-weight: 600;
+}
+
+.md-tabs__link:hover {
+  color: var(--md-accent-fg-color);
+}
+
+.md-search__form {
+  background-color: var(--md-default-fg-color--lightest);
+}
+
+.md-search__form:hover {
+  background-color: var(--md-default-fg-color--lighter);
+}
+
+.md-search__input,
+.md-search__input::placeholder,
+.md-search__icon {
+  color: var(--md-default-fg-color--light);
+}
+
+/* Footer: same background as the page, small type. */
+.md-footer,
+.md-footer-meta {
+  background-color: var(--md-default-bg-color);
+  color: var(--md-default-fg-color--light);
+}
+
+.md-footer {
+  border-top: 1px solid var(--kaira-rule);
+}
+
+.md-footer__inner {
+  padding: 0.2rem 0;
+}
+
+.md-footer__link {
+  padding-top: 0.6rem;
+  padding-bottom: 0.4rem;
+}
+
+.md-footer__title {
+  font-size: 0.75rem;
+}
+
+.md-footer__direction {
+  font-size: 0.6rem;
+}
+
+.md-footer-meta {
+  border-top: 1px solid var(--kaira-rule);
+}
+
+.md-footer-meta__inner,
+.md-copyright {
+  font-size: 0.6rem;
+}
+
+.md-footer-meta .md-copyright__highlight,
+html .md-footer-meta.md-typeset a {
+  color: var(--md-default-fg-color--light);
 }
 
 /* Dense typography: smaller leading, tighter block spacing, wider column. */
@@ -112,16 +210,12 @@
   letter-spacing: -0.01em;
 }
 
-/* Illustrations. */
+/* Illustrations: no frame; captions in small type below. */
 .md-typeset .kaira-figure {
   width: 100%;
   max-width: none;
-  box-sizing: border-box;
-  margin: 0.75rem 0 1.25rem;
-  padding: 0.5rem 0.75rem;
-  border: 1px solid var(--md-default-fg-color--lightest);
-  border-radius: 0.75rem;
-  background: var(--md-code-bg-color);
+  margin: 0.75rem 0 1.1rem;
+  padding: 0;
 }
 
 .kaira-figure img,
@@ -133,8 +227,8 @@
 
 .md-typeset .kaira-figure figcaption {
   max-width: none;
-  margin: 0.75rem 0 0;
-  font-size: 0.75rem;
+  margin: 0.5rem 0 0;
+  font-size: 0.68rem;
   font-style: normal;
   color: var(--md-default-fg-color--light);
   text-align: left;
@@ -145,14 +239,82 @@
   margin-left: 0;
 }
 
-/* Hand-drawn SVGs use fixed light fills; keep them readable in dark mode. */
-[data-md-color-scheme="slate"] .kaira-figure {
-  background: #f4f7fb;
-  border-color: #c9d3df;
+/* The diagrams are drawn in light colours with near-neutral hues; invert
+   them in the dark scheme so that they match the page instead of forming a
+   bright panel. The hue rotation restores the navy and teal tints. */
+[data-md-color-scheme="slate"] .md-typeset img[src$=".svg"] {
+  filter: invert(0.88) hue-rotate(180deg);
 }
 
-[data-md-color-scheme="slate"] .kaira-figure figcaption {
-  color: #4a5a6e;
+/* Admonitions: hairline left rule, no tinted title bar or shadow. */
+.md-typeset .admonition,
+.md-typeset details {
+  border: none;
+  border-left: 2px solid var(--md-default-fg-color--lighter);
+  border-radius: 0;
+  box-shadow: none;
+  background: transparent;
+}
+
+.md-typeset .admonition > .admonition-title,
+.md-typeset details > summary {
+  background: transparent;
+  padding-left: 1.6rem;
+  font-weight: 600;
+}
+
+.md-typeset .admonition > .admonition-title::before,
+.md-typeset details > summary::before {
+  left: 0.4rem;
+  background-color: var(--md-default-fg-color--light);
+}
+
+.md-typeset details > summary::after {
+  background-color: var(--md-default-fg-color--light);
+}
+
+/* Override the per-type border colours (note, warning, ...). */
+.md-typeset .admonition[class],
+.md-typeset details[class] {
+  border-left-color: var(--md-default-fg-color--lighter);
+}
+
+/* Tables: horizontal rules only, as in typeset documents. */
+.md-typeset table:not([class]) {
+  border: none;
+  border-top: 1px solid var(--md-default-fg-color--light);
+  border-bottom: 1px solid var(--md-default-fg-color--light);
+  border-radius: 0;
+  box-shadow: none;
+}
+
+.md-typeset table:not([class]) th {
+  border-bottom: 1px solid var(--md-default-fg-color--lighter);
+  background: transparent;
+  font-weight: 600;
+}
+
+.md-typeset table:not([class]) td {
+  border-top: 1px solid var(--kaira-rule);
+}
+
+.md-typeset table:not([class]) tbody tr:first-child td {
+  border-top: none;
+}
+
+.md-typeset table:not([class]) tr:hover {
+  background: transparent;
+  box-shadow: none;
+}
+
+/* Content tabs: plain labels, thin indicator. */
+.md-typeset .tabbed-labels > label {
+  font-size: 0.7rem;
+}
+
+.md-typeset .tabbed-labels::before {
+  height: 1px;
+  background: var(--md-default-fg-color);
 }
 
 /* Compact "Accepted / Rejected" command listings. */

@@ -3,78 +3,78 @@
   <desc id="d">Three forms. 1: a command with flags and options followed by a subcommand with its own flags, options and arguments. 2: a command with positional arguments - a fixed number, then a variable number, then a fixed number - among which flags and options may appear, and after -- every word is an argument. 3: nested subcommands of any depth, each level with its own flags, options and arguments.</desc>
 <text x="14" y="24" font-size="12" font-weight="600" fill="#1f2d3d">1 · Command with a subcommand</text>
 <text x="20" y="51" font-family="JetBrains Mono, Menlo, monospace" font-size="13" fill="#5b6b7f">$</text>
-<rect x="40" y="34" width="46" height="24" rx="5" fill="#eef2f9" stroke="#7f9ac4"/>
-<text x="63" y="51" text-anchor="middle" font-family="JetBrains Mono, Menlo, monospace" font-size="13" fill="#243b6b">prog</text>
-<rect x="96" y="34" width="61" height="24" rx="5" fill="#eef2f9" stroke="#7f9ac4"/>
-<text x="126" y="51" text-anchor="middle" font-family="JetBrains Mono, Menlo, monospace" font-size="13" fill="#243b6b">--flag</text>
-<rect x="167" y="34" width="99" height="24" rx="5" fill="#eef2f9" stroke="#7f9ac4"/>
-<text x="216" y="51" text-anchor="middle" font-family="JetBrains Mono, Menlo, monospace" font-size="13" fill="#243b6b">--opt=value</text>
-<rect x="276" y="34" width="92" height="24" rx="5" fill="#fff8e6" stroke="#c9a227"/>
-<text x="322" y="51" text-anchor="middle" font-family="JetBrains Mono, Menlo, monospace" font-size="13" fill="#6b5a1a">subcommand</text>
-<rect x="378" y="34" width="61" height="24" rx="5" fill="#e2f3ea" stroke="#5fae7f"/>
-<text x="408" y="51" text-anchor="middle" font-family="JetBrains Mono, Menlo, monospace" font-size="13" fill="#1e6b3a">--flag</text>
-<rect x="449" y="34" width="38" height="24" rx="5" fill="#e2f3ea" stroke="#5fae7f"/>
-<text x="468" y="51" text-anchor="middle" font-family="JetBrains Mono, Menlo, monospace" font-size="13" fill="#1e6b3a">arg</text>
-<rect x="497" y="34" width="38" height="24" rx="5" fill="#e2f3ea" stroke="#5fae7f"/>
-<text x="516" y="51" text-anchor="middle" font-family="JetBrains Mono, Menlo, monospace" font-size="13" fill="#1e6b3a">arg</text>
-<path d="M96 64 v6 h170 v-6" fill="none" stroke="#243b6b" stroke-width="1.3"/>
-<text x="96" y="84" text-anchor="start" font-size="11" fill="#243b6b">flags and options of the command</text>
-<path d="M276 64 v6 h92 v-6" fill="none" stroke="#6b5a1a" stroke-width="1.3"/>
-<text x="322" y="84" text-anchor="middle" font-size="11" fill="#6b5a1a">boundary</text>
-<path d="M378 64 v6 h157 v-6" fill="none" stroke="#1e6b3a" stroke-width="1.3"/>
-<text x="378" y="84" text-anchor="start" font-size="11" fill="#1e6b3a">the subcommand's own flags, options and arguments</text>
+<rect x="40" y="34" width="46" height="24" rx="2" fill="#ffffff" stroke="#9aa5b1"/>
+<text x="63" y="51" text-anchor="middle" font-family="JetBrains Mono, Menlo, monospace" font-size="13" fill="#1f3a5f">prog</text>
+<rect x="96" y="34" width="61" height="24" rx="2" fill="#ffffff" stroke="#9aa5b1"/>
+<text x="126" y="51" text-anchor="middle" font-family="JetBrains Mono, Menlo, monospace" font-size="13" fill="#1f3a5f">--flag</text>
+<rect x="167" y="34" width="99" height="24" rx="2" fill="#ffffff" stroke="#9aa5b1"/>
+<text x="216" y="51" text-anchor="middle" font-family="JetBrains Mono, Menlo, monospace" font-size="13" fill="#1f3a5f">--opt=value</text>
+<rect x="276" y="34" width="92" height="24" rx="2" fill="#ffffff" stroke="#1f3a5f"/>
+<text x="322" y="51" text-anchor="middle" font-family="JetBrains Mono, Menlo, monospace" font-size="13" fill="#1f3a5f">subcommand</text>
+<rect x="378" y="34" width="61" height="24" rx="2" fill="#f2f7f7" stroke="#6f9fa0"/>
+<text x="408" y="51" text-anchor="middle" font-family="JetBrains Mono, Menlo, monospace" font-size="13" fill="#0f6668">--flag</text>
+<rect x="449" y="34" width="38" height="24" rx="2" fill="#f2f7f7" stroke="#6f9fa0"/>
+<text x="468" y="51" text-anchor="middle" font-family="JetBrains Mono, Menlo, monospace" font-size="13" fill="#0f6668">arg</text>
+<rect x="497" y="34" width="38" height="24" rx="2" fill="#f2f7f7" stroke="#6f9fa0"/>
+<text x="516" y="51" text-anchor="middle" font-family="JetBrains Mono, Menlo, monospace" font-size="13" fill="#0f6668">arg</text>
+<path d="M96 64 v6 h170 v-6" fill="none" stroke="#1f3a5f" stroke-width="1.3"/>
+<text x="96" y="84" text-anchor="start" font-size="11" fill="#1f3a5f">flags and options of the command</text>
+<path d="M276 64 v6 h92 v-6" fill="none" stroke="#1f3a5f" stroke-width="1.3"/>
+<text x="322" y="84" text-anchor="middle" font-size="11" fill="#1f3a5f">boundary</text>
+<path d="M378 64 v6 h157 v-6" fill="none" stroke="#0f6668" stroke-width="1.3"/>
+<text x="378" y="84" text-anchor="start" font-size="11" fill="#0f6668">the subcommand's own flags, options and arguments</text>
 <text x="14" y="120" font-size="12" font-weight="600" fill="#1f2d3d">2 · Command with positional arguments</text>
 <text x="20" y="147" font-family="JetBrains Mono, Menlo, monospace" font-size="13" fill="#5b6b7f">$</text>
-<rect x="40" y="130" width="46" height="24" rx="5" fill="#eef2f9" stroke="#7f9ac4"/>
-<text x="63" y="147" text-anchor="middle" font-family="JetBrains Mono, Menlo, monospace" font-size="13" fill="#243b6b">prog</text>
-<rect x="96" y="130" width="61" height="24" rx="5" fill="#eef2f9" stroke="#7f9ac4"/>
-<text x="126" y="147" text-anchor="middle" font-family="JetBrains Mono, Menlo, monospace" font-size="13" fill="#243b6b">--flag</text>
-<rect x="167" y="130" width="38" height="24" rx="5" fill="#e2f3ea" stroke="#5fae7f"/>
-<text x="186" y="147" text-anchor="middle" font-family="JetBrains Mono, Menlo, monospace" font-size="13" fill="#1e6b3a">arg</text>
-<rect x="215" y="130" width="38" height="24" rx="5" fill="#e2f3ea" stroke="#5fae7f"/>
-<text x="234" y="147" text-anchor="middle" font-family="JetBrains Mono, Menlo, monospace" font-size="13" fill="#1e6b3a">arg</text>
-<rect x="263" y="130" width="38" height="24" rx="5" fill="#e2f3ea" stroke="#5fae7f"/>
-<text x="282" y="147" text-anchor="middle" font-family="JetBrains Mono, Menlo, monospace" font-size="13" fill="#1e6b3a">arg</text>
-<rect x="311" y="130" width="54" height="24" rx="5" fill="#eef2f9" stroke="#7f9ac4"/>
-<text x="338" y="147" text-anchor="middle" font-family="JetBrains Mono, Menlo, monospace" font-size="13" fill="#243b6b">--opt</text>
-<rect x="375" y="130" width="54" height="24" rx="5" fill="#eef2f9" stroke="#7f9ac4"/>
-<text x="402" y="147" text-anchor="middle" font-family="JetBrains Mono, Menlo, monospace" font-size="13" fill="#243b6b">value</text>
-<rect x="439" y="130" width="31" height="24" rx="5" fill="#f4f6f8" stroke="#8a98a8"/>
+<rect x="40" y="130" width="46" height="24" rx="2" fill="#ffffff" stroke="#9aa5b1"/>
+<text x="63" y="147" text-anchor="middle" font-family="JetBrains Mono, Menlo, monospace" font-size="13" fill="#1f3a5f">prog</text>
+<rect x="96" y="130" width="61" height="24" rx="2" fill="#ffffff" stroke="#9aa5b1"/>
+<text x="126" y="147" text-anchor="middle" font-family="JetBrains Mono, Menlo, monospace" font-size="13" fill="#1f3a5f">--flag</text>
+<rect x="167" y="130" width="38" height="24" rx="2" fill="#f2f7f7" stroke="#6f9fa0"/>
+<text x="186" y="147" text-anchor="middle" font-family="JetBrains Mono, Menlo, monospace" font-size="13" fill="#0f6668">arg</text>
+<rect x="215" y="130" width="38" height="24" rx="2" fill="#f2f7f7" stroke="#6f9fa0"/>
+<text x="234" y="147" text-anchor="middle" font-family="JetBrains Mono, Menlo, monospace" font-size="13" fill="#0f6668">arg</text>
+<rect x="263" y="130" width="38" height="24" rx="2" fill="#f2f7f7" stroke="#6f9fa0"/>
+<text x="282" y="147" text-anchor="middle" font-family="JetBrains Mono, Menlo, monospace" font-size="13" fill="#0f6668">arg</text>
+<rect x="311" y="130" width="54" height="24" rx="2" fill="#ffffff" stroke="#9aa5b1"/>
+<text x="338" y="147" text-anchor="middle" font-family="JetBrains Mono, Menlo, monospace" font-size="13" fill="#1f3a5f">--opt</text>
+<rect x="375" y="130" width="54" height="24" rx="2" fill="#ffffff" stroke="#9aa5b1"/>
+<text x="402" y="147" text-anchor="middle" font-family="JetBrains Mono, Menlo, monospace" font-size="13" fill="#1f3a5f">value</text>
+<rect x="439" y="130" width="31" height="24" rx="2" fill="#f4f6f8" stroke="#8a98a8"/>
 <text x="454" y="147" text-anchor="middle" font-family="JetBrains Mono, Menlo, monospace" font-size="13" fill="#5b6b7f">--</text>
-<rect x="480" y="130" width="76" height="24" rx="5" fill="#e2f3ea" stroke="#5fae7f"/>
-<text x="518" y="147" text-anchor="middle" font-family="JetBrains Mono, Menlo, monospace" font-size="13" fill="#1e6b3a">-literal</text>
-<rect x="566" y="130" width="38" height="24" rx="5" fill="#e2f3ea" stroke="#5fae7f"/>
-<text x="585" y="147" text-anchor="middle" font-family="JetBrains Mono, Menlo, monospace" font-size="13" fill="#1e6b3a">arg</text>
-<path d="M167 160 v6 h38 v-6" fill="none" stroke="#1e6b3a" stroke-width="1.3"/>
-<text x="186" y="180" text-anchor="middle" font-size="11" fill="#1e6b3a">fixed</text>
-<path d="M215 160 v6 h341 v-6" fill="none" stroke="#1e6b3a" stroke-width="1.3"/>
-<text x="386" y="180" text-anchor="middle" font-size="11" fill="#1e6b3a">variable number</text>
-<path d="M566 160 v6 h38 v-6" fill="none" stroke="#1e6b3a" stroke-width="1.3"/>
-<text x="585" y="180" text-anchor="middle" font-size="11" fill="#1e6b3a">fixed</text>
+<rect x="480" y="130" width="76" height="24" rx="2" fill="#f2f7f7" stroke="#6f9fa0"/>
+<text x="518" y="147" text-anchor="middle" font-family="JetBrains Mono, Menlo, monospace" font-size="13" fill="#0f6668">-literal</text>
+<rect x="566" y="130" width="38" height="24" rx="2" fill="#f2f7f7" stroke="#6f9fa0"/>
+<text x="585" y="147" text-anchor="middle" font-family="JetBrains Mono, Menlo, monospace" font-size="13" fill="#0f6668">arg</text>
+<path d="M167 160 v6 h38 v-6" fill="none" stroke="#0f6668" stroke-width="1.3"/>
+<text x="186" y="180" text-anchor="middle" font-size="11" fill="#0f6668">fixed</text>
+<path d="M215 160 v6 h341 v-6" fill="none" stroke="#0f6668" stroke-width="1.3"/>
+<text x="386" y="180" text-anchor="middle" font-size="11" fill="#0f6668">variable number</text>
+<path d="M566 160 v6 h38 v-6" fill="none" stroke="#0f6668" stroke-width="1.3"/>
+<text x="585" y="180" text-anchor="middle" font-size="11" fill="#0f6668">fixed</text>
 <text x="96" y="196" font-size="11" fill="#5b6b7f">flags and options may appear anywhere among the arguments; an option's value is the next word or follows =; after -- every word is an argument</text>
 <text x="14" y="226" font-size="12" font-weight="600" fill="#1f2d3d">3 · Nested subcommands (any depth; each level has its own flags, options and arguments)</text>
 <text x="20" y="253" font-family="JetBrains Mono, Menlo, monospace" font-size="13" fill="#5b6b7f">$</text>
-<rect x="40" y="236" width="46" height="24" rx="5" fill="#eef2f9" stroke="#7f9ac4"/>
-<text x="63" y="253" text-anchor="middle" font-family="JetBrains Mono, Menlo, monospace" font-size="13" fill="#243b6b">prog</text>
-<rect x="96" y="236" width="31" height="24" rx="5" fill="#eef2f9" stroke="#7f9ac4"/>
-<text x="112" y="253" text-anchor="middle" font-family="JetBrains Mono, Menlo, monospace" font-size="13" fill="#243b6b">-v</text>
-<rect x="137" y="236" width="61" height="24" rx="5" fill="#fff8e6" stroke="#c9a227"/>
-<text x="168" y="253" text-anchor="middle" font-family="JetBrains Mono, Menlo, monospace" font-size="13" fill="#6b5a1a">remote</text>
-<rect x="208" y="236" width="38" height="24" rx="5" fill="#f3e9f7" stroke="#a98bc0"/>
-<text x="227" y="253" text-anchor="middle" font-family="JetBrains Mono, Menlo, monospace" font-size="13" fill="#5b3f73">add</text>
-<rect x="256" y="236" width="31" height="24" rx="5" fill="#e2f3ea" stroke="#5fae7f"/>
-<text x="272" y="253" text-anchor="middle" font-family="JetBrains Mono, Menlo, monospace" font-size="13" fill="#1e6b3a">-v</text>
-<rect x="297" y="236" width="54" height="24" rx="5" fill="#e2f3ea" stroke="#5fae7f"/>
-<text x="324" y="253" text-anchor="middle" font-family="JetBrains Mono, Menlo, monospace" font-size="13" fill="#1e6b3a">--opt</text>
-<rect x="361" y="236" width="54" height="24" rx="5" fill="#e2f3ea" stroke="#5fae7f"/>
-<text x="388" y="253" text-anchor="middle" font-family="JetBrains Mono, Menlo, monospace" font-size="13" fill="#1e6b3a">value</text>
-<rect x="425" y="236" width="38" height="24" rx="5" fill="#e2f3ea" stroke="#5fae7f"/>
-<text x="444" y="253" text-anchor="middle" font-family="JetBrains Mono, Menlo, monospace" font-size="13" fill="#1e6b3a">url</text>
-<path d="M96 266 v6 h31 v-6" fill="none" stroke="#243b6b" stroke-width="1.3"/>
-<text x="112" y="286" text-anchor="middle" font-size="11" fill="#243b6b">prog</text>
-<path d="M137 266 v6 h61 v-6" fill="none" stroke="#6b5a1a" stroke-width="1.3"/>
-<text x="168" y="286" text-anchor="middle" font-size="11" fill="#6b5a1a">remote</text>
-<path d="M256 266 v6 h207 v-6" fill="none" stroke="#1e6b3a" stroke-width="1.3"/>
-<text x="256" y="286" text-anchor="start" font-size="11" fill="#1e6b3a">remote add</text>
+<rect x="40" y="236" width="46" height="24" rx="2" fill="#ffffff" stroke="#9aa5b1"/>
+<text x="63" y="253" text-anchor="middle" font-family="JetBrains Mono, Menlo, monospace" font-size="13" fill="#1f3a5f">prog</text>
+<rect x="96" y="236" width="31" height="24" rx="2" fill="#ffffff" stroke="#9aa5b1"/>
+<text x="112" y="253" text-anchor="middle" font-family="JetBrains Mono, Menlo, monospace" font-size="13" fill="#1f3a5f">-v</text>
+<rect x="137" y="236" width="61" height="24" rx="2" fill="#ffffff" stroke="#1f3a5f"/>
+<text x="168" y="253" text-anchor="middle" font-family="JetBrains Mono, Menlo, monospace" font-size="13" fill="#1f3a5f">remote</text>
+<rect x="208" y="236" width="38" height="24" rx="2" fill="#ffffff" stroke="#1f3a5f"/>
+<text x="227" y="253" text-anchor="middle" font-family="JetBrains Mono, Menlo, monospace" font-size="13" fill="#1f3a5f">add</text>
+<rect x="256" y="236" width="31" height="24" rx="2" fill="#f2f7f7" stroke="#6f9fa0"/>
+<text x="272" y="253" text-anchor="middle" font-family="JetBrains Mono, Menlo, monospace" font-size="13" fill="#0f6668">-v</text>
+<rect x="297" y="236" width="54" height="24" rx="2" fill="#f2f7f7" stroke="#6f9fa0"/>
+<text x="324" y="253" text-anchor="middle" font-family="JetBrains Mono, Menlo, monospace" font-size="13" fill="#0f6668">--opt</text>
+<rect x="361" y="236" width="54" height="24" rx="2" fill="#f2f7f7" stroke="#6f9fa0"/>
+<text x="388" y="253" text-anchor="middle" font-family="JetBrains Mono, Menlo, monospace" font-size="13" fill="#0f6668">value</text>
+<rect x="425" y="236" width="38" height="24" rx="2" fill="#f2f7f7" stroke="#6f9fa0"/>
+<text x="444" y="253" text-anchor="middle" font-family="JetBrains Mono, Menlo, monospace" font-size="13" fill="#0f6668">url</text>
+<path d="M96 266 v6 h31 v-6" fill="none" stroke="#1f3a5f" stroke-width="1.3"/>
+<text x="112" y="286" text-anchor="middle" font-size="11" fill="#1f3a5f">prog</text>
+<path d="M137 266 v6 h61 v-6" fill="none" stroke="#1f3a5f" stroke-width="1.3"/>
+<text x="168" y="286" text-anchor="middle" font-size="11" fill="#1f3a5f">remote</text>
+<path d="M256 266 v6 h207 v-6" fill="none" stroke="#0f6668" stroke-width="1.3"/>
+<text x="256" y="286" text-anchor="start" font-size="11" fill="#0f6668">remote add</text>
 <text x="96" y="302" font-size="11" fill="#5b6b7f">the same name or short form may be declared again at a deeper level (-v here means something else under add)</text>
 </svg>

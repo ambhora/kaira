@@ -41,10 +41,11 @@ nav:
 
 theme:
   name: material
+  custom_dir: overrides
   language: en
-  logo: assets/logo.svg
   favicon: assets/favicon.svg
   icon:
+    logo: kaira/logo
     repo: fontawesome/brands/github
     admonition:
       success: material/check-circle
@@ -58,14 +59,11 @@ theme:
     code: JetBrains Mono
   features:
     - navigation.instant
-    - navigation.instant.progress
     - navigation.tracking
     - navigation.tabs
-    - navigation.tabs.sticky
     - navigation.sections
     - navigation.indexes
     - navigation.path
-    - navigation.top
     - navigation.footer
     - toc.follow
     - search.suggest
@@ -100,6 +98,7 @@ extra_css:
   - stylesheets/extra.css
 
 extra:
+  generator: false
   status:
     draft: Draft — subject to change
   social:

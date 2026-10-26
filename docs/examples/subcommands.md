@@ -13,8 +13,6 @@ aliases are scoped per command.
 flowchart TD
     R["__main__<br/><small>-v / --verbose</small>"] --> B["__main__.build<br/><small>-v / --verbose</small>"]
     R --> T["__main__.test"]
-    classDef lvl fill:#eef2f9,stroke:#7f9ac4,color:#243b6b;
-    class R,B,T lvl;
 ```
 
 ```yaml title="kaira.korml"

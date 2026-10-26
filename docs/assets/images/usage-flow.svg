@@ -4,40 +4,40 @@
   <defs><marker id="a" viewBox="0 0 10 10" refX="9" refY="5" markerWidth="7" markerHeight="7" orient="auto"><path d="M0 0 L10 5 L0 10 z" fill="#5b6b7f"/></marker></defs>
   <style>
     .box { fill: #ffffff; stroke: #5b6b7f; stroke-width: 1.2; }
-    .you { fill: #eef2f9; stroke: #7f9ac4; } .in { fill: #f4f6f8; stroke: #8a98a8; }
-    .ok { fill: #e9f7ef; stroke: #5fae7f; } .err { fill: #fdeeee; stroke: #d08484; }
+    .you { fill: #ffffff; stroke: #9aa5b1; } .in { fill: #f4f6f8; stroke: #8a98a8; }
+    .ok { fill: #f2f7f7; stroke: #6f9fa0; } .err { fill: #ffffff; stroke: #a8746f; }
     .ln { fill: none; stroke: #5b6b7f; stroke-width: 1.2; marker-end: url(#a); }
     .br { fill: none; stroke: #8a98a8; stroke-width: 1; }
     .lbl { fill: #5b6b7f; font-size: 12px; } .t { fill: #1f2d3d; }
     .m { font-family: "JetBrains Mono", Menlo, monospace; font-size: 12.5px; }
   </style>
-<rect class="box you" x="10" y="66" width="224" height="52" rx="6"/>
+<rect class="box you" x="10" y="66" width="224" height="52" rx="2"/>
 <text class="t" x="122" y="92" text-anchor="middle">1. Write the declaration</text>
 <text class="t m" x="122" y="110" text-anchor="middle">greet.korml</text>
 <text class="lbl" x="10" y="54" text-anchor="start">Developer, once</text>
-<rect class="box lib" x="284" y="66" width="282" height="52" rx="6"/>
+<rect class="box lib" x="284" y="66" width="282" height="52" rx="2"/>
 <text class="t" x="425" y="92" text-anchor="middle">2. Load it with a Kaira library</text>
 <text class="t" x="425" y="110" text-anchor="middle">pykaira · kaira-rs · kaira-cpp</text>
 <text class="lbl" x="284" y="54" text-anchor="start">Program start-up</text>
 <path class="ln" d="M234 92 H284"/>
-<rect class="box lib" x="616" y="66" width="232" height="34" rx="6"/>
+<rect class="box lib" x="616" y="66" width="232" height="34" rx="2"/>
 <text class="t" x="732" y="92" text-anchor="middle">3. Parse the process argv</text>
 <path class="ln" d="M566 92 H616"/>
-<rect class="box in" x="702" y="146" width="60" height="34" rx="6"/>
+<rect class="box in" x="702" y="146" width="60" height="34" rx="2"/>
 <text class="t" x="732" y="172" text-anchor="middle">argv</text>
 <path class="ln" d="M732 146 V100"/>
 <text class="lbl" x="732.0" y="196" text-anchor="middle">from the shell, already tokenized</text>
-<rect class="box ok" x="908" y="20" width="323" height="52" rx="6"/>
+<rect class="box ok" x="908" y="20" width="323" height="52" rx="2"/>
 <text class="t" x="1070" y="46" text-anchor="middle">4a. Typed result</text>
 <text class="t" x="1070" y="64" text-anchor="middle">options · positionals · command path</text>
-<rect class="box err" x="908" y="110" width="257" height="52" rx="6"/>
+<rect class="box err" x="908" y="110" width="257" height="52" rx="2"/>
 <text class="t" x="1036" y="136" text-anchor="middle">4b. Error: code + argv index</text>
 <text class="t" x="1036" y="154" text-anchor="middle">report to the user, exit</text>
 <path class="ln" d="M848 75 H878 V46 H908"/>
 <path class="ln" d="M848 91 H878 V136 H908"/>
 <text class="lbl" x="874" y="40" text-anchor="end">ok</text>
 <text class="lbl" x="874" y="152" text-anchor="end">error</text>
-<rect class="box you" x="1281" y="20" width="274" height="52" rx="6"/>
+<rect class="box you" x="1281" y="20" width="274" height="52" rx="2"/>
 <text class="t" x="1418" y="46" text-anchor="middle">5. Application logic</text>
 <text class="t" x="1418" y="64" text-anchor="middle">reads a native struct / record</text>
 <path class="ln" d="M1231 46 H1281"/>

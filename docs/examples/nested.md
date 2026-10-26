@@ -17,8 +17,6 @@ flowchart LR
     P --> R["__main__.remote"]
     R --> RA["__main__.remote.add<br/><small>-v / --verify</small><br/><small>url</small>"]
     R --> RL["__main__.remote.list"]
-    classDef lvl fill:#eef2f9,stroke:#7f9ac4,color:#243b6b;
-    class P,I,R,RA,RL lvl;
 ```
 
 ```yaml title="pkg.korml"
