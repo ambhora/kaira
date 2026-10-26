@@ -89,8 +89,8 @@ the same code and the same position:
 
 | Command line | Error | Reason |
 | --- | --- | --- |
-| `greet` | `too_few_positionals` at 0 | The `name` slot is required; the index is the end of input. |
-| `greet --times 3 Ada` | `invalid_option_form` at 0 | `times` is `attached`; the spaced form is refused. |
+| `greet` | `too_few_positionals` at 1 | The `name` slot is required; the index is the end of input. |
+| `greet --times 3 Ada` | `invalid_option_form` at 1 | `times` is `attached`; the spaced form is refused. |
 
 Libraries expose the result through native types as well; the portable form
 above is what the specification guarantees ([Portable results](../reference/results.md)).
@@ -115,8 +115,9 @@ repository.
     the [KORML schema](../reference/schema.md).
 
 `argv`
-:   The ordered list of words produced by the shell, excluding the
-    executable name. Kaira does not split, trim, or unquote words.
+:   The ordered list of words the program receives, including the
+    invocation name `argv[0]`, which Kaira keeps but does not interpret.
+    Kaira does not split, trim, or unquote words.
 
 `command`, `level`
 :   One entry of `commands`. During parsing, the command currently being

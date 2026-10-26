@@ -30,7 +30,7 @@ commands:
 | Command line | Outcome |
 | --- | --- |
 | `forge` | `{"flags": [], "options": {}, "positionals": {}}` |
-| `forge now` | `unexpected_argument` at 0 — `shape: none` accepts no bare words. |
+| `forge now` | `unexpected_argument` at 1 — `shape: none` accepts no bare words. |
 
 ## 2. A flag
 
@@ -49,9 +49,9 @@ commands:
 | Command line | Outcome |
 | --- | --- |
 | `forge -v`, `forge --verbose` | `"flags": ["verbose"]` — the result always uses the long name. |
-| `forge --verbose=true` | `invalid_option_form` at 0 — a flag never takes a value. |
-| `forge -v --verbose` | `duplicate_option` at 1 — both spellings count as the same flag. |
-| `forge --verb` | `unknown_option` at 0 — there is no prefix matching. |
+| `forge --verbose=true` | `invalid_option_form` at 1 — a flag never takes a value. |
+| `forge -v --verbose` | `duplicate_option` at 2 — both spellings count as the same flag. |
+| `forge --verb` | `unknown_option` at 1 — there is no prefix matching. |
 
 ## 3. Options
 
@@ -76,9 +76,9 @@ commands:
 | Command line | Outcome |
 | --- | --- |
 | `forge --jobs=8 --include src --include tests` | `"options": {"jobs": "8", "include": ["src", "tests"]}` |
-| `forge --jobs 8` | `invalid_option_form` at 0 — `jobs` is `attached`. |
-| `forge --include=src` | `invalid_option_form` at 0 — `include` is `spaced`. |
-| `forge --jobs=4 --jobs=8` | `duplicate_option` at 1 — a `single` option occurs at most once. |
+| `forge --jobs 8` | `invalid_option_form` at 1 — `jobs` is `attached`. |
+| `forge --include=src` | `invalid_option_form` at 1 — `include` is `spaced`. |
+| `forge --jobs=4 --jobs=8` | `duplicate_option` at 2 — a `single` option occurs at most once. |
 
 `jobs` is `"8"`, a string. Kaira does not type or validate values; the
 application (or a typed accessor of the library) converts it.
@@ -108,8 +108,8 @@ commands:
 | Command line | Outcome |
 | --- | --- |
 | `forge app -v docs --include src` | `"flags": ["verbose"], "options": {"include": ["src"]}, "positionals": {"target": ["app", "docs"]}` |
-| `forge` | `too_few_positionals` at 0 — the slot is required; the index is the end of input. |
-| `forge app --clean` | `unknown_option` at 1 — dash-leading words are always options unless `--` came first. |
+| `forge` | `too_few_positionals` at 1 — the slot is required; the index is the end of input. |
+| `forge app --clean` | `unknown_option` at 2 — dash-leading words are always options unless `--` came first. |
 
 A slot whose count can vary (here: one or more) must be aligned `center`;
 only one such slot is allowed per command. Step 7 shows why.
@@ -122,7 +122,7 @@ Everything after it is a positional word, even if it starts with a dash.
 | Command line | Outcome |
 | --- | --- |
 | `forge app -- --clean -j8` | `"positionals": {"target": ["app", "--clean", "-j8"]}` |
-| `forge --include --` | `missing_value` at 0 — a spaced option never consumes `--`. An option that must accept the literal value `--` is declared `attached` and written `--name=--`. |
+| `forge --include --` | `missing_value` at 1 — a spaced option never consumes `--`. An option that must accept the literal value `--` is declared `attached` and written `--name=--`. |
 
 ## 6. Subcommands
 
@@ -166,10 +166,10 @@ For `forge -v build --release app`:
 | Command line | Outcome |
 | --- | --- |
 | `forge clean` | `"command": "__main__.clean"`, two records, both empty. |
-| `forge build -v app` | `unknown_option` at 1 — `verbose` belongs to `__main__`; inside `build` it is unknown. |
-| `forge --release build` | `unknown_option` at 0 — `release` belongs to `build`. |
-| `forge` | `missing_subcommand` at 0 — a `subcommands` command always requires a child. |
-| `forge deploy` | `unknown_subcommand` at 0 — only listed children are accepted. |
+| `forge build -v app` | `unknown_option` at 2 — `verbose` belongs to `__main__`; inside `build` it is unknown. |
+| `forge --release build` | `unknown_option` at 1 — `release` belongs to `build`. |
+| `forge` | `missing_subcommand` at 1 — a `subcommands` command always requires a child. |
+| `forge deploy` | `unknown_subcommand` at 1 — only listed children are accepted. |
 
 ## 7. Several positional slots
 
@@ -196,7 +196,7 @@ commands:
 | `forge a.txt b.txt dist/` | `"positionals": {"source": ["a.txt", "b.txt"], "destination": "dist/"}` |
 | `forge -f a.txt dist/` | `"flags": ["force"]`, `"positionals": {"source": ["a.txt"], "destination": "dist/"}` |
 | `forge a.txt -- -x dist/` | `"positionals": {"source": ["a.txt", "-x"], "destination": "dist/"}` |
-| `forge dist/` | `too_few_positionals` at 1 — one word fills `destination`; `source` needs at least one. |
+| `forge dist/` | `too_few_positionals` at 2 — one word fills `destination`; `source` needs at least one. |
 
 Declaring `source` as `left` with `multiplicity: multiple` is rejected as
 `invalid_declaration`: a `left` slot must have a fixed count.

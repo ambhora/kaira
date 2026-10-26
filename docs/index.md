@@ -72,7 +72,8 @@ portable error for a command line that omits the argument.
     ```
 
     The shell has already split the line into words, so the parser receives
-    `["-v", "report.txt"]`.
+    `["example", "-v", "report.txt"]`. The invocation name `argv[0]` is kept
+    but not interpreted.
 
 === "Portable result"
 
@@ -101,11 +102,11 @@ portable error for a command line that omits the argument.
     ```
 
     ```json
-    {"code": "too_few_positionals", "index": 1}
+    {"code": "too_few_positionals", "index": 2}
     ```
 
     An error consists of a code from a closed set and a zero-based index
-    into `argv` (here the end of input). Diagnostic text is
+    into `argv`, counting `argv[0]` (here the end of input, `argv.length`). Diagnostic text is
     implementation-defined.
 
 <div class="grid kaira-columns" markdown>

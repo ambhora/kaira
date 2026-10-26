@@ -214,6 +214,10 @@ slot, then all `right` slots. The declaration must satisfy two conditions:
 2. At most one slot is `center`, and only that slot may have a variable
    count.
 
+Every slot also has `max ≥ 1`: a slot that can never receive a word is
+`invalid_declaration`. A `left` or `right` slot is therefore always
+required.
+
 Under these conditions the assignment is unique for every word count: the
 fixed slots take their counts, and the centre slot takes whatever remains,
 which must lie within its range. For example

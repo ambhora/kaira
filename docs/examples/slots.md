@@ -33,8 +33,8 @@ the right, and the centre slot takes everything else.
 | `cp a.txt b.txt dist/` | accepted — `"source": ["a.txt", "b.txt"], "destination": "dist/"` |
 | `cp -r src dist/` | accepted — `"flags": ["recursive"]`, `"source": ["src"]`, `"destination": "dist/"` |
 | `cp a.txt -- -x dist/` | accepted — `"source": ["a.txt", "-x"]`; `--` lets a dash-leading word be a source |
-| `cp dist/` | `too_few_positionals` at 1 — one word fills `destination`; `source` needs at least one |
-| `cp src -r` | `too_few_positionals` at 2 — `-r` is a flag, so only one positional word was seen |
+| `cp dist/` | `too_few_positionals` at 2 — one word fills `destination`; `source` needs at least one |
+| `cp src -r` | `too_few_positionals` at 3 — `-r` is a flag, so only one positional word was seen |
 
 For the first line:
 

@@ -12,6 +12,11 @@ is the [specification](specification.md); this page is the working summary.
 The shell has already split the command line into `argv` words. Quoting
 and escaping are therefore the shell's concern, never Kaira's.
 
+`argv` is passed unchanged, including the invocation name `argv[0]`. Kaira
+does not interpret `argv[0]`: scanning starts at index 1, and every error
+index counts from `argv[0]`, so an index can be used directly on the host's
+argument vector. An empty `argv` is `empty_argv`.
+
 ## Per-level parsing
 
 Parsing starts at `__main__` and proceeds one command level at a time.
@@ -33,6 +38,10 @@ The procedure for one level:
 The same procedure as pseudo-code:
 
 ```text
+parse(argv):
+  if argv is empty: error empty_argv
+  return parse_level(__main__, argv.after_front)   # argv[0] is skipped
+
 parse_level(command, argv):
   flags = []          # long names, in first-occurrence order
   options = {}
@@ -92,9 +101,32 @@ that the whole word reaches Kaira.
 Values are not inspected: an option value is any word (or any suffix after
 `=`), delivered to the result unchanged.
 
+### Order of checks
+
+A dash-leading word is checked in a fixed order, and the first failing
+check determines the error. The *spelling* is the part before the first
+`=`, or the whole word.
+
+1. **Recognition** — the spelling is a declared long or short spelling at
+   this level; otherwise `unknown_option`.
+2. **Form** — a flag or spaced option has no `=`, an attached option has
+   one; otherwise `invalid_option_form`.
+3. **Occurrence** — the permitted number of occurrences is not exceeded;
+   otherwise `duplicate_option`.
+4. **Value** — a spaced option is followed by a word other than `--`;
+   otherwise `missing_value`.
+
+For a `single` option `--output` declared `attached`, the command line
+`app --output=a --output b` fails the form check at index 2 and is
+`invalid_option_form`, although it is also a second occurrence. For a
+`single` spaced option `--ratio`, `app --ratio 1 --ratio` is
+`duplicate_option` at index 3, although the value is also missing.
+
 ## Occurrence rules
 
-| Declaration | Occurrence rule |
+Each flag and option has a permitted number of occurrences per level:
+
+| Declaration | Permitted occurrences |
 | --- | --- |
 | flag | At most once. |
 | option, `single` | At most once. |
@@ -123,16 +155,19 @@ Pieces are delivered as strings; empty pieces are preserved.
 
 Positional words are collected during the scan and assigned at end of
 input. Let the slots in effective order (`left`…, `center`, `right`…) have
-bounds `[min, max]`; `left` and `right` slots have `min = max`, and only the
-`center` slot may vary.
+bounds `[min, max]` with `max ≥ 1`; `left` and `right` slots have
+`min = max`, and only the `center` slot may vary.
 
 1. **During the scan**, if the sum of all `max` values is finite and the
    number of positional words exceeds it, report `too_many_positionals` at
    the offending word.
-2. **At end of input**, give every fixed slot exactly its count, in order,
-   and the remaining words to the `center` slot. If the centre count is
-   below its `min` (or, with no centre slot, if there are fewer words than
-   the fixed slots need), report `too_few_positionals` at `argv.length`.
+2. **At end of input**, if the number of positional words is below the
+   sum of all `min` values, report `too_few_positionals` at
+   `argv.length`. Otherwise give every `left` and `right` slot exactly its
+   count, in order, and the remaining words to the `center` slot; the two
+   checks guarantee that this number lies within the `center` slot's
+   bounds.
+
 Words are not validated; the slot only determines where each word is
 placed in the result.
 
@@ -141,16 +176,16 @@ Example with `input` (`left`, 1), `extra` (`center`, 0 or more), `output`
 
 | `argv` | Outcome |
 | --- | --- |
-| `["a", "b"]` | `input = "a"`, `output = "b"` |
-| `["a", "1", "2", "b"]` | `extra = ["1", "2"]` |
-| `["a"]` | `too_few_positionals` at 1 |
-| `["a", "x", "b"]` | `extra = ["x"]` — words are not typed |
-| `["a", "x", "--bad", "b"]` | `unknown_option` at 2 |
+| `["app", "a", "b"]` | `input = "a"`, `output = "b"` |
+| `["app", "a", "1", "2", "b"]` | `extra = ["1", "2"]` |
+| `["app", "a"]` | `too_few_positionals` at 2 |
+| `["app", "a", "x", "b"]` | `extra = ["x"]` — words are not typed |
+| `["app", "a", "x", "--bad", "b"]` | `unknown_option` at 3 |
 
 ## The `--` delimiter
 
 The exact word `--` ends **option recognition** at the current
-`positionals` level. It may occur before or after positional words.
+`positionals` level. It can occur before or after positional words.
 
 After `--`, every remaining word is a positional word of the current
 command, including dash-leading words and further `--` words. Without the
@@ -175,10 +210,11 @@ the literal value.
 
 ## Error precedence
 
-1. Errors detected during the scan, at the first word that fails:
-   `unknown_option`, `invalid_option_form`, `missing_value`,
-   `duplicate_option`, `unexpected_argument`, `unknown_subcommand`,
-   `unexpected_delimiter`, `too_many_positionals`.
-2. At end of input: `missing_subcommand` or `too_few_positionals`.
+1. `empty_argv`, when `argv` has no elements.
+2. Errors detected during the scan, at the first word that fails:
+   `unknown_option`, `invalid_option_form`, `duplicate_option`,
+   `missing_value` (in the order of checks above), `unexpected_argument`,
+   `unknown_subcommand`, `unexpected_delimiter`, `too_many_positionals`.
+3. At end of input: `missing_subcommand` or `too_few_positionals`.
 
 See [Error codes](errors.md) for the full list with examples.

@@ -74,8 +74,9 @@ with no `index`:
 {"code": "invalid_declaration"}
 ```
 
-Argument failures return a `code` and a zero-based `index` into the supplied
-`argv` (which excludes the executable name). Errors detected at end of
+Argument failures return a `code` and a zero-based `index` into the
+complete `argv`, including the invocation name `argv[0]`, so the index can
+be used directly on the host's argument vector. Errors detected at end of
 input use `index = argv.length`.
 
 ```json
@@ -91,11 +92,14 @@ intentionally not standardized.
 The repository's `conformance/v1.json` contains three sections.
 
 `declarations`
-:   Named, already-decoded representations of KORML command declarations.
-    JSON is used only as a neutral interchange format for tests.
+:   Named, already-decoded representations of KORML command declarations:
+    scalars appear as the JSON strings, numbers, and Booleans that the
+    specification decodes them to. JSON is used only as a neutral
+    interchange format for tests.
 
 `cases`
-:   Each case names a declaration, supplies an `argv` array, and expects
+:   Each case names a declaration, supplies an `argv` array that begins
+    with the invocation name, and expects
     exactly one of `ok` (a portable result) or `error` (a `code` and
     `index`).
 
@@ -103,16 +107,20 @@ The repository's `conformance/v1.json` contains three sections.
 :   Declarations that must be rejected during validation, with the expected
     error code and no argument index.
 
-An implementation should load KORML source files with its chosen compatible
-KORML reader, then pass the resulting data to its validator and `argv`
+An implementation loads KORML source files with a reader for KORML v0 and
+v1.0, then passes the resulting data to its validator and `argv`
 parser. The shared JSON cases test the **semantic** layer; they do not
 replace tests that the KORML front end rejects malformed documents and
-duplicate keys.
+duplicate keys and decodes scalars as specified.
 
 The suite currently covers, among other things:
 
 - every error code at least once, including scope violations such as a
   parent flag used inside a child;
+- an empty `argv`, and an `argv[0]` that looks like an option, which is
+  not interpreted;
+- the order of checks within one option word: recognition, form,
+  occurrence, value;
 - numeric-looking words far beyond 64-bit range, `-0`, `true`, and `NAME=VALUE`
   words, all delivered as strings;
 - empty attached values, empty separator pieces, and Unicode strings;
@@ -120,8 +128,10 @@ The suite currently covers, among other things:
   not allowed;
 - slot assignment with fixed and variable slots and count errors;
 - tree validation: missing root, unknown or doubly listed child keys,
-  orphan commands, duplicate child words, and name or alias collisions
-  between flags and options.
+  orphan commands, cycles unreachable from the root, duplicate child words,
+  and name or alias collisions between flags and options;
+- version precedence, slots with `max = 0`, and integers and slot-count
+  sums at and beyond the 64-bit limit.
 
 !!! note "Scope of the suite"
 

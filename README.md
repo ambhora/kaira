@@ -43,8 +43,8 @@ commands:
       - input: {alignment: left}
 ```
 
-For `argv = ["-v", "report.txt"]` (without `argv[0]`), the portable
-result is:
+For `argv = ["example", "-v", "report.txt"]`, the portable result is as
+follows; `argv[0]` is kept in the vector but not interpreted:
 
 ```json
 {
@@ -68,7 +68,7 @@ by libraries and applications above the specification.
 
 ## Conformance contract
 
-1. Load and validate the KORML declaration.
+1. Read the declaration as KORML v0 or v1.0 and validate it.
 2. Parse argument strings using Kaira v1 grammar.
 3. Return the portable result or structured error.
 4. Agree with the language-neutral conformance vectors.

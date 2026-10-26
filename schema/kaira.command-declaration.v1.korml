@@ -84,7 +84,6 @@ types:
       multiplicity: multiplicity
       required: boolean
       cardinality: cardinality
-      help: string
 
   positional-entry:
     kind: mapping-of

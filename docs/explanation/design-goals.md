@@ -45,8 +45,9 @@ record in `commands` per selected command, keyed by the command's name.
 ## 4. Structured errors
 
 A failure is reported as a code from a closed set together with a
-zero-based index into `argv`. This is sufficient for an application to
-locate the offending word and is language-neutral enough to be expressed in
+zero-based index into `argv`, counting the invocation name `argv[0]`. This
+is sufficient for an application to locate the offending word and is
+language-neutral enough to be expressed in
 a shared conformance suite. Message text, formatting, and suggestions are
 implementation-defined.
 

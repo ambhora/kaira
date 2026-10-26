@@ -35,28 +35,41 @@ implementation-defined.
 
 ## Checklist
 
-- [ ] **Read KORML faithfully.** Reject duplicate mapping keys and malformed
-      documents as `invalid_declaration`. Preserve keys and string values
-      byte for byte.
-- [ ] **Validate the whole declaration before parsing anything.** Exactly
-      three root fields; `version` is exactly `kaira.command-declaration/v1`
-      (anything else is `unsupported_version`); `commands` contains
-      `__main__`; unknown fields are errors everywhere.
+- [ ] **Read KORML faithfully.** Accept a KORML v0 source or a KORML v1.0
+      stream with exactly one document. Reject duplicate mapping keys and
+      malformed documents as `invalid_declaration`. Preserve keys and scalar
+      text byte for byte.
+- [ ] **Decode scalars as specified.** Booleans are exactly `true` or
+      `false`; integers are `0` or a decimal number without sign or leading
+      zero, at most 2⁶³ − 1; quoting style is not significant.
+- [ ] **Validate the whole declaration before parsing anything.** Check
+      `version` first: any scalar other than `kaira.command-declaration/v1`
+      is `unsupported_version`, whatever else the document contains. Then
+      exactly three root fields; `commands` contains `__main__`; unknown
+      fields are errors everywhere.
 - [ ] **Check the tree.** Every listed child key exists, `__main__` is
-      never listed, every other key is listed by exactly one parent, and the
-      words of one parent's children are distinct.
+      never listed, every other key is listed by exactly one parent, every
+      key is reachable from `__main__`, and the words of one parent's
+      children are distinct.
 - [ ] **Enforce the per-command constraints.** `subcommands` present iff
       `shape: subcommands`, `positionals` present iff `shape: positionals`;
       long names and short aliases distinct across flags and options; a
       nonempty `separator` only with `multiplicity: multiple`; no `value`
       field anywhere.
 - [ ] **Enforce the slot rules.** Effective bounds from `multiplicity`,
-      `required`, and `cardinality` must agree; `left`/`right` slots have a
-      fixed count; at most one `center` slot, the only one allowed to vary.
+      `required`, and `cardinality` must agree; every slot has `max ≥ 1`;
+      `left`/`right` slots have a fixed count; at most one `center` slot,
+      the only one allowed to vary; the sums of the slot minima and finite
+      maxima of one command are at most 2⁶³ − 1.
+- [ ] **Keep `argv[0]`.** Do not strip the invocation name; start scanning
+      at index 1 and report indices into the complete vector. An empty
+      `argv` is `empty_argv`.
 - [ ] **Scan each level left to right** following the
       [parser rules](../reference/parser-rules.md). Keep fresh flag, option,
-      and positional-word collections per level. Stop recognizing options
-      after `--`. Descend into a subcommand immediately and never look back.
+      and positional-word collections per level. Check each option word
+      in the order recognition, form, occurrence, value. Stop recognizing
+      options after `--`. Descend into a subcommand immediately and never
+      look back.
 - [ ] **Assign positional words to slots at end of input**, fixed slots
       first, the remainder to the centre slot.
 - [ ] **Leave values alone.** No trimming, conversion, or validation; the
@@ -65,9 +78,9 @@ implementation-defined.
       `path`, and `commands`; one record per selected key with `flags`,
       `options`, and `positionals`; omit absent options and empty slots;
       `single` yields a value, `multiple` an array.
-- [ ] **Report errors in the prescribed order**: scan errors at the first
-      failing word, then `missing_subcommand` / `too_few_positionals` at
-      `argv.length`.
+- [ ] **Report errors in the prescribed order**: `empty_argv`, then scan
+      errors at the first failing word, then `missing_subcommand` /
+      `too_few_positionals` at `argv.length`.
 - [ ] **Pass the conformance suite.**
 
 ## Running the conformance suite
@@ -84,14 +97,14 @@ implementation-defined.
     {
       "id": "short-attached",
       "declaration": "options",
-      "argv": ["-o=--"],
+      "argv": ["app", "-o=--"],
       "ok": { "program": "app", "command": "__main__", "path": ["__main__"], "commands": { "…": "…" } }
     },
     {
       "id": "missing-spaced-value",
       "declaration": "options",
-      "argv": ["--include", "--"],
-      "error": { "code": "missing_value", "index": 0 }
+      "argv": ["app", "--include", "--"],
+      "error": { "code": "missing_value", "index": 1 }
     }
   ],
   "invalid_declarations": [
@@ -163,13 +176,25 @@ A harness in any language does the same four things:
 !!! failure "Resolving parent flags or options inside a child level"
 
     After a subcommand word is consumed, only the child's declarations are
-    in scope. `app test -v` is `unknown_option` at index 1 even when
+    in scope. `app test -v` is `unknown_option` at index 2 even when
     `__main__` declares `-v`.
 
 !!! failure "Matching subcommand keys instead of words"
 
     The user types the word (`build`), not the key (`__main__.build`).
-    `["__main__.install", "x"]` is `unknown_subcommand`.
+    `["app", "__main__.install", "x"]` is `unknown_subcommand`.
+
+!!! failure "Stripping or interpreting `argv[0]`"
+
+    `argv[0]` stays in the vector and is skipped, whatever it contains; the
+    first argument is at index 1. An adapter that strips it reports every
+    index one too low.
+
+!!! failure "Checking occurrence before form"
+
+    The checks on an option word run in a fixed order. For an attached
+    `single` option, `app --output=a --output b` is `invalid_option_form`
+    at 2, not `duplicate_option`.
 
 !!! failure "Re-tokenizing `argv` elements"
 

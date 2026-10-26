@@ -31,9 +31,9 @@ commands:
 | `kaira --dry-run -- --not-a-kaira-option build --help` | accepted — see below; nothing after `--` is read as an option or subcommand |
 | `kaira input --dry-run -- --literal -- -2` | accepted — `"argument": ["input", "--literal", "--", "-2"]`; the flag is parsed although it follows `input`, and a second `--` is just a word |
 | `kaira --output=--` | accepted — `"output": "--"` |
-| `kaira --not-a-kaira-option` | `unknown_option` at 0 — without `--`, a dash-leading word must be declared |
-| `kaira build --dry-run --help` | `unknown_option` at 2 — `--help` is not declared; `build` is just a positional word here |
-| `kaira --output --` | `invalid_option_form` at 0 — `output` is `attached`; `--output` without `=` is the wrong form |
+| `kaira --not-a-kaira-option` | `unknown_option` at 1 — without `--`, a dash-leading word must be declared |
+| `kaira build --dry-run --help` | `unknown_option` at 3 — `--help` is not declared; `build` is just a positional word here |
+| `kaira --output --` | `invalid_option_form` at 1 — `output` is `attached`; `--output` without `=` is the wrong form |
 
 For the first line:
 

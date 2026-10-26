@@ -38,14 +38,14 @@ commands:
 | `kaira --include src --include include target` | accepted — `"include": ["src", "include"]` |
 | `kaira --features "mpi;cuda;openmp" target` | accepted — `"features": ["mpi", "cuda", "openmp"]` |
 | `kaira target1 --verbose target2 --include src` | accepted — `"positionals": {"target": ["target1", "target2"]}`; flags and options may follow positional words |
-| `kaira --verbose=true` | `invalid_option_form` at 0 — a flag never takes a value |
-| `kaira --output build.log target` | `invalid_option_form` at 0 — `output` is `attached` |
-| `kaira --output=a.log --output=b.log` | `duplicate_option` at 1 — a `single` option occurs at most once |
-| `kaira --include=src target` | `invalid_option_form` at 0 — `include` is `spaced` |
-| `kaira --features=mpi;cuda target` | `invalid_option_form` at 0 — `features` is `spaced` |
-| `kaira --features mpi --features cuda` | `duplicate_option` at 2 — a separator option occurs at most once |
-| `kaira -vo` | `unknown_option` at 0 — no short-option clustering |
-| `kaira target --unknown-option` | `unknown_option` at 1 — undeclared dash-leading words are errors anywhere in the level; put `--` before such a word to pass it through |
+| `kaira --verbose=true` | `invalid_option_form` at 1 — a flag never takes a value |
+| `kaira --output build.log target` | `invalid_option_form` at 1 — `output` is `attached` |
+| `kaira --output=a.log --output=b.log` | `duplicate_option` at 2 — a `single` option occurs at most once |
+| `kaira --include=src target` | `invalid_option_form` at 1 — `include` is `spaced` |
+| `kaira --features=mpi;cuda target` | `invalid_option_form` at 1 — `features` is `spaced` |
+| `kaira --features mpi --features cuda` | `duplicate_option` at 3 — a separator option occurs at most once |
+| `kaira -vo` | `unknown_option` at 1 — no short-option clustering |
+| `kaira target --unknown-option` | `unknown_option` at 2 — undeclared dash-leading words are errors anywhere in the level; put `--` before such a word to pass it through |
 
 For `kaira --verbose --output=build.log --include src --include include --features "mpi;cuda" target`:
 

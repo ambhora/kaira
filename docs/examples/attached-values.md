@@ -32,10 +32,10 @@ commands:
 | `kaira --define=USE_MPI=1 --define=USE_CUDA=1 target` | accepted — `"define": ["USE_MPI=1", "USE_CUDA=1"]` |
 | `kaira --features='mpi;cuda;openmp' target` | accepted — the quotes are for the shell; the word that reaches Kaira is `--features=mpi;cuda;openmp` |
 | `kaira --output= target` | accepted — `"output": ""`; an empty value is valid for `string` |
-| `kaira --output build.log target` | `invalid_option_form` at 0 — `output` is `attached` |
-| `kaira --define USE_MPI=1 target` | `invalid_option_form` at 0 — same rule for `define` |
-| `kaira --features "mpi;cuda;openmp" target` | `invalid_option_form` at 0 — same rule for `features` |
-| `kaira --features=mpi --features=cuda target` | `duplicate_option` at 1 — a separator option occurs at most once; pass one separated value |
+| `kaira --output build.log target` | `invalid_option_form` at 1 — `output` is `attached` |
+| `kaira --define USE_MPI=1 target` | `invalid_option_form` at 1 — same rule for `define` |
+| `kaira --features "mpi;cuda;openmp" target` | `invalid_option_form` at 1 — same rule for `features` |
+| `kaira --features=mpi --features=cuda target` | `duplicate_option` at 2 — a separator option occurs at most once; pass one separated value |
 
 For `kaira --output=build.log --define=USE_MPI=1 --define=USE_CUDA=1 --features='mpi;cuda' target`
 the record for `__main__` is:

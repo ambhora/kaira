@@ -19,9 +19,9 @@ commands:
 | Command line | Outcome |
 | --- | --- |
 | `kaira` | accepted — `{"flags": [], "options": {}, "positionals": {}}` |
-| `kaira extra` | `unexpected_argument` at 0 — `shape: none` accepts no bare words. |
-| `kaira --verbose` | `unknown_option` at 0 — nothing is declared. |
-| `kaira --` | `unexpected_delimiter` at 0 — `--` is meaningful only for `shape: positionals`. |
+| `kaira extra` | `unexpected_argument` at 1 — `shape: none` accepts no bare words. |
+| `kaira --verbose` | `unknown_option` at 1 — nothing is declared. |
+| `kaira --` | `unexpected_delimiter` at 1 — `--` is meaningful only for `shape: positionals`. |
 
 The full result for `kaira`:
 

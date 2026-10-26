@@ -31,7 +31,7 @@ root
         ├── options?      name → {style, multiplicity?, separator?, short?, help?}
         ├── subcommands?  [key, …]                  (iff shape = subcommands)
         └── positionals?  [{name: slot}, …]         (iff shape = positionals)
-            └── slot      {alignment, multiplicity?, required?, cardinality?, help?}
+            └── slot      {alignment, multiplicity?, required?, cardinality?}
 ```
 
 ## Schema
@@ -45,7 +45,7 @@ root
 | Field | Required | Meaning |
 | --- | --- | --- |
 | `version` | yes | Exactly `kaira.command-declaration/v1`. |
-| `program` | yes | Program name, copied into results; not matched against the executable name. |
+| `program` | yes | Identifier copied into results; not matched against `argv[0]`. |
 | `commands` | yes | Mapping from command key to command. Must contain `__main__`. |
 
 Unknown fields are rejected everywhere.
@@ -66,8 +66,9 @@ commands:
 ```
 
 Rules: every listed key must exist; `__main__` is never listed; every other
-key is listed by exactly one parent; the words of one parent's children
-are distinct. The dotted prefix is a naming convention with no effect on
+key is listed by exactly one parent; every key is reachable from
+`__main__`, so a cycle among unlisted commands is rejected; the words of
+one parent's children are distinct. The dotted prefix is a naming convention with no effect on
 parsing — `build` could equally be keyed `b` — but it keeps keys unique and
 self-describing.
 
@@ -215,16 +216,22 @@ the slot name to its fields.
 | `multiplicity` | no | `single`, `multiple` | `single` |
 | `required` | no | boolean | `true` |
 | `cardinality.min` | no | integer ≥ 0 | `1` if required, else `0` |
-| `cardinality.max` | no | integer ≥ min, or `unbounded` | `1` if single, else `unbounded` |
-| `help` | no | string | — |
+| `cardinality.max` | no | integer ≥ 1 and ≥ min, or `unbounded` | `1` if single, else `unbounded` |
+
+Slots have no `help` field; descriptive text for the command line belongs
+to the command, its flags, and its options.
 
 Consistency rules, violations of which are `invalid_declaration`:
 
-1. `single` ⇒ `max = 1`; `required: true` ⇒ `min ≥ 1`; `required: false`
-   ⇒ `min = 0`. An explicit `cardinality` must agree with these.
-2. A `left` or `right` slot has a fixed count (`min = max`).
+1. `max ≥ 1`; `single` ⇒ `max = 1`; `required: true` ⇒ `min ≥ 1`;
+   `required: false` ⇒ `min = 0`. An explicit `cardinality` must agree
+   with these.
+2. A `left` or `right` slot has a fixed count (`min = max`), and is
+   therefore always required.
 3. At most one slot is `center`; only it may have a variable count.
-4. Effective order: all `left` slots in list order, the `center` slot, all
+4. Within one command, the sum of the `min` values, and the sum of the
+   `max` values when none is `unbounded`, are at most 2⁶³ − 1.
+5. Effective order: all `left` slots in list order, the `center` slot, all
    `right` slots in list order.
 
 ```yaml
@@ -254,4 +261,7 @@ makes the declaration invalid.
 
     The schema uses intrinsic `integer` and `boolean` scalars only to
     describe *declaration metadata* such as `cardinality` bounds and
-    `required`. They say nothing about command-line values.
+    `required`. They say nothing about command-line values. KORML scalars
+    are text; the specification decodes a boolean from exactly `true` or
+    `false` and an integer from `0` or a decimal number without sign or
+    leading zero, at most 2⁶³ − 1.

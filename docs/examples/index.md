@@ -24,5 +24,5 @@ empty.
 !!! note "Indices"
 
     Rejected command lines list the error code and the zero-based index of
-    the offending `argv` word. `argv` excludes the program name: in
-    `kaira --bad`, the word `--bad` is at index 0.
+    the offending `argv` word. `argv` includes the program name as
+    `argv[0]`: in `kaira --bad`, the word `--bad` is at index 1.

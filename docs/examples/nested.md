@@ -60,14 +60,14 @@ commands:
 | --- | --- |
 | `pkg -v install --jobs=4 left-pad is-odd --dry-run` | accepted — see below |
 | `pkg remote add -v https://example.org/index` | accepted — three records; at the third level `-v` means `verify` |
-| `pkg remote` | `missing_subcommand` at 1 — a `subcommands` command always requires a child |
-| `pkg install -v left-pad` | `unknown_option` at 1 — `verbose` belongs to `__main__`; inside `install` it is unknown |
-| `pkg --jobs=4 install left-pad` | `unknown_option` at 0 — `jobs` belongs to `install` |
-| `pkg install` | `too_few_positionals` at 1 — `install` requires at least one package |
-| `pkg remote add a b` | `too_many_positionals` at 3 — `url` takes exactly one word |
-| `pkg remote list extra` | `unexpected_argument` at 2 — `list` has `shape: none` |
-| `pkg remote -v add x` | `unknown_option` at 1 — `remote` itself declares no flags |
-| `pkg` | `missing_subcommand` at 0 |
+| `pkg remote` | `missing_subcommand` at 2 — a `subcommands` command always requires a child |
+| `pkg install -v left-pad` | `unknown_option` at 2 — `verbose` belongs to `__main__`; inside `install` it is unknown |
+| `pkg --jobs=4 install left-pad` | `unknown_option` at 1 — `jobs` belongs to `install` |
+| `pkg install` | `too_few_positionals` at 2 — `install` requires at least one package |
+| `pkg remote add a b` | `too_many_positionals` at 4 — `url` takes exactly one word |
+| `pkg remote list extra` | `unexpected_argument` at 3 — `list` has `shape: none` |
+| `pkg remote -v add x` | `unknown_option` at 2 — `remote` itself declares no flags |
+| `pkg` | `missing_subcommand` at 1 |
 
 For `pkg -v install --jobs=4 left-pad is-odd --dry-run`:
 

@@ -41,12 +41,12 @@ commands:
 | --- | --- |
 | `kaira build`, `kaira test` | accepted |
 | `kaira -v build -v` | accepted — see below |
-| `kaira` | `missing_subcommand` at 0 — the index is `argv.length`. |
-| `kaira clean` | `unknown_subcommand` at 0 — `clean` is not a listed child's word. |
-| `kaira build target` | `unexpected_argument` at 1 — `build` has `shape: none`. |
-| `kaira test -v` | `unknown_option` at 1 — `test` declares no flags; the root's `-v` is out of scope. |
-| `kaira build -v -v` | `duplicate_option` at 2 — a flag may appear at most once per level. |
-| `kaira -- build` | `unexpected_delimiter` at 0 — `--` never selects a subcommand. |
+| `kaira` | `missing_subcommand` at 1 — the index is `argv.length`. |
+| `kaira clean` | `unknown_subcommand` at 1 — `clean` is not a listed child's word. |
+| `kaira build target` | `unexpected_argument` at 2 — `build` has `shape: none`. |
+| `kaira test -v` | `unknown_option` at 2 — `test` declares no flags; the root's `-v` is out of scope. |
+| `kaira build -v -v` | `duplicate_option` at 3 — a flag may appear at most once per level. |
+| `kaira -- build` | `unexpected_delimiter` at 1 — `--` never selects a subcommand. |
 
 For `kaira -v build -v`, each level records its own `verbose`:
 
