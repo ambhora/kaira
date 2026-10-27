@@ -89,7 +89,7 @@ intentionally not standardized.
 
 ## Conformance suite
 
-The repository's `conformance/v1.json` contains three sections.
+The repository's `tests/conformance/v1.json` contains three sections.
 
 `declarations`
 :   Named, already-decoded representations of KORML command declarations:

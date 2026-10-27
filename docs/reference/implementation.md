@@ -85,9 +85,9 @@ implementation-defined.
 
 ## Running the conformance suite
 
-`conformance/v1.json` is a plain JSON document with three sections.
+`tests/conformance/v1.json` is a plain JSON document with three sections.
 
-```json title="conformance/v1.json (abridged)"
+```json title="tests/conformance/v1.json (abridged)"
 {
   "format": "kaira.conformance/v1",
   "declarations": {
@@ -133,7 +133,7 @@ A harness in any language does the same four things:
     import json
     from my_kaira import validate, parse, KairaError
 
-    suite = json.load(open("conformance/v1.json"))
+    suite = json.load(open("tests/conformance/v1.json"))
     decls = {name: validate(d) for name, d in suite["declarations"].items()}
 
     for case in suite["cases"]:

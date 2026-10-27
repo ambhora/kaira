@@ -1,7 +1,8 @@
 .venv/
 site/
 __pycache__/
-kaira_docs.egg-info
+*.egg-info
+dist/
 
 # Generated from src/SPECIFICATION.md
 docs/reference/specification.md

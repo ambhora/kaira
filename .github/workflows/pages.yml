@@ -32,7 +32,7 @@ jobs:
       - name: Install documentation dependencies
         run: |
           python -m pip install --upgrade pip
-          python -m pip install -e .
+          python -m pip install -e ".[docs]"
 
       - name: Synchronize normative specification
         run: python scripts/sync_specification.py

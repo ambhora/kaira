@@ -3,7 +3,7 @@
 ## 1. Status and conformance
 
 This document is normative. The KORML schema under `schema/` and the
-conformance cases under `conformance/` form the remaining v1 contract.
+conformance cases under `tests/conformance/` form the remaining v1 contract.
 Where these documents disagree, the following order applies:
 
 1. The EBNF grammar in section 10 is the authoritative definition of the
@@ -433,7 +433,7 @@ or application execution.
 
 ## 9. Conformance
 
-The file `conformance/v1.json` defines language-neutral test cases.
+The file `tests/conformance/v1.json` defines language-neutral test cases.
 Declarations in that file are given in decoded form: KORML scalars appear
 as the JSON strings, numbers, and Booleans that section 2.3 decodes them
 to. Conformant implementations SHALL pass the normative cases.

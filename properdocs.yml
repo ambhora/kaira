@@ -109,7 +109,7 @@ extra:
       link: https://github.com/ambhora/kaira/blob/main/src/SPECIFICATION.md
       name: Normative specification source
     - icon: material/test-tube
-      link: https://github.com/ambhora/kaira/blob/main/conformance/v1.json
+      link: https://github.com/ambhora/kaira/blob/main/tests/conformance/v1.json
       name: Conformance vectors
 
 markdown_extensions:

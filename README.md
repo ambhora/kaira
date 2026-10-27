@@ -23,7 +23,7 @@ vectors. Language libraries implement the contract independently.
 
 - [Normative specification](src/SPECIFICATION.md)
 - [KORML declaration schema](schema/kaira.command-declaration.v1.korml)
-- [Portable conformance vectors](conformance/v1.json)
+- [Portable conformance vectors](tests/conformance/v1.json)
 - [Documentation](docs/index.md)
 
 The draft is not yet declared stable. Once v1 is stabilized, any incompatible
@@ -80,6 +80,26 @@ Both `--name value` and `--name=value` exist, but each option declares
 which **one** it accepts. An optional single-character short alias follows
 that same style; it is never generated from the long name.
 
+## Python package
+
+The repository is installable as the `kaira-spec` Python package, which
+ships the specification, schema, and conformance vectors so that language
+implementations can depend on them instead of copying them:
+
+```python
+import kaira_spec
+
+suite = kaira_spec.load_conformance("v1")
+schema = kaira_spec.schema_path("v1")
+```
+
+Structural checks on the vectors themselves run with:
+
+```sh
+pip install -e ".[test]"
+pytest
+```
+
 ## Documentation
 
 The rendered documentation lives at <https://ambhora.github.io/kaira/>. It is
@@ -89,7 +109,7 @@ an implementer's checklist, an error-code reference, and worked examples.
 ```sh
 python -m venv .venv
 . .venv/bin/activate
-pip install -e .
+pip install -e ".[docs]"
 python scripts/sync_specification.py
 properdocs serve
 ```
